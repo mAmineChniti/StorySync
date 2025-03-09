@@ -35,8 +35,9 @@ interface LoginResponse {
 	tokens: Tokens;
 }
 
+const AUTH_API_URL = "https://gordian.onrender.com/api/v1";
+
 export default function Login() {
-	const AUTH_API_URL = "https://gordian.onrender.com";
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const form = useForm({
 		resolver: zodResolver(loginSchema),
