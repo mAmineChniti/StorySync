@@ -1,13 +1,13 @@
-import { Providers } from "@/components/providers";
-import "@/styles/globals.css";
+import { Providers } from '@/components/providers';
+import '@/styles/globals.css';
 import { Analytics } from '@vercel/analytics/next';
-import { GeistSans } from "geist/font/sans";
-import { type Metadata } from "next";
+import { GeistSans } from 'geist/font/sans';
+import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Story Sync",
-  description: "Collaborative storytelling with others.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }]
+  title: 'Story Sync',
+  description: 'Collaborative storytelling with others.',
+  icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
 export default function RootLayout({
