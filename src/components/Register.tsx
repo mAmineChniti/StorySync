@@ -1,138 +1,182 @@
 'use client';
 
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { RegisterResponse } from '@/types/authInterfaces';
+import { registerSchema } from '@/types/authSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema } from './authSchemas';
 import { useMutation } from '@tanstack/react-query';
 import { setCookie } from 'cookies-next';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import type * as z from 'zod';
 
-interface User {
-	id: string;
-	username: string;
-	email: string;
-	first_name: string;
-	last_name: string;
-	date_joined: string;
-}
-
-interface Tokens {
-	access_token: string;
-	access_created_at: string;
-	access_expires_at: string;
-	refresh_token: string;
-	refresh_created_at: string;
-	refresh_expires_at: string;
-}
-
-interface RegisterResponse {
-	message: string;
-	user: User;
-	tokens: Tokens;
-}
-
-const AUTH_API_URL = "https://gordian.onrender.com/api/v1";
+const AUTH_API_URL = 'https://gordian.onrender.com/api/v1';
 
 export default function Register() {
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
-	const form = useForm({
-		resolver: zodResolver(registerSchema),
-		defaultValues: {
-			name: '',
-			email: '',
-			password: '',
-			confirmPassword: '',
-		},
-	});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const form = useForm({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+    },
+  });
 
-	const registerMutation = useMutation<RegisterResponse, unknown, z.infer<typeof registerSchema>>({
-		mutationFn: async (data: z.infer<typeof registerSchema>) => {
-			const response = await fetch(`${AUTH_API_URL}/register`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(data),
-			});
+  const registerMutation = useMutation<
+    RegisterResponse,
+    unknown,
+    z.infer<typeof registerSchema>
+  >({
+    mutationFn: async (data: z.infer<typeof registerSchema>) => {
+      const response = await fetch(`${AUTH_API_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: data.username,
+          email: data.email,
+          password: data.password,
+          first_name: data.firstName,
+          last_name: data.lastName,
+        }),
+      });
 
-			if (!response.ok) {
-				throw new Error('Registration failed');
-			}
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
 
-			return response.json() as Promise<RegisterResponse>;
-		},
-		onSuccess: async (userData) => {
-			try {
-				await setCookie('user', JSON.stringify(userData.user));
-				await setCookie('tokens', JSON.stringify(userData.tokens));
-				setErrorMessage(null);
-			} catch (error) {
-				console.error('Error setting cookies:', error);
-				setErrorMessage('Error setting cookies');
-			}
-		},
-		onError: (error: unknown) => {
-			const typedError = error instanceof Error ? error : new Error('An unknown error occurred');
-			setErrorMessage(typedError.message);
-		},
-	});
+      return response.json() as Promise<RegisterResponse>;
+    },
+    onSuccess: async (userData) => {
+      try {
+        await setCookie('user', JSON.stringify(userData.user));
+        await setCookie('tokens', JSON.stringify(userData.tokens));
+        setErrorMessage(null);
+      } catch (error) {
+        console.error('Error setting cookies:', error);
+        setErrorMessage('Error setting cookies');
+      }
+    },
+    onError: (error: unknown) => {
+      const typedError =
+        error instanceof Error ? error : new Error('An unknown error occurred');
+      setErrorMessage(typedError.message);
+    },
+  });
 
-	const onSubmit = (data: z.infer<typeof registerSchema>) => {
-		registerMutation.mutate(data);
-	};
+  const onSubmit = (data: z.infer<typeof registerSchema>) => {
+    registerMutation.mutate(data);
+  };
 
-	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)}>
-				<FormField name="name" control={form.control} render={({ field }) => (
-					<FormItem>
-						<FormLabel>Name</FormLabel>
-						<FormControl>
-							<Input placeholder="Your Name" {...field} />
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)} />
-				<FormField name="email" control={form.control} render={({ field }) => (
-					<FormItem>
-						<FormLabel>Email</FormLabel>
-						<FormControl>
-							<Input placeholder="you@example.com" {...field} />
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)} />
-				<FormField name="password" control={form.control} render={({ field }) => (
-					<FormItem>
-						<FormLabel>Password</FormLabel>
-						<FormControl>
-							<Input type="password" placeholder="••••••" {...field} />
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)} />
-				<FormField name="confirmPassword" control={form.control} render={({ field }) => (
-					<FormItem>
-						<FormLabel>Confirm Password</FormLabel>
-						<FormControl>
-							<Input type="password" placeholder="••••••" {...field} />
-						</FormControl>
-						<FormMessage />
-					</FormItem>
-				)} />
-				{errorMessage && (
-					<div className="text-red-500 mt-2">
-						<p>{errorMessage}</p>
-					</div>
-				)}
-				<Button type="submit" className="w-full mt-4" disabled={registerMutation.isPending}>
-					{registerMutation.isPending ? 'Registering...' : 'Register'}
-				</Button>
-			</form>
-		</Form>
-	);
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          name="username"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Your Username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="firstName"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Your First Name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="lastName"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Your Last Name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="email"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="you@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="password"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="••••••" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="confirmPassword"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="••••••" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        {errorMessage && (
+          <Label className="text-red-500" htmlFor="error">
+            {errorMessage}
+          </Label>
+        )}
+        <Button
+          type="submit"
+          className="w-full mt-4"
+          disabled={registerMutation.isPending}
+        >
+          {registerMutation.isPending ? 'Registering...' : 'Register'}
+        </Button>
+      </form>
+    </Form>
+  );
 }
