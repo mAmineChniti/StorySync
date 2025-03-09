@@ -35,7 +35,7 @@ interface RegisterResponse {
 	tokens: Tokens;
 }
 
-const AUTH_API_URL = "https://gordian.onrender.com";
+const AUTH_API_URL = "https://gordian.onrender.com/api/v1";
 
 export default function Register() {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
