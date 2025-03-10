@@ -16,6 +16,7 @@ import { loginSchema } from '@/types/authSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { setCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type * as z from 'zod';
@@ -26,11 +27,11 @@ export default function Login() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      identifier: '',
       password: '',
     },
   });
-
+  const router = useRouter();
   const loginMutation = useMutation<
     LoginResponse,
     unknown,
@@ -42,7 +43,10 @@ export default function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          identifier: data.identifier,
+          password: data.password,
+        }),
       });
 
       if (!response.ok) {
@@ -57,6 +61,7 @@ export default function Login() {
         await setCookie('user', JSON.stringify(userData.user));
         await setCookie('tokens', JSON.stringify(userData.tokens));
         setErrorMessage(null);
+        router.push('/home');
       } catch (error) {
         console.error('Error setting cookies:', error);
         setErrorMessage('Failed to set cookies');
@@ -67,6 +72,7 @@ export default function Login() {
       const typedError =
         error instanceof Error ? error : new Error('An unknown error occurred');
       setErrorMessage(typedError.message);
+      form.reset();
     },
   });
 
@@ -78,11 +84,11 @@ export default function Login() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
-          name="email"
+          name="identifier"
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="mt-2">Email</FormLabel>
               <FormControl>
                 <Input placeholder="you@example.com" {...field} />
               </FormControl>
@@ -95,7 +101,7 @@ export default function Login() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel className="mt-2">Password</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••" {...field} />
               </FormControl>
