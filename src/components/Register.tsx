@@ -16,6 +16,7 @@ import { registerSchema } from '@/types/authSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { setCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type * as z from 'zod';
@@ -35,7 +36,7 @@ export default function Register() {
       lastName: '',
     },
   });
-
+  const router = useRouter();
   const registerMutation = useMutation<
     RegisterResponse,
     unknown,
@@ -67,6 +68,7 @@ export default function Register() {
         await setCookie('user', JSON.stringify(userData.user));
         await setCookie('tokens', JSON.stringify(userData.tokens));
         setErrorMessage(null);
+        router.push('/home');
       } catch (error) {
         console.error('Error setting cookies:', error);
         setErrorMessage('Error setting cookies');
@@ -76,6 +78,7 @@ export default function Register() {
       const typedError =
         error instanceof Error ? error : new Error('An unknown error occurred');
       setErrorMessage(typedError.message);
+      form.reset();
     },
   });
 
@@ -91,7 +94,7 @@ export default function Register() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel className="mt-2">Username</FormLabel>
               <FormControl>
                 <Input placeholder="Your Username" {...field} />
               </FormControl>
@@ -104,7 +107,7 @@ export default function Register() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <FormLabel className="mt-2">First Name</FormLabel>
               <FormControl>
                 <Input placeholder="Your First Name" {...field} />
               </FormControl>
@@ -117,7 +120,7 @@ export default function Register() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
+              <FormLabel className="mt-2">Last Name</FormLabel>
               <FormControl>
                 <Input placeholder="Your Last Name" {...field} />
               </FormControl>
@@ -130,7 +133,7 @@ export default function Register() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="mt-2">Email</FormLabel>
               <FormControl>
                 <Input placeholder="you@example.com" {...field} />
               </FormControl>
@@ -143,7 +146,7 @@ export default function Register() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel className="mt-2">Password</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••" {...field} />
               </FormControl>
@@ -156,7 +159,7 @@ export default function Register() {
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel className="mt-2">Confirm Password</FormLabel>
               <FormControl>
                 <Input type="password" placeholder="••••••" {...field} />
               </FormControl>
@@ -165,7 +168,7 @@ export default function Register() {
           )}
         />
         {errorMessage && (
-          <Label className="text-red-500" htmlFor="error">
+          <Label className="text-red-500 mt-2" htmlFor="error">
             {errorMessage}
           </Label>
         )}
