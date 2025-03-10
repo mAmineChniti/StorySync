@@ -1,9 +1,18 @@
+'use client';
+
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { hasCookie } from 'cookies-next';
 import Link from 'next/link';
-import { Button } from './ui/button';
+import { useEffect, useState } from 'react';
 
 export default function Landing() {
+  const [discoverUri, setDiscoverUri] = useState<string>('');
+  useEffect(() => {
+    setDiscoverUri(hasCookie('user') ? '/home' : '/login');
+  }, []);
+
   return (
     <div className="flex flex-col flex-grow w-full bg-gray-50 text-gray-900 mt-16">
       <section className="w-full text-center py-20 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
@@ -15,7 +24,7 @@ export default function Landing() {
           Join a thriving community of storytellers today!
         </p>
         <Button className="mt-6 px-6 py-3 text-lg">
-          <Link href="/discover">Get Started</Link>
+          <Link href={discoverUri}>Get Started</Link>
         </Button>
       </section>
 

@@ -11,16 +11,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { env } from '@/env';
 import type { LoginResponse } from '@/types/authInterfaces';
 import { loginSchema } from '@/types/authSchemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { setCookie } from 'cookies-next';
+import { setCookie } from 'cookies-next/client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type * as z from 'zod';
-const AUTH_API_URL = 'https://gordian.onrender.com/api/v1';
 
 export default function Login() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -38,7 +38,7 @@ export default function Login() {
     z.infer<typeof loginSchema>
   >({
     mutationFn: async (data: z.infer<typeof loginSchema>) => {
-      const response = await fetch(`${AUTH_API_URL}/login`, {
+      const response = await fetch(`${env.NEXT_PUBLIC_AUTH_API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,8 +58,8 @@ export default function Login() {
 
     onSuccess: async (userData) => {
       try {
-        await setCookie('user', JSON.stringify(userData.user));
-        await setCookie('tokens', JSON.stringify(userData.tokens));
+        setCookie('user', JSON.stringify(userData.user));
+        setCookie('tokens', JSON.stringify(userData.tokens));
         setErrorMessage(null);
         router.push('/home');
       } catch (error) {
