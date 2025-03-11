@@ -64,7 +64,7 @@
     "initVersion": "7.38.1"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,mdx}": [
+    "*/**.{ts,tsx,js,jsx,mdx}": [
       "prettier --write"
     ]
   }
