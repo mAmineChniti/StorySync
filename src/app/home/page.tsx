@@ -14,10 +14,11 @@ export default function Home() {
       router.push('/login');
     }
   }, [router]);
+
   return (
     <>
       <NavBar />
-      <main className="flex flex-col min-h-screen w-full items-center justify-center">
+      <main className="flex flex-col min-h-screen w-full items-center justify-between">
         <HomeContent />
         <Footer />
       </main>
