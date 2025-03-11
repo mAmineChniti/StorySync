@@ -5,7 +5,7 @@ export default function HomePage() {
   return (
     <>
       <NavBar />
-      <main className="flex flex-col min-h-screen w-full">
+      <main className="flex flex-col min-h-screen w-full items-center justify-center">
         <Landing />
       </main>
     </>

@@ -5,7 +5,7 @@ import { GeistSans } from 'geist/font/sans';
 import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Story Sync',
+  title: 'StorySync',
   description: 'Collaborative storytelling with others.',
   icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
