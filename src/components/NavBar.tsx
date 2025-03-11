@@ -55,16 +55,25 @@ export default function NavBar() {
             </NavigationMenuItem>
           </>
         ) : (
-          <NavigationMenuItem className="ml-auto">
-            <Link href="#" passHref legacyBehavior>
-              <NavigationMenuLink
-                onClick={Logout}
-                className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none"
-              >
-                Logout
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
+          <>
+            <NavigationMenuItem className="ml-auto">
+              <Link href="/profile" passHref legacyBehavior>
+                <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                  Profile
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="#" passHref legacyBehavior>
+                <NavigationMenuLink
+                  onClick={Logout}
+                  className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none"
+                >
+                  Logout
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </>
         )}
       </NavigationMenuList>
     </NavigationMenu>
