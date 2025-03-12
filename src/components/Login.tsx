@@ -61,7 +61,7 @@ export default function Login() {
         setCookie('user', JSON.stringify(userData.user));
         setCookie('tokens', JSON.stringify(userData.tokens));
         setErrorMessage(null);
-        router.push('/home');
+        router.push('/browse');
       } catch (error) {
         console.error('Error setting cookies:', error);
         setErrorMessage('Failed to set cookies');

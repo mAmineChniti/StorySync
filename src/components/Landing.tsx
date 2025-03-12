@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 export default function Landing() {
   const [discoverUri, setDiscoverUri] = useState<string>('');
   useEffect(() => {
-    setDiscoverUri(hasCookie('user') ? '/home' : '/login');
+    setDiscoverUri(hasCookie('user') ? '/browse' : '/login');
   }, []);
 
   return (
