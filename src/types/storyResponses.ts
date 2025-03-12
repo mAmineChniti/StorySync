@@ -5,9 +5,10 @@ export interface StoryDetails {
   title: string;
   description: string;
   genre: string;
-  ownerId: ObjectId; collaborators?: ObjectId[];
-  createdAt: Date;
-  updatedAt: Date;
+  ownerId: ObjectId;
+  collaborators?: ObjectId[];
+  created_at: string;
+  updated_at: string;
   forkedFrom?: ObjectId | null;
 }
 
@@ -17,7 +18,7 @@ export interface StoryResponse {
 }
 
 export interface FetchStoriesByFilterParams {
-  genre: string;
+  genres: string[];
   page?: number;
   limit?: number;
 }

@@ -1,11 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-// import ProfileSidebar from "./ProfileSidebar"
-// import ProfileInfo from "./ProfileInfo"
-// import UserStories from "./UserStories"
-// import CollaboratedStories from "./CollaboratedStories"
-// import CreateStory from "./CreateStory"
 import NavBar from "@/components/NavBar"
 import Footer from "@/components/Footer"
 import ProfileSidebar from "@/components/ProfileSidebar"
@@ -13,6 +8,8 @@ import ProfileInfo from "@/components/ProfileInfo"
 import UserStories from "@/components/UserStories"
 import { useRouter } from "next/navigation"
 import { hasCookie } from "cookies-next/client"
+import CollaboratedStories from "@/components/CollaboratedStories"
+import CreateStory from "@/components/CreateStory"
 
 type ProfileView = "profile" | "my-stories" | "collaborations" | "create-story"
 

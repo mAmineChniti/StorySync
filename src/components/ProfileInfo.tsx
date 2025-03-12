@@ -9,25 +9,13 @@ import { useState, useEffect } from "react";
 import { Edit2, Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { type Tokens, type User } from "@/types/authInterfaces";
+import { type UserStruct } from "@/types/authInterfaces";
 import { env } from '@/env';
-import { getCookie } from "cookies-next/client";
+import { getAccessToken } from "@/lib";
 
 const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
 
-const getAccessToken = (): string | null => {
-  const tokenString = getCookie('tokens');
-  if (!tokenString) return null;
-  try {
-    const tokens = JSON.parse(tokenString) as Tokens;
-    return tokens.access_token || null;
-  } catch (error) {
-    console.error('Invalid token format', error);
-    return null;
-  }
-};
-
-const fetchUserProfile = async (): Promise<User> => {
+const fetchUserProfile = async (): Promise<UserStruct> => {
   const authToken = getAccessToken();
   if (!authToken) {
     throw new Error("No authentication token found");
@@ -45,11 +33,11 @@ const fetchUserProfile = async (): Promise<User> => {
     throw new Error("Failed to fetch user profile");
   }
 
-  const responseData = await response.json() as { message: string, user: User };
+  const responseData = await response.json() as { message: string, user: UserStruct };
   return responseData.user;
 };
 
-const updateUserProfile = async (updatedData: Partial<User>): Promise<User> => {
+const updateUserProfile = async (updatedData: Partial<UserStruct>): Promise<UserStruct> => {
   const authToken = getAccessToken();
   if (!authToken) {
     throw new Error("No authentication token found");
@@ -67,7 +55,7 @@ const updateUserProfile = async (updatedData: Partial<User>): Promise<User> => {
   if (!response.ok) {
     throw new Error("Failed to update profile");
   }
-  const responseData = await response.json() as { message: string, user: User };
+  const responseData = await response.json() as { message: string, user: UserStruct };
   return responseData.user;
 };
 
@@ -75,12 +63,12 @@ export default function ProfileInfo() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const { data: user, isLoading, isError } = useQuery<User>({
+  const { data: user, isLoading, isError } = useQuery<UserStruct>({
     queryKey: ["userProfile"],
     queryFn: fetchUserProfile,
   });
 
-  const form = useForm<Partial<User>>({
+  const form = useForm<Partial<UserStruct>>({
     defaultValues: {
       username: "",
       email: "",
@@ -116,7 +104,7 @@ export default function ProfileInfo() {
     },
   });
 
-  const onSubmit = (formData: Partial<User>) => {
+  const onSubmit = (formData: Partial<UserStruct>) => {
     mutation.mutate(formData);
   };
 

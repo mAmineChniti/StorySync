@@ -11,33 +11,21 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { getCookie } from 'cookies-next/client';
 import { BookOpen, Calendar, Tag } from 'lucide-react';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { FetchStoriesByFilterParams, StoryDetails, StoryResponse } from '@/types/storyResponses';
-import type { Tokens } from '@/types/authInterfaces';
 import { env } from '@/env';
-const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
+import { formatDate, getAccessToken } from '@/lib';
 
-const getAccessToken = (): string | null => {
-  const tokenString = getCookie('tokens');
-  if (!tokenString) return null;
-  try {
-    const tokens = JSON.parse(tokenString) as Tokens;
-    return tokens.access_token || null;
-  } catch (error) {
-    console.error('Invalid token format', error);
-    return null;
-  }
-};
+const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
 
 const fetchStories = async (page: number, limit: number): Promise<StoryDetails[]> => {
   const authToken = getAccessToken();
   if (!authToken) throw new Error('No authentication token found');
 
   try {
-    const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/api/v1/get-stories`, {
+    const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/get-stories`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,19 +45,18 @@ const fetchStories = async (page: number, limit: number): Promise<StoryDetails[]
   }
 };
 
-const fetchStoriesByFilter = async ({ genre, page = 1, limit = 10 }: FetchStoriesByFilterParams): Promise<StoryDetails[]> => {
+const fetchStoriesByFilter = async ({ genres, page = 1, limit = 10 }: FetchStoriesByFilterParams): Promise<StoryDetails[]> => {
   const authToken = getAccessToken();
   if (!authToken) throw new Error('No authentication token found');
 
   try {
-    const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/api/v1/get-stories-by-filters`, {
+    const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/get-stories-by-filters`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify({
-        genre: genre,
+        genres,
         page: page,
         limit: limit,
       }),
@@ -83,7 +70,21 @@ const fetchStoriesByFilter = async ({ genre, page = 1, limit = 10 }: FetchStorie
   }
 };
 
-const allGenres = ['Fantasy', 'Sci-Fi', 'Mystery', 'Romance', 'Horror', 'Thriller'];
+const allGenres = [
+  "Fantasy",
+  "Science Fiction",
+  "Mystery",
+  "Romance",
+  "Horror",
+  "Thriller",
+  "Historical Fiction",
+  "Young Adult",
+  "Children's",
+  "Biography",
+  "Non-fiction",
+  "Poetry",
+  "Drama",
+];
 
 export default function HomeContent() {
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
@@ -96,8 +97,7 @@ export default function HomeContent() {
     queryKey: ['stories', selectedGenres, searchQuery, currentPage],
     queryFn: async () => {
       if (selectedGenres.length > 0) {
-        const results = await Promise.all(selectedGenres.map(genre => fetchStoriesByFilter({ genre, page: currentPage, limit })));
-        return results.flat();
+        return await fetchStoriesByFilter({ genres: selectedGenres, page: currentPage, limit });
       }
       return await fetchStories(currentPage, limit);
     },
@@ -105,8 +105,8 @@ export default function HomeContent() {
 
   const filteredBooks = stories.filter((book: StoryDetails) =>
     searchQuery
-      ? book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.description.toLowerCase().includes(searchQuery.toLowerCase())
+      ? (typeof book.title === 'string' && book.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (typeof book.description === 'string' && book.description.toLowerCase().includes(searchQuery.toLowerCase()))
       : true
   );
 
@@ -114,15 +114,6 @@ export default function HomeContent() {
     setSelectedGenres((prev) =>
       prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
     );
-  };
-
-  const formatDate = (dateString: string | Date) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
   };
 
   const handleNextPage = () => {
@@ -232,15 +223,13 @@ export default function HomeContent() {
                         <Tag className="h-4 w-4 mr-1" />
                         <span>{book.genre}</span>
                       </div>
-                      <p className="text-gray-700 line-clamp-3">
-                        {book.createdAt && (
-                          <div className="flex items-center text-sm text-gray-600 mb-4">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            <span>Started: {formatDate(book.createdAt)}</span>
-                          </div>
-                        )}
-                        {book.description}
-                      </p>
+                      {book.created_at && (
+                        <div className="flex items-center text-sm text-gray-600 mb-4">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>Started: {formatDate(book.created_at)}</span>
+                        </div>
+                      )}
+                      <p className="text-gray-700 mb-4 line-clamp-3">{book.description}</p>
                     </CardContent>
                     <CardFooter>
                       <Button className="w-full">
