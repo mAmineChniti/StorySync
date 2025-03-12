@@ -48,9 +48,9 @@ const fetchStories = async (page: number, limit: number): Promise<StoryDetails[]
         limit,
       }),
     });
-    if (!response.ok) throw new Error('Failed to fetch stories');
-    const data = await response.json() as StoryResponse;
-    return data.stories;
+    let data = {} as StoryResponse;
+    if (response.ok) { data = await response.json() as StoryResponse; }
+    return data.stories || [];
   } catch (error) {
     console.error(error);
     return [];
@@ -74,9 +74,9 @@ const fetchStoriesByFilter = async ({ genre, page = 1, limit = 10 }: FetchStorie
         limit: limit,
       }),
     });
-    if (!response.ok) throw new Error('Failed to fetch filtered stories');
-    const data = await response.json() as StoryResponse;
-    return data.stories;
+    let data = {} as StoryResponse;
+    if (response.ok) { data = await response.json() as StoryResponse; }
+    return data.stories || [];
   } catch (error) {
     console.error(error);
     return [];

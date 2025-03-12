@@ -1,4 +1,4 @@
-export interface User {
+export interface UserStruct {
   id: string;
   username: string;
   email: string;
@@ -18,13 +18,13 @@ export interface Tokens {
 
 export interface RegisterResponse {
   message: string;
-  user: User;
+  user: UserStruct;
   tokens: Tokens;
 }
 
 export interface LoginResponse {
   message: string;
-  user: User;
+  user: UserStruct;
   tokens: Tokens;
 }
 
