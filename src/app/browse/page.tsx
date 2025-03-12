@@ -7,7 +7,7 @@ import { hasCookie } from 'cookies-next/client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-export default function Home() {
+export default function Browse() {
   const router = useRouter();
   useEffect(() => {
     if (!hasCookie('user')) {
