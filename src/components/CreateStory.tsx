@@ -1,16 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BookOpen } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -18,39 +15,55 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import type { StoryDetails } from "@/types/storyResponses";
-import { env } from "@/env";
-import { useRouter } from "next/navigation";
-import { getAccessToken } from "@/lib";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { env } from '@/env';
+import { getAccessToken } from '@/lib';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { BookOpen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
 const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
 
-type CreateStoryFormValues = Omit<StoryDetails, "id" | "collaborators" | "forkedFrom" | "ownerId">;
-
 const storySchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  genre: z.string().min(1, "Genre is required"),
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  genre: z.string().min(1, 'Genre is required'),
   created_at: z.string(),
   updated_at: z.string(),
 });
 
+type CreateStoryFormValues = z.infer<typeof storySchema>;
 
-const createStory = async (storyData: CreateStoryFormValues): Promise<string> => {
+const createStory = async (
+  storyData: CreateStoryFormValues,
+): Promise<string> => {
   const accessToken = getAccessToken();
   if (!accessToken) {
-    throw new Error("No authentication token found");
+    throw new Error('No authentication token found');
   }
   const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/create-story`, {
-    method: "POST",
+    method: 'POST',
     body: JSON.stringify(storyData),
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
   });
   if (!response.ok) {
-    throw new Error("Failed to create story");
+    throw new Error('Failed to create story');
   }
   return (await response.json()) as string;
 };
@@ -62,38 +75,38 @@ export default function CreateStory() {
   const form = useForm<CreateStoryFormValues>({
     resolver: zodResolver(storySchema),
     defaultValues: {
-      title: "",
-      description: "",
-      genre: "",
+      title: '',
+      description: '',
+      genre: '',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
   });
 
-  const mutation = useMutation<string, unknown, CreateStoryFormValues>({
+  const mutation = useMutation<string, Error, CreateStoryFormValues>({
     mutationFn: createStory,
     onSuccess: () => {
       setSubmitted(true);
     },
-    onError: () => {
-      setError("Failed to create story");
+    onError: (error) => {
+      setError(error.message);
     },
   });
 
   const genres = [
-    "Fantasy",
-    "Science Fiction",
-    "Mystery",
-    "Romance",
-    "Horror",
-    "Thriller",
-    "Historical Fiction",
-    "Young Adult",
+    'Fantasy',
+    'Science Fiction',
+    'Mystery',
+    'Romance',
+    'Horror',
+    'Thriller',
+    'Historical Fiction',
+    'Young Adult',
     "Children's",
-    "Biography",
-    "Non-fiction",
-    "Poetry",
-    "Drama",
+    'Biography',
+    'Non-fiction',
+    'Poetry',
+    'Drama',
   ];
 
   const onSubmit = (data: CreateStoryFormValues) => {
@@ -105,17 +118,28 @@ export default function CreateStory() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Story Created</CardTitle>
-          <CardDescription>Your story has been created successfully.</CardDescription>
+          <CardDescription>
+            Your story has been created successfully.
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-end gap-4">
-          <Button className="bg-purple-600 hover:bg-purple-700">Start Writing the Story</Button>
-          <Button className="bg-purple-600 hover:bg-purple-700" onClick={() => { form.reset(); setSubmitted(false); }}>
+          <Button className="bg-purple-600 hover:bg-purple-700">
+            Start Writing the Story
+          </Button>
+          <Button
+            className="bg-purple-600 hover:bg-purple-700"
+            onClick={() => {
+              form.reset();
+              setSubmitted(false);
+            }}
+          >
             Add Another Story
           </Button>
         </CardContent>
       </Card>
     );
   }
+
   if (error) {
     return (
       <Card>
@@ -124,9 +148,16 @@ export default function CreateStory() {
           <CardDescription>{error}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={() => { setError(null); router.refresh(); }}>Retry</Button>
+          <Button
+            onClick={() => {
+              setError(null);
+              router.refresh();
+            }}
+          >
+            Retry
+          </Button>
         </CardContent>
-      </Card >
+      </Card>
     );
   }
 
@@ -135,7 +166,8 @@ export default function CreateStory() {
       <CardHeader>
         <CardTitle className="text-2xl">Create New Story</CardTitle>
         <CardDescription>
-          Start your new writing journey and share your creativity with the world
+          Start your new writing journey and share your creativity with the
+          world
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -150,7 +182,10 @@ export default function CreateStory() {
                     <FormItem>
                       <FormLabel>Story Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter a captivating title" {...field} />
+                        <Input
+                          placeholder="Enter a captivating title"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -163,7 +198,11 @@ export default function CreateStory() {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="What is your story about?" rows={5} {...field} />
+                        <Textarea
+                          placeholder="What is your story about?"
+                          rows={5}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -172,10 +211,13 @@ export default function CreateStory() {
                 <FormField
                   control={form.control}
                   name="genre"
-                  render={({ field: { onChange, value } }) => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Genre</FormLabel>
-                      <Select value={value} onValueChange={onChange}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <SelectTrigger id="genre">
                           <SelectValue placeholder="Select a genre" />
                         </SelectTrigger>
@@ -194,8 +236,14 @@ export default function CreateStory() {
               </div>
             </div>
             <div className="flex justify-end">
-              <Button type="submit" disabled={mutation.isPending} className="bg-purple-600 hover:bg-purple-700">
-                {mutation.isPending ? "Creating Story..." : (
+              <Button
+                type="submit"
+                disabled={mutation.isPending}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {mutation.isPending ? (
+                  'Creating Story...'
+                ) : (
                   <>
                     <BookOpen className="mr-2 h-4 w-4" />
                     Create Story
