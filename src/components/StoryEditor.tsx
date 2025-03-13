@@ -12,10 +12,38 @@ import { env } from '@/env';
 import { getAccessToken, getUserId } from '@/lib';
 import { type StoryContent, type StoryDetails } from '@/types/storyResponses';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import Highlight from '@tiptap/extension-highlight';
+import HorizontalRule from '@tiptap/extension-horizontal-rule';
 import { Placeholder } from '@tiptap/extension-placeholder';
+import TextAlign from '@tiptap/extension-text-align';
+import Underline from '@tiptap/extension-underline';
 import { EditorContent, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
-import { BookOpen, Edit, GitBranch } from 'lucide-react';
+import { createLowlight } from 'lowlight';
+import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
+  Bold,
+  BookOpen,
+  Code,
+  Edit,
+  GitBranch,
+  Heading1,
+  Heading2,
+  Heading3,
+  Highlighter,
+  Italic,
+  List,
+  ListOrdered,
+  Quote,
+  Redo2,
+  SeparatorHorizontal,
+  Underline as UnderlineIcon,
+  Undo2,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -85,7 +113,7 @@ export default function StoryEditor() {
   const [editedContent, setEditedContent] = useState('');
   const user_id = getUserId();
   const id = params?.id as string;
-
+  const lowlight = createLowlight();
   const {
     data: story,
     isLoading: loadingStory,
@@ -116,27 +144,26 @@ export default function StoryEditor() {
     extensions: [
       StarterKit,
       Placeholder.configure({ placeholder: 'Start writing your story...' }),
+      Underline,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Highlight.configure({ multicolor: true }),
+      CodeBlockLowlight.configure({ lowlight }),
+      HorizontalRule,
     ],
     content: content?.content ?? '',
     onUpdate: ({ editor }) => setEditedContent(editor.getHTML()),
     editable: isEditing,
-    immediatelyRender: false,
+    editorProps: {
+      attributes: { class: 'focus:outline-none' },
+    },
   });
 
   useEffect(() => {
-    if (editor) {
-      editor.setEditable(isEditing);
-    }
+    editor?.setEditable(isEditing);
   }, [isEditing, editor]);
 
   useEffect(() => {
-    if (content?.content && editor) {
-      const initialContent =
-        typeof content.content === 'string'
-          ? content.content
-          : JSON.stringify(content.content);
-      editor.commands.setContent(initialContent);
-    }
+    if (content?.content && editor) editor.commands.setContent(content.content);
   }, [content, editor]);
 
   const saveMutation = useMutation({
@@ -158,12 +185,10 @@ export default function StoryEditor() {
     },
   });
 
-  const canEdit = () => {
-    if (!story || !user_id) return false;
-    return (
-      story.owner_id.toString() === user_id || collaborators?.includes(user_id)
-    );
-  };
+  const canEdit = () =>
+    story &&
+    user_id &&
+    (story.owner_id.toString() === user_id || collaborators?.includes(user_id));
 
   if (!id)
     return (
@@ -223,8 +248,247 @@ export default function StoryEditor() {
           ) : contentError ? (
             <p className="text-center text-red-500">Error loading content.</p>
           ) : isEditing ? (
-            <div className="prose max-w-none p-4 border rounded-lg">
-              {editor && <EditorContent editor={editor} />}
+            <div className="prose max-w-none p-4 border rounded-lg relative">
+              {editor && (
+                <>
+                  <div className="flex flex-wrap gap-2 mb-4 p-2 bg-gray-50 rounded-t-lg border-b">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => editor?.chain().focus().undo().run()}
+                    >
+                      <Undo2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => editor?.chain().focus().redo().run()}
+                    >
+                      <Redo2 className="h-4 w-4" />
+                    </Button>
+                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => editor?.chain().focus().toggleBold().run()}
+                      className={editor?.isActive('bold') ? 'bg-blue-200' : ''}
+                    >
+                      <Bold className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().toggleItalic().run()
+                      }
+                      className={
+                        editor?.isActive('italic') ? 'bg-blue-200' : ''
+                      }
+                    >
+                      <Italic className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().toggleUnderline().run()
+                      }
+                      className={
+                        editor?.isActive('underline') ? 'bg-blue-200' : ''
+                      }
+                    >
+                      <UnderlineIcon className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().toggleHighlight().run()
+                      }
+                      className={
+                        editor?.isActive('highlight') ? 'bg-blue-200' : ''
+                      }
+                    >
+                      <Highlighter className="h-4 w-4" />
+                    </Button>
+                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor
+                          ?.chain()
+                          .focus()
+                          .toggleHeading({ level: 1 })
+                          .run()
+                      }
+                      className={
+                        editor?.isActive('heading', { level: 1 })
+                          ? 'bg-blue-200'
+                          : ''
+                      }
+                    >
+                      <Heading1 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor
+                          ?.chain()
+                          .focus()
+                          .toggleHeading({ level: 2 })
+                          .run()
+                      }
+                      className={
+                        editor?.isActive('heading', { level: 2 })
+                          ? 'bg-blue-200'
+                          : ''
+                      }
+                    >
+                      <Heading2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor
+                          ?.chain()
+                          .focus()
+                          .toggleHeading({ level: 3 })
+                          .run()
+                      }
+                      className={
+                        editor?.isActive('heading', { level: 3 })
+                          ? 'bg-blue-200'
+                          : ''
+                      }
+                    >
+                      <Heading3 className="h-4 w-4" />
+                    </Button>
+                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().toggleBulletList().run()
+                      }
+                      className={
+                        editor?.isActive('bulletList') ? 'bg-blue-200' : ''
+                      }
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().toggleOrderedList().run()
+                      }
+                      className={
+                        editor?.isActive('orderedList') ? 'bg-blue-200' : ''
+                      }
+                    >
+                      <ListOrdered className="h-4 w-4" />
+                    </Button>
+                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().toggleBlockquote().run()
+                      }
+                      className={
+                        editor?.isActive('blockquote') ? 'bg-blue-200' : ''
+                      }
+                    >
+                      <Quote className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().toggleCodeBlock().run()
+                      }
+                      className={
+                        editor?.isActive('codeBlock') ? 'bg-blue-200' : ''
+                      }
+                    >
+                      <Code className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().setHorizontalRule().run()
+                      }
+                    >
+                      <SeparatorHorizontal className="h-4 w-4" />
+                    </Button>
+                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().setTextAlign('left').run()
+                      }
+                      className={
+                        editor?.isActive({ textAlign: 'left' })
+                          ? 'bg-blue-200'
+                          : ''
+                      }
+                    >
+                      <AlignLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().setTextAlign('center').run()
+                      }
+                      className={
+                        editor?.isActive({ textAlign: 'center' })
+                          ? 'bg-blue-200'
+                          : ''
+                      }
+                    >
+                      <AlignCenter className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().setTextAlign('right').run()
+                      }
+                      className={
+                        editor?.isActive({ textAlign: 'right' })
+                          ? 'bg-blue-200'
+                          : ''
+                      }
+                    >
+                      <AlignRight className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        editor?.chain().focus().setTextAlign('justify').run()
+                      }
+                      className={
+                        editor?.isActive({ textAlign: 'justify' })
+                          ? 'bg-blue-200'
+                          : ''
+                      }
+                    >
+                      <AlignJustify className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <EditorContent
+                    editor={editor}
+                    className="p-4 min-h-[300px] "
+                  />
+                </>
+              )}
             </div>
           ) : content?.content ? (
             <div
@@ -252,15 +516,7 @@ export default function StoryEditor() {
                   variant="outline"
                   onClick={() => {
                     setIsEditing(false);
-                    if (content?.content) {
-                      const initialContent =
-                        typeof content.content === 'string'
-                          ? content.content
-                          : JSON.stringify(content.content);
-                      editor?.commands.setContent(initialContent);
-                    } else {
-                      editor?.commands.setContent('');
-                    }
+                    editor?.commands.setContent(content?.content ?? '');
                   }}
                   disabled={saveMutation.isPending}
                 >
