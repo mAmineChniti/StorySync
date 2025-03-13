@@ -1,11 +1,12 @@
 'use client';
-import ProfileInfo from '@/components/ProfileInfo';
+
+import CreateStory from '@/components/CreateStory';
 import ProfileLayout from '@/components/ProfileLayout';
 import { hasCookie } from 'cookies-next/client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-export default function Profile() {
+export default function CreateStoryPage() {
   const router = useRouter();
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function Profile() {
 
   return (
     <ProfileLayout>
-      <ProfileInfo />
+      <CreateStory />
     </ProfileLayout>
   );
 }

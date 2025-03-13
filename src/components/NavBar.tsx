@@ -56,14 +56,14 @@ export default function NavBar() {
           </>
         ) : (
           <>
-            <NavigationMenuItem>
+            <NavigationMenuItem className="ml-auto">
               <Link href="/browse" passHref legacyBehavior>
                 <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
                   Browse Stories
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-            <NavigationMenuItem className="ml-auto">
+            <NavigationMenuItem>
               <Link href="/profile" passHref legacyBehavior>
                 <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
                   Profile

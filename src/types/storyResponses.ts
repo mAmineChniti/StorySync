@@ -5,11 +5,17 @@ export interface StoryDetails {
   title: string;
   description: string;
   genre: string;
-  ownerId: ObjectId;
+  owner_id: ObjectId;
   collaborators?: ObjectId[];
   created_at: string;
   updated_at: string;
   forkedFrom?: ObjectId | null;
+}
+
+export interface StoryContent {
+  id: ObjectId;
+  story_id: ObjectId;
+  content: string;
 }
 
 export interface StoryResponse {

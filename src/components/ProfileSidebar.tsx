@@ -1,40 +1,41 @@
-"use client";
+'use client';
 
-import { BookOpen, Edit, PenTool, User } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { BookOpen, Edit, PenTool, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
-type ProfileView = "profile" | "my-stories" | "collaborations" | "create-story"
+export default function ProfileSidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
 
-interface ProfileSidebarProps {
-  currentView: ProfileView
-  setCurrentView: (view: ProfileView) => void
-}
-
-export default function ProfileSidebar({ currentView, setCurrentView }: ProfileSidebarProps) {
   const menuItems = [
     {
-      id: "profile",
-      label: "Profile Information",
+      id: 'profile',
+      label: 'Profile Information',
+      url: '/profile',
       icon: User,
     },
     {
-      id: "my-stories",
-      label: "My Stories",
+      id: 'my-stories',
+      label: 'My Stories',
+      url: '/user-stories',
       icon: BookOpen,
     },
     {
-      id: "collaborations",
-      label: "Collaborations",
+      id: 'collaborations',
+      label: 'Collaborations',
+      url: '/collaborations',
       icon: Edit,
     },
     {
-      id: "create-story",
-      label: "Create New Story",
+      id: 'create-story',
+      label: 'Create New Story',
+      url: '/create-story',
       icon: PenTool,
     },
-  ]
+  ];
 
   return (
     <Card className="w-full md:w-64 shrink-0 mb-6 md:mb-0 sticky top-24 h-fit">
@@ -42,12 +43,12 @@ export default function ProfileSidebar({ currentView, setCurrentView }: ProfileS
         {menuItems.map((item) => (
           <Button
             key={item.id}
-            variant={currentView === item.id ? "default" : "ghost"}
+            variant={pathname === item.url ? 'default' : 'ghost'}
             className={cn(
-              "w-full justify-start gap-2",
-              currentView === item.id ? "bg-purple-600 hover:bg-purple-700" : "",
+              'w-full justify-start gap-2',
+              pathname === item.url ? 'bg-purple-600 hover:bg-purple-700' : '',
             )}
-            onClick={() => setCurrentView(item.id as ProfileView)}
+            onClick={() => router.push(item.url)}
           >
             <item.icon className="h-4 w-4" />
             <span>{item.label}</span>
@@ -55,6 +56,5 @@ export default function ProfileSidebar({ currentView, setCurrentView }: ProfileS
         ))}
       </div>
     </Card>
-  )
+  );
 }
-
