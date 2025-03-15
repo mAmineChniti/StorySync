@@ -11,8 +11,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { env } from '@/env';
 import { formatDate, getUserId } from '@/lib';
 import { type StoryDetails, type StoryResponse } from '@/types/storyResponses';
-import { useQuery } from '@tanstack/react-query';
-import { BookOpen, Calendar, Edit, Tag, User } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { BookOpen, Calendar, Edit, Tag, Trash2, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -48,16 +48,55 @@ const fetchUserStories = async (
   }
 };
 
+const deleteStory = async (storyId: string) => {
+  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
+
+  const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/delete-story`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ story_id: storyId }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete story');
+  }
+};
+
 export default function UserStories() {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 5;
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['userStories', currentPage],
     queryFn: () => fetchUserStories(currentPage, limit),
   });
 
+  const mutation = useMutation({
+    mutationFn: deleteStory,
+    onSuccess: async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['userStories'] });
+      } catch (error) {
+        console.error('Error invalidating query:', error);
+      }
+    },
+    onError: (error) => {
+      console.error('Error deleting story:', error);
+    },
+  });
+
   const stories = data ?? [];
+
+  const handleDeleteStory = (storyId: string) => {
+    if (window.confirm('Are you sure you want to delete this story?')) {
+      mutation.mutate(storyId);
+    }
+  };
+
   const handleNextPage = () => {
     setCurrentPage((prev) => prev + 1);
   };
@@ -84,9 +123,7 @@ export default function UserStories() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                     <Skeleton className="h-8 w-2/3" />
                   </div>
-
                   <Skeleton className="h-6 w-full mb-4" />
-
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600 mb-4">
                     <div className="flex items-center">
                       <Skeleton className="h-4 w-1/2 mr-1" />
@@ -101,7 +138,6 @@ export default function UserStories() {
                       <Skeleton className="h-4 w-1/2 mr-1" />
                     </div>
                   </div>
-
                   <div className="flex flex-wrap gap-2">
                     <Skeleton className="h-8 w-32" />
                     <Skeleton className="h-8 w-32" />
@@ -196,6 +232,16 @@ export default function UserStories() {
                       <Edit className="h-4 w-4 mr-1" />
                       Continue Writing
                     </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="cursor-pointer"
+                      onClick={() => handleDeleteStory(story.id.toString())}
+                      disabled={mutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      {mutation.isPending ? 'Deleting...' : 'Delete'}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -213,8 +259,7 @@ export default function UserStories() {
           Previous
         </Button>
         <span className="text-lg">Page {currentPage}</span>
-        <Button
-          className="cursor-pointer"
+        <Button className="cursor-pointer"
           onClick={handleNextPage}
           disabled={stories.length < limit || isLoading}
         >
