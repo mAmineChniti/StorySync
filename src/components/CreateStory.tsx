@@ -35,8 +35,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-
 const storySchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
@@ -50,6 +48,7 @@ type CreateStoryFormValues = z.infer<typeof storySchema>;
 const createStory = async (
   storyData: CreateStoryFormValues,
 ): Promise<string> => {
+  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const accessToken = getAccessToken();
   if (!accessToken) {
     throw new Error('No authentication token found');
@@ -239,7 +238,7 @@ export default function CreateStory() {
               <Button
                 type="submit"
                 disabled={mutation.isPending}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
               >
                 {mutation.isPending ? (
                   'Creating Story...'

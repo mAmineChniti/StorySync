@@ -16,51 +16,20 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
 import { env } from '@/env';
 import { getAccessToken } from '@/lib';
 import { type UserStruct } from '@/types/authInterfaces';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next/client';
 import { Edit2, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-
-const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
-
-const fetchUserProfile = async (): Promise<UserStruct | null> => {
-  const authToken = getAccessToken();
-  if (!authToken) {
-    console.error('No authentication token found');
-    return null;
-  }
-
-  try {
-    const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/fetchuser`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const responseData = (await response.json()) as {
-      message: string;
-      user: UserStruct;
-    };
-    return responseData.user;
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    return null;
-  }
-};
 
 const updateUserProfile = async (
   updatedData: Partial<UserStruct>,
 ): Promise<UserStruct | null> => {
+  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
   const authToken = getAccessToken();
   if (!authToken) {
     return null;
@@ -95,33 +64,34 @@ const updateUserProfile = async (
 export default function ProfileInfo() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const router = useRouter();
 
-  const {
-    data: user,
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery<UserStruct | null>({
-    queryKey: ['userProfile'],
-    queryFn: fetchUserProfile,
-    retry: false,
-  });
+  const [user, setUser] = useState<UserStruct | null>(null);
+
+  useEffect(() => {
+    const userData = getCookie('user');
+    if (userData) {
+      setUser(JSON.parse(userData) as UserStruct);
+    }
+  }, []);
 
   const form = useForm<Partial<UserStruct>>({
     defaultValues: {
-      username: '',
-      email: '',
-      first_name: '',
-      last_name: '',
+      username: user?.username ?? '',
+      email: user?.email ?? '',
+      first_name: user?.first_name ?? '',
+      last_name: user?.last_name ?? '',
     },
   });
 
   useEffect(() => {
     if (user) {
-      form.setValue('username', user.username);
-      form.setValue('email', user.email);
-      form.setValue('first_name', user.first_name);
-      form.setValue('last_name', user.last_name);
+      form.reset({
+        username: user.username,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      });
     }
   }, [user, form]);
 
@@ -135,8 +105,13 @@ export default function ProfileInfo() {
         form.setValue('last_name', data.last_name);
 
         queryClient.setQueryData(['userProfile'], data);
+        deleteCookie('user');
+        setCookie('user', JSON.stringify(data));
         setIsEditing(false);
       }
+    },
+    onError: (error) => {
+      console.error('Error updating profile:', error);
     },
   });
 
@@ -144,32 +119,22 @@ export default function ProfileInfo() {
     mutation.mutate(formData);
   };
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-8 w-1/3 mb-2" />
-          <Skeleton className="h-4 w-2/3" />
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isError || !user) {
+  if (!user) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Error</CardTitle>
           <CardDescription>
-            Could not load profile. Please check your connection and try again.
+            Could not load profile. Please re-login and try again.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={() => refetch()}>Retry</Button>
+          <Button
+            className="cursor-pointer"
+            onClick={() => router.push('/login')}
+          >
+            Retry
+          </Button>
         </CardContent>
       </Card>
     );
@@ -177,7 +142,7 @@ export default function ProfileInfo() {
 
   return (
     <Card>
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="text-2xl">Profile Information</CardTitle>
@@ -186,6 +151,7 @@ export default function ProfileInfo() {
             </CardDescription>
           </div>
           <Button
+            className="cursor-pointer"
             variant="outline"
             size="sm"
             onClick={() => setIsEditing(!isEditing)}
@@ -212,7 +178,7 @@ export default function ProfileInfo() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel className="mt-2">Username</FormLabel>
                   <FormControl>
                     <Input
                       disabled={!isEditing}
@@ -229,7 +195,7 @@ export default function ProfileInfo() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="mt-2">Email</FormLabel>
                   <FormControl>
                     <Input
                       disabled={!isEditing}
@@ -246,7 +212,7 @@ export default function ProfileInfo() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel className="mt-2">First Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={!isEditing}
@@ -263,7 +229,7 @@ export default function ProfileInfo() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel className="mt-2">Last Name</FormLabel>
                   <FormControl>
                     <Input
                       disabled={!isEditing}
@@ -278,25 +244,34 @@ export default function ProfileInfo() {
             <div className="mt-4 text-sm text-gray-500">
               Joined:{' '}
               {user?.date_joined
-                ? new Date(user.date_joined).toLocaleDateString()
+                ? new Date(user.date_joined).toLocaleDateString('en-GB')
                 : 'N/A'}
             </div>
 
             {isEditing && (
-              <Button
-                type="submit"
-                className="w-full md:w-auto"
-                disabled={mutation.isPending}
-              >
-                {mutation.isPending ? (
-                  'Saving...'
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Changes
-                  </>
+              <>
+                {mutation.isError && (
+                  <div className="mt-2 text-sm text-red-500">
+                    {mutation.error instanceof Error
+                      ? mutation.error.message
+                      : 'An unexpected error occurred. Please try again.'}
+                  </div>
                 )}
-              </Button>
+                <Button
+                  type="submit"
+                  className="cursor-pointer w-full md:w-auto"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? (
+                    'Saving...'
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Changes
+                    </>
+                  )}
+                </Button>
+              </>
             )}
           </form>
         </Form>
