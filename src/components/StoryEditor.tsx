@@ -46,7 +46,7 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const fetchStoryDetails = async (id: string): Promise<StoryDetails | null> => {
+const fetchStoryDetails = async (story_id: string): Promise<StoryDetails | null> => {
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const authToken = getAccessToken();
   if (!authToken) throw new Error('No authentication token found');
@@ -58,7 +58,7 @@ const fetchStoryDetails = async (id: string): Promise<StoryDetails | null> => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ story_id }),
     },
   );
   if (!response.ok) return null;
@@ -69,14 +69,14 @@ const fetchStoryDetails = async (id: string): Promise<StoryDetails | null> => {
   return data.story;
 };
 
-const fetchStoryContent = async (id: string): Promise<StoryContent | null> => {
+const fetchStoryContent = async (story_id: string): Promise<StoryContent | null> => {
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-story-content`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ story_id }),
     },
   );
   if (!response.ok) return null;
@@ -87,14 +87,14 @@ const fetchStoryContent = async (id: string): Promise<StoryContent | null> => {
   return data.content;
 };
 
-const fetchStoryCollaborators = async (id: string): Promise<string[]> => {
+const fetchStoryCollaborators = async (story_id: string): Promise<string[]> => {
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-story-collaborators`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ story_id }),
     },
   );
   if (!response.ok) throw new Error('Failed to fetch collaborators');

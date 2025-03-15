@@ -149,10 +149,10 @@ export default function HomeContent() {
       queryFn: async ({ pageParam }) =>
         selectedGenres.length > 0
           ? fetchStoriesByFilter({
-            genres: selectedGenres,
-            page: pageParam,
-            limit,
-          })
+              genres: selectedGenres,
+              page: pageParam,
+              limit,
+            })
           : fetchStories(pageParam, limit),
       getNextPageParam: (lastPage, allPages) =>
         lastPage.length === limit ? allPages.length + 1 : undefined,
@@ -168,10 +168,10 @@ export default function HomeContent() {
   const filteredStories = allStories.filter((story) =>
     searchQuery
       ? [story.title, story.description].some(
-        (text) =>
-          typeof text === 'string' &&
-          text.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+          (text) =>
+            typeof text === 'string' &&
+            text.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
       : true,
   );
 
