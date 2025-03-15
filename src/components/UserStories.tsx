@@ -16,12 +16,11 @@ import { BookOpen, Calendar, Edit, Tag, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-
 const fetchUserStories = async (
   page: number,
   limit: number,
 ): Promise<StoryDetails[]> => {
+  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const userId = getUserId();
   if (!userId) {
     throw new Error('User not authenticated');
@@ -51,7 +50,7 @@ const fetchUserStories = async (
 
 export default function UserStories() {
   const [currentPage, setCurrentPage] = useState(1);
-  const limit = 10;
+  const limit = 5;
   const router = useRouter();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['userStories', currentPage],
@@ -205,9 +204,9 @@ export default function UserStories() {
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-center gap-4 mt-6">
+      <CardFooter className="flex justify-between">
         <Button
-          variant="outline"
+          className="cursor-pointer"
           onClick={handlePrevPage}
           disabled={currentPage === 1 || isLoading}
         >
@@ -215,7 +214,7 @@ export default function UserStories() {
         </Button>
         <span className="text-lg">Page {currentPage}</span>
         <Button
-          variant="outline"
+          className="cursor-pointer"
           onClick={handleNextPage}
           disabled={stories.length < limit || isLoading}
         >

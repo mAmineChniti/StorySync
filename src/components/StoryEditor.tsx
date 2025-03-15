@@ -27,7 +27,6 @@ import {
   AlignLeft,
   AlignRight,
   Bold,
-  BookOpen,
   Code,
   Edit,
   GitBranch,
@@ -47,9 +46,8 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-
 const fetchStoryDetails = async (id: string): Promise<StoryDetails | null> => {
+  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const authToken = getAccessToken();
   if (!authToken) throw new Error('No authentication token found');
   const response = await fetch(
@@ -72,6 +70,7 @@ const fetchStoryDetails = async (id: string): Promise<StoryDetails | null> => {
 };
 
 const fetchStoryContent = async (id: string): Promise<StoryContent | null> => {
+  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-story-content`,
     {
@@ -89,6 +88,7 @@ const fetchStoryContent = async (id: string): Promise<StoryContent | null> => {
 };
 
 const fetchStoryCollaborators = async (id: string): Promise<string[]> => {
+  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-story-collaborators`,
     {
@@ -168,6 +168,7 @@ export default function StoryEditor() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
       const authToken = getAccessToken();
       if (!authToken) throw new Error('No authentication token found');
       await fetch(`${NEXT_PUBLIC_STORY_API_URL}/edit-story`, {
@@ -513,6 +514,7 @@ export default function StoryEditor() {
             {isEditing ? (
               <>
                 <Button
+                  className="cursor-pointer"
                   variant="outline"
                   onClick={() => {
                     setIsEditing(false);
@@ -523,6 +525,7 @@ export default function StoryEditor() {
                   Cancel
                 </Button>
                 <Button
+                  className="cursor-pointer"
                   onClick={() => saveMutation.mutate()}
                   disabled={saveMutation.isPending}
                 >
@@ -531,7 +534,10 @@ export default function StoryEditor() {
               </>
             ) : (
               content?.content && (
-                <Button onClick={() => setIsEditing(true)}>
+                <Button
+                  className="cursor-pointer"
+                  onClick={() => setIsEditing(true)}
+                >
                   <Edit className="mr-2 h-4 w-4" /> Edit Story
                 </Button>
               )
@@ -540,11 +546,11 @@ export default function StoryEditor() {
         )}
       </Card>
       <div className="mt-8 flex gap-4 justify-end">
-        <Button onClick={() => router.push(`/fork/${id}`)}>
+        <Button
+          className="cursor-pointer"
+          onClick={() => router.push(`/fork/${id}`)}
+        >
           <GitBranch className="mr-2 h-4 w-4" /> Fork Story
-        </Button>
-        <Button variant="outline">
-          <BookOpen className="mr-2 h-4 w-4" /> Submit Fork for Review
         </Button>
       </div>
     </div>

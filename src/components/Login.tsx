@@ -22,6 +22,25 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import type * as z from 'zod';
 
+const loginUser = async (
+  data: z.infer<typeof loginSchema>,
+): Promise<LoginResponse> => {
+  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
+  const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error('Login failed');
+  }
+
+  return (await response.json()) as LoginResponse;
+};
+
 export default function Login() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
@@ -32,31 +51,9 @@ export default function Login() {
     },
   });
   const router = useRouter();
-  const loginMutation = useMutation<
-    LoginResponse,
-    unknown,
-    z.infer<typeof loginSchema>
-  >({
-    mutationFn: async (data: z.infer<typeof loginSchema>) => {
-      const response = await fetch(`${env.NEXT_PUBLIC_AUTH_API_URL}/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          identifier: data.identifier,
-          password: data.password,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      return response.json() as Promise<LoginResponse>;
-    },
-
-    onSuccess: async (userData) => {
+  const loginMutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: async (userData: LoginResponse) => {
       try {
         setCookie('user', JSON.stringify(userData.user));
         setCookie('tokens', JSON.stringify(userData.tokens));

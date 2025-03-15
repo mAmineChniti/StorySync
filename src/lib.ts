@@ -16,13 +16,13 @@ const getAccessToken = (): string | null => {
 const formatDate = (dateString: string | Date): string => {
   if (!dateString) {
     console.error('Invalid date:', dateString);
-    return 'Invalid date';
+    return 'N/A';
   }
 
   const date = new Date(dateString);
   if (isNaN(date.getTime())) {
     console.error('Invalid date:', dateString);
-    return 'Invalid date';
+    return 'N/A';
   }
 
   return date.toLocaleDateString('en-GB', {

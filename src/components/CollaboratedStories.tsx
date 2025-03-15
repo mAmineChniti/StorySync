@@ -20,13 +20,11 @@ import { type ObjectId } from 'mongodb';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
-
 const fetchCollaboratedStories = async (
   page: number,
   limit: number,
 ): Promise<StoryDetails[]> => {
+  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const authToken = getAccessToken();
   if (!authToken) {
     console.error('No authentication token found');
@@ -66,6 +64,7 @@ const fetchCollaboratedStories = async (
 const fetchUserProfile = async (
   userId: ObjectId,
 ): Promise<{ first_name: string; last_name: string }> => {
+  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
   try {
     const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/fetchuser`, {
       method: 'POST',
@@ -98,7 +97,7 @@ const OwnerInfo = ({ ownerId }: { ownerId: ObjectId }) => {
   const { data: ownerData, isLoading } = useQuery({
     queryKey: ['user', ownerId.toString()],
     queryFn: () => fetchUserProfile(ownerId),
-    staleTime: 1000 * 60 * 5, // Cache user data for 5 minutes
+    staleTime: 1000 * 60 * 5,
   });
 
   return isLoading ? (
@@ -115,15 +114,11 @@ export default function CollaboratedStories() {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10;
 
-  const {
-    data: stories,
-    isLoading,
-    isError,
-  } = useQuery<StoryDetails[]>({
+  const { data, isLoading, isError } = useQuery<StoryDetails[]>({
     queryKey: ['collaboratedStories', currentPage],
     queryFn: () => fetchCollaboratedStories(currentPage, limit),
   });
-
+  const stories = data ?? [];
   if (isLoading) {
     return (
       <Card>
@@ -203,7 +198,12 @@ export default function CollaboratedStories() {
               You haven&apos;t collaborated on any stories yet. Explore stories
               to find collaboration opportunities!
             </p>
-            <Button className="mt-4">Explore Stories</Button>
+            <Button
+              className="mt-4 cursor-pointer"
+              onClick={() => router.push('/browse')}
+            >
+              Explore Stories
+            </Button>
           </div>
         ) : (
           <div className="space-y-6">
@@ -251,12 +251,20 @@ export default function CollaboratedStories() {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
-          disabled={currentPage === 1}
+          className="cursor-pointer"
+          disabled={currentPage === 1 || isLoading}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
         >
           Previous
         </Button>
-        <Button onClick={() => setCurrentPage((prev) => prev + 1)}>Next</Button>
+        <span className="text-lg">Page {currentPage}</span>
+        <Button
+          className="cursor-pointer"
+          disabled={stories.length < limit || isLoading}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </Button>
       </CardFooter>
     </Card>
   );
