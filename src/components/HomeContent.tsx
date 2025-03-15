@@ -33,27 +33,28 @@ const fetchStories = async (
   const authToken = getAccessToken();
   if (!authToken) throw new Error('No authentication token found');
 
-  try {
-    const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/get-stories`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({
-        page,
-        limit,
-      }),
-    });
-    let data = {} as StoryResponse;
-    if (response.ok) {
-      data = (await response.json()) as StoryResponse;
+  const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/get-stories`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+    },
+    body: JSON.stringify({ page, limit }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Error fetching stories';
+    try {
+      const errorData = await response.json() as { message: string };
+      errorMessage = errorData.message || errorMessage;
+    } catch {
+      errorMessage = response.statusText || errorMessage;
     }
-    return data.stories || [];
-  } catch (error) {
-    console.error(error);
-    return [];
+    throw new Error(errorMessage);
   }
+
+  const data = (await response.json()) as StoryResponse;
+  return data.stories || [];
 };
 
 const fetchStoriesByFilter = async ({
@@ -65,30 +66,28 @@ const fetchStoriesByFilter = async ({
   const authToken = getAccessToken();
   if (!authToken) throw new Error('No authentication token found');
 
-  try {
-    const response = await fetch(
-      `${NEXT_PUBLIC_STORY_API_URL}/get-stories-by-filters`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          genres,
-          page,
-          limit,
-        }),
-      },
-    );
-    let data = {} as StoryResponse;
-    if (response.ok) {
-      data = (await response.json()) as StoryResponse;
+  const response = await fetch(
+    `${NEXT_PUBLIC_STORY_API_URL}/get-stories-by-filters`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ genres, page, limit }),
+    },
+  );
+
+  if (!response.ok) {
+    let errorMessage = 'Error fetching stories';
+    try {
+      const errorData = await response.json() as { message: string };
+      errorMessage = errorData.message || errorMessage;
+    } catch {
+      errorMessage = response.statusText || errorMessage;
     }
-    return data.stories || [];
-  } catch (error) {
-    console.error(error);
-    return [];
+    throw new Error(errorMessage);
   }
+
+  const data = (await response.json()) as StoryResponse;
+  return data.stories || [];
 };
 
 const fetchOwnerName = async (
@@ -97,28 +96,34 @@ const fetchOwnerName = async (
   const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
   const authToken = getAccessToken();
   if (!authToken) throw new Error('No authentication token found');
+
   const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/fetchuserbyid`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${authToken}`,
     },
-    body: JSON.stringify({
-      id: ownerId.toString(),
-    }),
+    body: JSON.stringify({ id: ownerId.toString() }),
   });
+
   if (!response.ok) {
-    return { first_name: 'Unknown', last_name: 'User' };
+    let errorMessage = 'Failed to fetch user';
+    try {
+      const errorData = await response.json() as { message: string };
+      errorMessage = errorData.message || errorMessage;
+    } catch {
+      errorMessage = response.statusText || errorMessage;
+    }
+    throw new Error(errorMessage);
   }
-  const data = (await response.json()) as {
-    message: string;
-    user: Partial<UserStruct>;
-  };
+
+  const data = (await response.json()) as { message: string; user: Partial<UserStruct> };
   return {
     first_name: data.user.first_name ?? 'Unknown',
     last_name: data.user.last_name ?? 'User',
   };
 };
+
 const OwnerName = ({ ownerId }: { ownerId: ObjectId }) => {
   const { data, isPending, error } = useQuery({
     queryKey: ['ownerName', ownerId],
@@ -126,8 +131,7 @@ const OwnerName = ({ ownerId }: { ownerId: ObjectId }) => {
   });
 
   if (isPending) return <span className="line-clamp-1">Loading author...</span>;
-  if (error || !data)
-    return <span className="line-clamp-1">Unknown Author</span>;
+  if (error) return <span className="line-clamp-1 text-red-500">{error.message}</span>;
   return (
     <span className="line-clamp-1">
       {data.first_name} {data.last_name}
@@ -142,21 +146,27 @@ export default function HomeContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const limit = 10;
 
-  const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    useInfiniteQuery({
-      queryKey: ['stories', selectedGenres, searchQuery],
-      initialPageParam: 1,
-      queryFn: async ({ pageParam }) =>
-        selectedGenres.length > 0
-          ? fetchStoriesByFilter({
-              genres: selectedGenres,
-              page: pageParam,
-              limit,
-            })
-          : fetchStories(pageParam, limit),
-      getNextPageParam: (lastPage, allPages) =>
-        lastPage.length === limit ? allPages.length + 1 : undefined,
-    });
+  const {
+    data,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    error
+  } = useInfiniteQuery({
+    queryKey: ['stories', selectedGenres, searchQuery],
+    initialPageParam: 1,
+    queryFn: async ({ pageParam }) =>
+      selectedGenres.length > 0
+        ? fetchStoriesByFilter({
+          genres: selectedGenres,
+          page: pageParam,
+          limit,
+        })
+        : fetchStories(pageParam, limit),
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.length === limit ? allPages.length + 1 : undefined,
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -168,10 +178,10 @@ export default function HomeContent() {
   const filteredStories = allStories.filter((story) =>
     searchQuery
       ? [story.title, story.description].some(
-          (text) =>
-            typeof text === 'string' &&
-            text.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
+        (text) =>
+          typeof text === 'string' &&
+          text.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
       : true,
   );
 
@@ -180,10 +190,21 @@ export default function HomeContent() {
       <section className="w-full text-center py-12 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
         <h1 className="text-4xl font-bold tracking-tight">Discover Stories</h1>
         <p className="mt-4 text-lg max-w-2xl mx-auto">
-          Browse through our collection of stories and find your next favorite
-          read.
+          Browse through our collection of stories and find your next favorite read.
         </p>
       </section>
+
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-4 my-2">
+          <span className="block sm:inline">{error.message}</span>
+          <button
+            className="absolute top-0 right-0 px-3 py-2"
+            onClick={() => router.refresh()}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full px-4 py-8">
         <aside className="md:block w-full md:w-64 shrink-0 mb-6 md:mb-0 md:mr-8">
