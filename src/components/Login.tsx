@@ -58,12 +58,12 @@ export default function Login() {
         setCookie("user", JSON.stringify(userData.user), {
           path: "/",
           sameSite: "lax",
-          secure: env.NODE_ENV === "production",
+          secure: window.location.protocol === "https:",
         });
         setCookie("tokens", JSON.stringify(userData.tokens), {
           path: "/",
           sameSite: "lax",
-          secure: env.NODE_ENV === "production",
+          secure: window.location.protocol === "https:",
         });
         setErrorMessage(null);
         router.push("/browse");

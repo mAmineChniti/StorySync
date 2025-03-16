@@ -115,17 +115,20 @@ export default function StoryEditor() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
-  const user_id = getUserId();
-  const id = params?.id as string;
+  const [userId, setUserId] = useState<string | null>("");
+  useEffect(() => {
+    setUserId(getUserId());
+  }, []);
+  const story_id = params?.story_id as string;
   const lowlight = createLowlight();
   const {
     data: story,
     isLoading: loadingStory,
     error: storyError,
   } = useQuery({
-    queryKey: ["story", id],
-    queryFn: () => fetchStoryDetails(id),
-    enabled: !!id,
+    queryKey: ["story", story_id],
+    queryFn: () => fetchStoryDetails(story_id),
+    enabled: !!story_id,
   });
 
   const {
@@ -133,20 +136,23 @@ export default function StoryEditor() {
     isLoading: loadingContent,
     error: contentError,
   } = useQuery({
-    queryKey: ["content", id],
-    queryFn: () => fetchStoryContent(id),
-    enabled: !!id,
+    queryKey: ["content", story_id],
+    queryFn: () => fetchStoryContent(story_id),
+    enabled: !!story_id,
   });
 
   const { data: collaborators } = useQuery({
-    queryKey: ["collaborators", id],
-    queryFn: () => fetchStoryCollaborators(id),
-    enabled: !!id,
+    queryKey: ["collaborators", story_id],
+    queryFn: () => fetchStoryCollaborators(story_id),
+    enabled: !!story_id,
   });
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false,
+        horizontalRule: false,
+      }),
       Placeholder.configure({ placeholder: "Start writing your story..." }),
       Underline,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -182,21 +188,21 @@ export default function StoryEditor() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
         },
-        body: JSON.stringify({ story_id: id, content: editedContent }),
+        body: JSON.stringify({ story_id: story_id, content: editedContent }),
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["content", id] });
+      await queryClient.invalidateQueries({ queryKey: ["content", story_id] });
       setIsEditing(false);
     },
   });
 
   const canEdit = () =>
     story &&
-    user_id &&
-    (story.owner_id.toString() === user_id || collaborators?.includes(user_id));
+    userId &&
+    (story.owner_id.toString() === userId || collaborators?.includes(userId));
 
-  if (!id)
+  if (!story_id)
     return (
       <div className="max-w-6xl mx-auto mt-16 p-10 min-h-[80vh] min-w-[80vh] flex flex-col justify-center">
         <Card className="text-center">
@@ -210,7 +216,7 @@ export default function StoryEditor() {
       </div>
     );
 
-  if (!user_id)
+  if (!userId)
     return (
       <div className="max-w-6xl mx-auto mt-16 p-10 min-h-[80vh] min-w-[80vh] flex flex-col justify-center">
         <Card className="text-center">
@@ -553,7 +559,7 @@ export default function StoryEditor() {
       <div className="mt-8 flex gap-4 justify-end">
         <Button
           className="cursor-pointer"
-          onClick={() => router.push(`/fork/${id}`)}
+          onClick={() => router.push(`/fork/${story_id}`)}
         >
           <GitBranch className="mr-2 h-4 w-4" /> Fork Story
         </Button>
