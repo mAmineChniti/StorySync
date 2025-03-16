@@ -1,16 +1,12 @@
-'use client';
+"use client";
 
-import Login from '@/components/Login';
-import Register from '@/components/Register';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import Login from "@/components/Login";
+import Register from "@/components/Register";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-interface AuthPageProps {
-  isLogin: boolean;
-}
-
-export default function AuthPage({ isLogin }: AuthPageProps) {
+export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   const [isLoginState, setIsLoginState] = useState(isLogin);
   const router = useRouter();
 
@@ -20,12 +16,12 @@ export default function AuthPage({ isLogin }: AuthPageProps) {
 
   const handleSwitchToRegister = () => {
     setIsLoginState(false);
-    router.push('/register');
+    router.push("/register");
   };
 
   const handleSwitchToLogin = () => {
     setIsLoginState(true);
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
@@ -33,7 +29,7 @@ export default function AuthPage({ isLogin }: AuthPageProps) {
       <Card className="w-full max-w-md p-6 shadow-lg rounded-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            {isLoginState ? 'Login' : 'Register'}
+            {isLoginState ? "Login" : "Register"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -41,7 +37,7 @@ export default function AuthPage({ isLogin }: AuthPageProps) {
           <p className="mt-4 text-center">
             {isLoginState ? (
               <>
-                Don&apos;t have an account?{' '}
+                Don&apos;t have an account?{" "}
                 <button
                   onClick={handleSwitchToRegister}
                   className="text-blue-500 hover:underline"
@@ -51,7 +47,7 @@ export default function AuthPage({ isLogin }: AuthPageProps) {
               </>
             ) : (
               <>
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <button
                   onClick={handleSwitchToLogin}
                   className="text-blue-500 hover:underline"

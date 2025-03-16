@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Footer from '@/components/Footer';
-import NavBar from '@/components/NavBar';
-import ProfileSidebar from '@/components/ProfileSidebar';
+import Footer from "@/components/Footer";
+import NavBar from "@/components/NavBar";
+import ProfileSidebar from "@/components/ProfileSidebar";
 
 export default function ProfileLayout({
   children,

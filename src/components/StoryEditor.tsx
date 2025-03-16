@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { env } from '@/env';
-import { getAccessToken, getUserId } from '@/lib';
-import { type StoryContent, type StoryDetails } from '@/types/storyResponses';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import Highlight from '@tiptap/extension-highlight';
-import HorizontalRule from '@tiptap/extension-horizontal-rule';
-import { Placeholder } from '@tiptap/extension-placeholder';
-import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
-import { EditorContent, useEditor } from '@tiptap/react';
-import { StarterKit } from '@tiptap/starter-kit';
-import { createLowlight } from 'lowlight';
+} from "@/components/ui/card";
+import { env } from "@/env";
+import { getAccessToken, getUserId } from "@/lib";
+import { type StoryContent, type StoryDetails } from "@/types/storyResponses";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import Highlight from "@tiptap/extension-highlight";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import { Placeholder } from "@tiptap/extension-placeholder";
+import TextAlign from "@tiptap/extension-text-align";
+import Underline from "@tiptap/extension-underline";
+import { EditorContent, useEditor } from "@tiptap/react";
+import { StarterKit } from "@tiptap/starter-kit";
+import { createLowlight } from "lowlight";
 import {
   AlignCenter,
   AlignJustify,
@@ -42,20 +42,22 @@ import {
   SeparatorHorizontal,
   Underline as UnderlineIcon,
   Undo2,
-} from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const fetchStoryDetails = async (story_id: string): Promise<StoryDetails | null> => {
+const fetchStoryDetails = async (
+  story_id: string,
+): Promise<StoryDetails | null> => {
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const authToken = getAccessToken();
-  if (!authToken) throw new Error('No authentication token found');
+  if (!authToken) throw new Error("No authentication token found");
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-story-details`,
     {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify({ story_id }),
@@ -69,13 +71,15 @@ const fetchStoryDetails = async (story_id: string): Promise<StoryDetails | null>
   return data.story;
 };
 
-const fetchStoryContent = async (story_id: string): Promise<StoryContent | null> => {
+const fetchStoryContent = async (
+  story_id: string,
+): Promise<StoryContent | null> => {
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-story-content`,
     {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ story_id }),
     },
   );
@@ -92,12 +96,12 @@ const fetchStoryCollaborators = async (story_id: string): Promise<string[]> => {
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-story-collaborators`,
     {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ story_id }),
     },
   );
-  if (!response.ok) throw new Error('Failed to fetch collaborators');
+  if (!response.ok) throw new Error("Failed to fetch collaborators");
   const data = (await response.json()) as {
     message: string;
     collaborators: string[];
@@ -110,7 +114,7 @@ export default function StoryEditor() {
   const params = useParams();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedContent, setEditedContent] = useState('');
+  const [editedContent, setEditedContent] = useState("");
   const user_id = getUserId();
   const id = params?.id as string;
   const lowlight = createLowlight();
@@ -119,7 +123,7 @@ export default function StoryEditor() {
     isLoading: loadingStory,
     error: storyError,
   } = useQuery({
-    queryKey: ['story', id],
+    queryKey: ["story", id],
     queryFn: () => fetchStoryDetails(id),
     enabled: !!id,
   });
@@ -129,13 +133,13 @@ export default function StoryEditor() {
     isLoading: loadingContent,
     error: contentError,
   } = useQuery({
-    queryKey: ['content', id],
+    queryKey: ["content", id],
     queryFn: () => fetchStoryContent(id),
     enabled: !!id,
   });
 
   const { data: collaborators } = useQuery({
-    queryKey: ['collaborators', id],
+    queryKey: ["collaborators", id],
     queryFn: () => fetchStoryCollaborators(id),
     enabled: !!id,
   });
@@ -143,19 +147,20 @@ export default function StoryEditor() {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Start writing your story...' }),
+      Placeholder.configure({ placeholder: "Start writing your story..." }),
       Underline,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       Highlight.configure({ multicolor: true }),
       CodeBlockLowlight.configure({ lowlight }),
       HorizontalRule,
     ],
-    content: content?.content ?? '',
+    content: content?.content ?? "",
     onUpdate: ({ editor }) => setEditedContent(editor.getHTML()),
     editable: isEditing,
     editorProps: {
-      attributes: { class: 'focus:outline-none' },
+      attributes: { class: "focus:outline-none" },
     },
+    immediatelyRender: false,
   });
 
   useEffect(() => {
@@ -170,18 +175,18 @@ export default function StoryEditor() {
     mutationFn: async () => {
       const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
       const authToken = getAccessToken();
-      if (!authToken) throw new Error('No authentication token found');
+      if (!authToken) throw new Error("No authentication token found");
       await fetch(`${NEXT_PUBLIC_STORY_API_URL}/edit-story`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
         },
         body: JSON.stringify({ story_id: id, content: editedContent }),
       });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['content', id] });
+      await queryClient.invalidateQueries({ queryKey: ["content", id] });
       setIsEditing(false);
     },
   });
@@ -218,7 +223,7 @@ export default function StoryEditor() {
             </p>
           </CardContent>
           <CardFooter>
-            <Button onClick={() => router.push('/login')}>Login</Button>
+            <Button onClick={() => router.push("/login")}>Login</Button>
           </CardFooter>
         </Card>
       </div>
@@ -232,7 +237,7 @@ export default function StoryEditor() {
             {loadingStory ? (
               <div className="h-10 bg-gray-300 w-1/2 animate-pulse" />
             ) : (
-              (story?.title ?? 'Error Loading Story')
+              (story?.title ?? "Error Loading Story")
             )}
           </CardTitle>
         </CardHeader>
@@ -272,7 +277,7 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() => editor?.chain().focus().toggleBold().run()}
-                      className={editor?.isActive('bold') ? 'bg-blue-200' : ''}
+                      className={editor?.isActive("bold") ? "bg-blue-200" : ""}
                     >
                       <Bold className="h-4 w-4" />
                     </Button>
@@ -283,7 +288,7 @@ export default function StoryEditor() {
                         editor?.chain().focus().toggleItalic().run()
                       }
                       className={
-                        editor?.isActive('italic') ? 'bg-blue-200' : ''
+                        editor?.isActive("italic") ? "bg-blue-200" : ""
                       }
                     >
                       <Italic className="h-4 w-4" />
@@ -295,7 +300,7 @@ export default function StoryEditor() {
                         editor?.chain().focus().toggleUnderline().run()
                       }
                       className={
-                        editor?.isActive('underline') ? 'bg-blue-200' : ''
+                        editor?.isActive("underline") ? "bg-blue-200" : ""
                       }
                     >
                       <UnderlineIcon className="h-4 w-4" />
@@ -307,7 +312,7 @@ export default function StoryEditor() {
                         editor?.chain().focus().toggleHighlight().run()
                       }
                       className={
-                        editor?.isActive('highlight') ? 'bg-blue-200' : ''
+                        editor?.isActive("highlight") ? "bg-blue-200" : ""
                       }
                     >
                       <Highlighter className="h-4 w-4" />
@@ -324,9 +329,9 @@ export default function StoryEditor() {
                           .run()
                       }
                       className={
-                        editor?.isActive('heading', { level: 1 })
-                          ? 'bg-blue-200'
-                          : ''
+                        editor?.isActive("heading", { level: 1 })
+                          ? "bg-blue-200"
+                          : ""
                       }
                     >
                       <Heading1 className="h-4 w-4" />
@@ -342,9 +347,9 @@ export default function StoryEditor() {
                           .run()
                       }
                       className={
-                        editor?.isActive('heading', { level: 2 })
-                          ? 'bg-blue-200'
-                          : ''
+                        editor?.isActive("heading", { level: 2 })
+                          ? "bg-blue-200"
+                          : ""
                       }
                     >
                       <Heading2 className="h-4 w-4" />
@@ -360,9 +365,9 @@ export default function StoryEditor() {
                           .run()
                       }
                       className={
-                        editor?.isActive('heading', { level: 3 })
-                          ? 'bg-blue-200'
-                          : ''
+                        editor?.isActive("heading", { level: 3 })
+                          ? "bg-blue-200"
+                          : ""
                       }
                     >
                       <Heading3 className="h-4 w-4" />
@@ -375,7 +380,7 @@ export default function StoryEditor() {
                         editor?.chain().focus().toggleBulletList().run()
                       }
                       className={
-                        editor?.isActive('bulletList') ? 'bg-blue-200' : ''
+                        editor?.isActive("bulletList") ? "bg-blue-200" : ""
                       }
                     >
                       <List className="h-4 w-4" />
@@ -387,7 +392,7 @@ export default function StoryEditor() {
                         editor?.chain().focus().toggleOrderedList().run()
                       }
                       className={
-                        editor?.isActive('orderedList') ? 'bg-blue-200' : ''
+                        editor?.isActive("orderedList") ? "bg-blue-200" : ""
                       }
                     >
                       <ListOrdered className="h-4 w-4" />
@@ -400,7 +405,7 @@ export default function StoryEditor() {
                         editor?.chain().focus().toggleBlockquote().run()
                       }
                       className={
-                        editor?.isActive('blockquote') ? 'bg-blue-200' : ''
+                        editor?.isActive("blockquote") ? "bg-blue-200" : ""
                       }
                     >
                       <Quote className="h-4 w-4" />
@@ -412,7 +417,7 @@ export default function StoryEditor() {
                         editor?.chain().focus().toggleCodeBlock().run()
                       }
                       className={
-                        editor?.isActive('codeBlock') ? 'bg-blue-200' : ''
+                        editor?.isActive("codeBlock") ? "bg-blue-200" : ""
                       }
                     >
                       <Code className="h-4 w-4" />
@@ -431,12 +436,12 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign('left').run()
+                        editor?.chain().focus().setTextAlign("left").run()
                       }
                       className={
-                        editor?.isActive({ textAlign: 'left' })
-                          ? 'bg-blue-200'
-                          : ''
+                        editor?.isActive({ textAlign: "left" })
+                          ? "bg-blue-200"
+                          : ""
                       }
                     >
                       <AlignLeft className="h-4 w-4" />
@@ -445,12 +450,12 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign('center').run()
+                        editor?.chain().focus().setTextAlign("center").run()
                       }
                       className={
-                        editor?.isActive({ textAlign: 'center' })
-                          ? 'bg-blue-200'
-                          : ''
+                        editor?.isActive({ textAlign: "center" })
+                          ? "bg-blue-200"
+                          : ""
                       }
                     >
                       <AlignCenter className="h-4 w-4" />
@@ -459,12 +464,12 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign('right').run()
+                        editor?.chain().focus().setTextAlign("right").run()
                       }
                       className={
-                        editor?.isActive({ textAlign: 'right' })
-                          ? 'bg-blue-200'
-                          : ''
+                        editor?.isActive({ textAlign: "right" })
+                          ? "bg-blue-200"
+                          : ""
                       }
                     >
                       <AlignRight className="h-4 w-4" />
@@ -473,12 +478,12 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign('justify').run()
+                        editor?.chain().focus().setTextAlign("justify").run()
                       }
                       className={
-                        editor?.isActive({ textAlign: 'justify' })
-                          ? 'bg-blue-200'
-                          : ''
+                        editor?.isActive({ textAlign: "justify" })
+                          ? "bg-blue-200"
+                          : ""
                       }
                     >
                       <AlignJustify className="h-4 w-4" />
@@ -518,7 +523,7 @@ export default function StoryEditor() {
                   variant="outline"
                   onClick={() => {
                     setIsEditing(false);
-                    editor?.commands.setContent(content?.content ?? '');
+                    editor?.commands.setContent(content?.content ?? "");
                   }}
                   disabled={saveMutation.isPending}
                 >
@@ -529,7 +534,7 @@ export default function StoryEditor() {
                   onClick={() => saveMutation.mutate()}
                   disabled={saveMutation.isPending}
                 >
-                  {saveMutation.isPending ? 'Saving...' : 'Save Changes'}
+                  {saveMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </>
             ) : (

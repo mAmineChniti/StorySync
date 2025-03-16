@@ -1,17 +1,7 @@
-'use client';
-import Landing from '@/components/Landing';
-import NavBar from '@/components/NavBar';
-import { hasCookie } from 'cookies-next/client';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import Landing from "@/components/Landing";
+import NavBar from "@/components/NavBar";
 
 export default function HomePage() {
-  const router = useRouter();
-  useEffect(() => {
-    if (hasCookie('user')) {
-      router.push('/browse');
-    }
-  }, [router]);
   return (
     <>
       <NavBar />
