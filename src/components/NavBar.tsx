@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from '@/components/ui/navigation-menu';
-import { deleteCookie, hasCookie } from 'cookies-next/client';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+} from "@/components/ui/navigation-menu";
+import { deleteCookie, hasCookie } from "cookies-next/client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function NavBar() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setIsUserLoggedIn(hasCookie('user'));
+    setIsUserLoggedIn(hasCookie("user"));
   }, []);
 
   const Logout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
-    deleteCookie('user');
-    deleteCookie('token');
-    router.push('/');
+    deleteCookie("user");
+    deleteCookie("tokens");
+    router.push("/");
   };
 
   return (

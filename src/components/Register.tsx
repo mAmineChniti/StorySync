@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -8,31 +8,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { env } from '@/env';
-import type { RegisterResponse } from '@/types/authInterfaces';
-import { registerSchema } from '@/types/authSchemas';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { setCookie } from 'cookies-next/client';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import type * as z from 'zod';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { env } from "@/env";
+import type { RegisterResponse } from "@/types/authInterfaces";
+import { registerSchema } from "@/types/authSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { setCookie } from "cookies-next/client";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import type * as z from "zod";
 
 export default function Register() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      firstName: '',
-      lastName: '',
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      firstName: "",
+      lastName: "",
     },
   });
   const router = useRouter();
@@ -43,9 +43,9 @@ export default function Register() {
   >({
     mutationFn: async (data: z.infer<typeof registerSchema>) => {
       const response = await fetch(`${env.NEXT_PUBLIC_AUTH_API_URL}/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: data.username,
@@ -57,25 +57,25 @@ export default function Register() {
       });
 
       if (!response.ok) {
-        throw new Error('Registration failed');
+        throw new Error("Registration failed");
       }
 
       return response.json() as Promise<RegisterResponse>;
     },
     onSuccess: async (userData) => {
       try {
-        setCookie('user', JSON.stringify(userData.user));
-        setCookie('tokens', JSON.stringify(userData.tokens));
+        setCookie("user", JSON.stringify(userData.user));
+        setCookie("tokens", JSON.stringify(userData.tokens));
         setErrorMessage(null);
-        router.push('/home');
+        router.push("/home");
       } catch (error) {
-        console.error('Error setting cookies:', error);
-        setErrorMessage('Error setting cookies');
+        console.error("Error setting cookies:", error);
+        setErrorMessage("Error setting cookies");
       }
     },
     onError: (error: unknown) => {
       const typedError =
-        error instanceof Error ? error : new Error('An unknown error occurred');
+        error instanceof Error ? error : new Error("An unknown error occurred");
       setErrorMessage(typedError.message);
       form.reset();
     },
@@ -176,7 +176,7 @@ export default function Register() {
           className="w-full mt-4"
           disabled={registerMutation.isPending}
         >
-          {registerMutation.isPending ? 'Registering...' : 'Register'}
+          {registerMutation.isPending ? "Registering..." : "Register"}
         </Button>
       </form>
     </Form>

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -15,30 +15,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { env } from '@/env';
-import { getAccessToken } from '@/lib';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { BookOpen } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { env } from "@/env";
+import { getAccessToken } from "@/lib";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { BookOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const storySchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required'),
-  genre: z.string().min(1, 'Genre is required'),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  genre: z.string().min(1, "Genre is required"),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -51,18 +51,18 @@ const createStory = async (
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const accessToken = getAccessToken();
   if (!accessToken) {
-    throw new Error('No authentication token found');
+    throw new Error("No authentication token found");
   }
   const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/create-story`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(storyData),
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
   });
   if (!response.ok) {
-    throw new Error('Failed to create story');
+    throw new Error("Failed to create story");
   }
   return (await response.json()) as string;
 };
@@ -74,9 +74,9 @@ export default function CreateStory() {
   const form = useForm<CreateStoryFormValues>({
     resolver: zodResolver(storySchema),
     defaultValues: {
-      title: '',
-      description: '',
-      genre: '',
+      title: "",
+      description: "",
+      genre: "",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
@@ -93,19 +93,19 @@ export default function CreateStory() {
   });
 
   const genres = [
-    'Fantasy',
-    'Science Fiction',
-    'Mystery',
-    'Romance',
-    'Horror',
-    'Thriller',
-    'Historical Fiction',
-    'Young Adult',
+    "Fantasy",
+    "Science Fiction",
+    "Mystery",
+    "Romance",
+    "Horror",
+    "Thriller",
+    "Historical Fiction",
+    "Young Adult",
     "Children's",
-    'Biography',
-    'Non-fiction',
-    'Poetry',
-    'Drama',
+    "Biography",
+    "Non-fiction",
+    "Poetry",
+    "Drama",
   ];
 
   const onSubmit = (data: CreateStoryFormValues) => {
@@ -241,7 +241,7 @@ export default function CreateStory() {
                 className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
               >
                 {mutation.isPending ? (
-                  'Creating Story...'
+                  "Creating Story..."
                 ) : (
                   <>
                     <BookOpen className="mr-2 h-4 w-4" />

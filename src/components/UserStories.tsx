@@ -1,4 +1,5 @@
-import { Button } from '@/components/ui/button';
+"use client";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,15 +7,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { env } from '@/env';
-import { formatDate, getAccessToken, getUserId } from '@/lib';
-import { type StoryDetails, type StoryResponse } from '@/types/storyResponses';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BookOpen, Calendar, Edit, Tag, Trash2, User } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { env } from "@/env";
+import { formatDate, getAccessToken, getUserId } from "@/lib";
+import { type StoryDetails, type StoryResponse } from "@/types/storyResponses";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const fetchUserStories = async (
   page: number,
@@ -22,21 +23,21 @@ const fetchUserStories = async (
 ): Promise<StoryDetails[]> => {
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const userId = getUserId();
-  if (!userId) throw new Error('User not authenticated');
+  if (!userId) throw new Error("User not authenticated");
 
   const response = await fetch(
     `${NEXT_PUBLIC_STORY_API_URL}/get-stories-by-user`,
     {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_id: userId, page, limit }),
     },
   );
 
   if (!response.ok) {
-    let errorMessage = 'Error fetching user stories';
+    let errorMessage = "Error fetching user stories";
     try {
-      const errorData = await response.json() as { message: string };
+      const errorData = (await response.json()) as { message: string };
       errorMessage = errorData.message || errorMessage;
     } catch {
       errorMessage = response.statusText || errorMessage;
@@ -51,20 +52,20 @@ const fetchUserStories = async (
 const deleteStory = async (storyId: string) => {
   const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
   const authToken = getAccessToken();
-  if (!authToken) throw new Error('User not authenticated');
+  if (!authToken) throw new Error("User not authenticated");
   const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/delete-story`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${authToken}`
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${authToken}`,
     },
     body: JSON.stringify({ story_id: storyId }),
   });
 
   if (!response.ok) {
-    let errorMessage = 'Failed to delete story';
+    let errorMessage = "Failed to delete story";
     try {
-      const errorData = await response.json() as { message: string };
+      const errorData = (await response.json()) as { message: string };
       errorMessage = errorData.message || errorMessage;
     } catch {
       errorMessage = response.statusText || errorMessage;
@@ -81,7 +82,7 @@ export default function UserStories() {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['userStories', currentPage],
+    queryKey: ["userStories", currentPage],
     queryFn: () => fetchUserStories(currentPage, limit),
   });
 
@@ -90,9 +91,9 @@ export default function UserStories() {
     onSuccess: async () => {
       setErrorMessage(null);
       try {
-        await queryClient.invalidateQueries({ queryKey: ['userStories'] });
+        await queryClient.invalidateQueries({ queryKey: ["userStories"] });
       } catch {
-        setErrorMessage('Failed to refresh stories list');
+        setErrorMessage("Failed to refresh stories list");
       }
     },
     onError: (error) => {
@@ -119,7 +120,10 @@ export default function UserStories() {
         <CardContent>
           <div className="space-y-6">
             {[1, 2].map((i) => (
-              <div key={i} className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0">
+              <div
+                key={i}
+                className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0"
+              >
                 <div className="flex-1">
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                     <Skeleton className="h-8 w-2/3" />
@@ -150,11 +154,15 @@ export default function UserStories() {
         <CardHeader>
           <CardTitle>Error</CardTitle>
           <CardDescription>
-            {error instanceof Error ? error.message : 'There was an error loading your stories'}
+            {error instanceof Error
+              ? error.message
+              : "There was an error loading your stories"}
           </CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button className="cursor-pointer" onClick={() => router.refresh()}>Retry</Button>
+          <Button className="cursor-pointer" onClick={() => router.refresh()}>
+            Retry
+          </Button>
         </CardFooter>
       </Card>
     );
@@ -185,14 +193,20 @@ export default function UserStories() {
             <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-4 text-lg font-medium">No stories yet</h3>
             <p className="mt-2 text-gray-500">
-              You haven&apos;t created any stories yet. Start writing your first story!
+              You haven&apos;t created any stories yet. Start writing your first
+              story!
             </p>
-            <Button className="cursor-pointer mt-4">Create Your First Story</Button>
+            <Button className="cursor-pointer mt-4">
+              Create Your First Story
+            </Button>
           </div>
         ) : (
           <div className="space-y-6">
             {stories.map((story) => (
-              <div key={story.id.toString()} className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0">
+              <div
+                key={story.id.toString()}
+                className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0"
+              >
                 <div className="flex-1">
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold">{story.title}</h3>
@@ -213,14 +227,18 @@ export default function UserStories() {
                     </div>
                     <div className="flex items-center">
                       <User className="h-4 w-4 mr-1" />
-                      <span>{story.collaborators?.length ?? 0} Collaborators</span>
+                      <span>
+                        {story.collaborators?.length ?? 0} Collaborators
+                      </span>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button
                       className="cursor-pointer"
                       size="sm"
-                      onClick={() => router.push(`/story/${story.id.toString()}`)}
+                      onClick={() =>
+                        router.push(`/story/${story.id.toString()}`)
+                      }
                     >
                       <Edit className="h-4 w-4 mr-1" />
                       Continue Writing
@@ -233,7 +251,7 @@ export default function UserStories() {
                       disabled={mutation.isPending}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
-                      {mutation.isPending ? 'Deleting...' : 'Delete'}
+                      {mutation.isPending ? "Deleting..." : "Delete"}
                     </Button>
                   </div>
                 </div>

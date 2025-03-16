@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { BookOpen, Edit, PenTool, User } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { BookOpen, Edit, PenTool, User } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function ProfileSidebar() {
   const router = useRouter();
@@ -12,27 +12,27 @@ export default function ProfileSidebar() {
 
   const menuItems = [
     {
-      id: 'profile',
-      label: 'Profile Information',
-      url: '/profile',
+      id: "profile",
+      label: "Profile Information",
+      url: "/profile",
       icon: User,
     },
     {
-      id: 'my-stories',
-      label: 'My Stories',
-      url: '/user-stories',
+      id: "my-stories",
+      label: "My Stories",
+      url: "/user-stories",
       icon: BookOpen,
     },
     {
-      id: 'collaborations',
-      label: 'Collaborations',
-      url: '/collaborations',
+      id: "collaborations",
+      label: "Collaborations",
+      url: "/collaborations",
       icon: Edit,
     },
     {
-      id: 'create-story',
-      label: 'Create New Story',
-      url: '/create-story',
+      id: "create-story",
+      label: "Create New Story",
+      url: "/create-story",
       icon: PenTool,
     },
   ];
@@ -43,10 +43,10 @@ export default function ProfileSidebar() {
         {menuItems.map((item) => (
           <Button
             key={item.id}
-            variant={pathname === item.url ? 'default' : 'ghost'}
+            variant={pathname === item.url ? "default" : "ghost"}
             className={cn(
-              'w-full justify-start gap-2',
-              pathname === item.url ? 'bg-purple-600 hover:bg-purple-700' : '',
+              "w-full justify-start gap-2",
+              pathname === item.url ? "bg-purple-600 hover:bg-purple-700" : "",
             )}
             onClick={() => router.push(item.url)}
           >

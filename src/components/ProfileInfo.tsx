@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { env } from '@/env';
-import { getAccessToken } from '@/lib';
-import { type UserStruct } from '@/types/authInterfaces';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteCookie, getCookie, setCookie } from 'cookies-next/client';
-import { Edit2, Save } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { env } from "@/env";
+import { getAccessToken } from "@/lib";
+import { type UserStruct } from "@/types/authInterfaces";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteCookie, getCookie, setCookie } from "cookies-next/client";
+import { Edit2, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const updateUserProfile = async (
   updatedData: Partial<UserStruct>,
@@ -37,16 +37,16 @@ const updateUserProfile = async (
 
   try {
     const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/update`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`,
       },
       body: JSON.stringify(updatedData),
     });
 
     if (!response.ok) {
-      console.error('Failed to update profile');
+      console.error("Failed to update profile");
       return null;
     }
 
@@ -56,7 +56,7 @@ const updateUserProfile = async (
     };
     return responseData.user;
   } catch (error) {
-    console.error('Error updating profile:', error);
+    console.error("Error updating profile:", error);
     return null;
   }
 };
@@ -69,7 +69,7 @@ export default function ProfileInfo() {
   const [user, setUser] = useState<UserStruct | null>(null);
 
   useEffect(() => {
-    const userData = getCookie('user');
+    const userData = getCookie("user");
     if (userData) {
       setUser(JSON.parse(userData) as UserStruct);
     }
@@ -77,10 +77,10 @@ export default function ProfileInfo() {
 
   const form = useForm<Partial<UserStruct>>({
     defaultValues: {
-      username: user?.username ?? '',
-      email: user?.email ?? '',
-      first_name: user?.first_name ?? '',
-      last_name: user?.last_name ?? '',
+      username: user?.username ?? "",
+      email: user?.email ?? "",
+      first_name: user?.first_name ?? "",
+      last_name: user?.last_name ?? "",
     },
   });
 
@@ -99,19 +99,19 @@ export default function ProfileInfo() {
     mutationFn: updateUserProfile,
     onSuccess: (data) => {
       if (data) {
-        form.setValue('username', data.username);
-        form.setValue('email', data.email);
-        form.setValue('first_name', data.first_name);
-        form.setValue('last_name', data.last_name);
+        form.setValue("username", data.username);
+        form.setValue("email", data.email);
+        form.setValue("first_name", data.first_name);
+        form.setValue("last_name", data.last_name);
 
-        queryClient.setQueryData(['userProfile'], data);
-        deleteCookie('user');
-        setCookie('user', JSON.stringify(data));
+        queryClient.setQueryData(["userProfile"], data);
+        deleteCookie("user");
+        setCookie("user", JSON.stringify(data));
         setIsEditing(false);
       }
     },
     onError: (error) => {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
     },
   });
 
@@ -131,7 +131,7 @@ export default function ProfileInfo() {
         <CardContent>
           <Button
             className="cursor-pointer"
-            onClick={() => router.push('/login')}
+            onClick={() => router.push("/login")}
           >
             Retry
           </Button>
@@ -242,10 +242,10 @@ export default function ProfileInfo() {
             />
 
             <div className="mt-4 text-sm text-gray-500">
-              Joined:{' '}
+              Joined:{" "}
               {user?.date_joined
-                ? new Date(user.date_joined).toLocaleDateString('en-GB')
-                : 'N/A'}
+                ? new Date(user.date_joined).toLocaleDateString("en-GB")
+                : "N/A"}
             </div>
 
             {isEditing && (
@@ -254,7 +254,7 @@ export default function ProfileInfo() {
                   <div className="mt-2 text-sm text-red-500">
                     {mutation.error instanceof Error
                       ? mutation.error.message
-                      : 'An unexpected error occurred. Please try again.'}
+                      : "An unexpected error occurred. Please try again."}
                   </div>
                 )}
                 <Button
@@ -263,7 +263,7 @@ export default function ProfileInfo() {
                   disabled={mutation.isPending}
                 >
                   {mutation.isPending ? (
-                    'Saving...'
+                    "Saving..."
                   ) : (
                     <>
                       <Save className="h-4 w-4 mr-2" />

@@ -13,7 +13,7 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default [...compat.extends(
+const eslintConfig = [...compat.extends(
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
@@ -54,3 +54,5 @@ export default [...compat.extends(
         }],
     },
 }];
+
+export default eslintConfig;
