@@ -1,9 +1,14 @@
 import Footer from "@/components/Footer";
 import HomeContent from "@/components/HomeContent";
 import NavBar from "@/components/NavBar";
-import { Suspense } from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Suspense } from "react";
 
 const FallBack = () => (
   <div className="flex flex-col w-full bg-gray-50 text-gray-900 mt-16 min-h-screen">
@@ -95,8 +100,7 @@ export default function Browse() {
     <>
       <NavBar />
       <main className="flex flex-col min-h-screen w-full items-center justify-between">
-        <Suspense
-          fallback={<FallBack />}>
+        <Suspense fallback={<FallBack />}>
           <HomeContent />
         </Suspense>
         <Footer />
