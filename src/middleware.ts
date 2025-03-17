@@ -24,7 +24,7 @@ export function middleware(req: NextRequest) {
   ];
 
   if (protectedRoutes.some((route) => pathname.startsWith(route)) && !user) {
-    return NextResponse.redirect(new URL("/login", req.url), 401);
+    return NextResponse.redirect(new URL("/login", req.url), 307);
   }
 
   return NextResponse.next();
