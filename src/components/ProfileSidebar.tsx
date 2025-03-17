@@ -45,7 +45,7 @@ export default function ProfileSidebar() {
             key={item.id}
             variant={pathname === item.url ? "default" : "ghost"}
             className={cn(
-              "w-full justify-start gap-2",
+              "w-full justify-start gap-2 cursor-pointer",
               pathname === item.url ? "bg-purple-600 hover:bg-purple-700" : "",
             )}
             onClick={() => router.push(item.url)}

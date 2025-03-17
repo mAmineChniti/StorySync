@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { env } from "@/env";
 import { getAccessToken, getUserId } from "@/lib";
+import { cn } from "@/lib/utils";
 import { type StoryContent, type StoryDetails } from "@/types/storyResponses";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -264,14 +265,14 @@ export default function StoryEditor() {
               {editor && (
                 <>
                   <div className="flex flex-wrap gap-2 mb-4 p-2 bg-gray-50 rounded-t-lg border-b">
-                    <Button
+                    <Button className="cursor-pointer"
                       variant="ghost"
                       size="sm"
                       onClick={() => editor?.chain().focus().undo().run()}
                     >
                       <Undo2 className="h-4 w-4" />
                     </Button>
-                    <Button
+                    <Button className="cursor-pointer"
                       variant="ghost"
                       size="sm"
                       onClick={() => editor?.chain().focus().redo().run()}
@@ -283,7 +284,7 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() => editor?.chain().focus().toggleBold().run()}
-                      className={editor?.isActive("bold") ? "bg-blue-200" : ""}
+                      className={cn("cursor-pointer", editor?.isActive("bold") ? "bg-blue-200" : "")}
                     >
                       <Bold className="h-4 w-4" />
                     </Button>
@@ -293,9 +294,9 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().toggleItalic().run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("italic") ? "bg-blue-200" : ""
-                      }
+                      )}
                     >
                       <Italic className="h-4 w-4" />
                     </Button>
@@ -305,9 +306,9 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().toggleUnderline().run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("underline") ? "bg-blue-200" : ""
-                      }
+                      )}
                     >
                       <UnderlineIcon className="h-4 w-4" />
                     </Button>
@@ -317,9 +318,9 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().toggleHighlight().run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("highlight") ? "bg-blue-200" : ""
-                      }
+                      )}
                     >
                       <Highlighter className="h-4 w-4" />
                     </Button>
@@ -334,11 +335,11 @@ export default function StoryEditor() {
                           .toggleHeading({ level: 1 })
                           .run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("heading", { level: 1 })
                           ? "bg-blue-200"
                           : ""
-                      }
+                      )}
                     >
                       <Heading1 className="h-4 w-4" />
                     </Button>
@@ -352,11 +353,11 @@ export default function StoryEditor() {
                           .toggleHeading({ level: 2 })
                           .run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("heading", { level: 2 })
                           ? "bg-blue-200"
                           : ""
-                      }
+                      )}
                     >
                       <Heading2 className="h-4 w-4" />
                     </Button>
@@ -370,11 +371,11 @@ export default function StoryEditor() {
                           .toggleHeading({ level: 3 })
                           .run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("heading", { level: 3 })
                           ? "bg-blue-200"
                           : ""
-                      }
+                      )}
                     >
                       <Heading3 className="h-4 w-4" />
                     </Button>
@@ -385,9 +386,9 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().toggleBulletList().run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("bulletList") ? "bg-blue-200" : ""
-                      }
+                      )}
                     >
                       <List className="h-4 w-4" />
                     </Button>
@@ -397,9 +398,9 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().toggleOrderedList().run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("orderedList") ? "bg-blue-200" : ""
-                      }
+                      )}
                     >
                       <ListOrdered className="h-4 w-4" />
                     </Button>
@@ -410,9 +411,9 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().toggleBlockquote().run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("blockquote") ? "bg-blue-200" : ""
-                      }
+                      )}
                     >
                       <Quote className="h-4 w-4" />
                     </Button>
@@ -422,13 +423,14 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().toggleCodeBlock().run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive("codeBlock") ? "bg-blue-200" : ""
-                      }
+                      )}
                     >
                       <Code className="h-4 w-4" />
                     </Button>
                     <Button
+                      className="cursor-pointer"
                       variant="ghost"
                       size="sm"
                       onClick={() =>
@@ -444,11 +446,11 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().setTextAlign("left").run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive({ textAlign: "left" })
                           ? "bg-blue-200"
                           : ""
-                      }
+                      )}
                     >
                       <AlignLeft className="h-4 w-4" />
                     </Button>
@@ -458,11 +460,11 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().setTextAlign("center").run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive({ textAlign: "center" })
                           ? "bg-blue-200"
                           : ""
-                      }
+                      )}
                     >
                       <AlignCenter className="h-4 w-4" />
                     </Button>
@@ -472,11 +474,11 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().setTextAlign("right").run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive({ textAlign: "right" })
                           ? "bg-blue-200"
                           : ""
-                      }
+                      )}
                     >
                       <AlignRight className="h-4 w-4" />
                     </Button>
@@ -486,11 +488,11 @@ export default function StoryEditor() {
                       onClick={() =>
                         editor?.chain().focus().setTextAlign("justify").run()
                       }
-                      className={
+                      className={cn("cursor-pointer",
                         editor?.isActive({ textAlign: "justify" })
                           ? "bg-blue-200"
                           : ""
-                      }
+                      )}
                     >
                       <AlignJustify className="h-4 w-4" />
                     </Button>
