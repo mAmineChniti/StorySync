@@ -24,6 +24,7 @@ export default function NavBar() {
     deleteCookie("user");
     deleteCookie("tokens");
     router.push("/");
+    router.refresh();
   };
 
   return (
