@@ -1,3 +1,4 @@
+import { ClientTokenRefresher } from "@/components/ClientTokenRefresher";
 import { Providers } from "@/components/providers";
 import "@/styles/globals.css";
 import { Analytics } from "@vercel/analytics/next";
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
+        <ClientTokenRefresher />
         <Providers>{children}</Providers>
         <Analytics />
       </body>

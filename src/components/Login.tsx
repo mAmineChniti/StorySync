@@ -12,6 +12,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { env } from "@/env";
+import {
+  checkAndRefreshToken,
+  REFRESH_THRESHOLD,
+} from "@/hooks/useTokenRefresh";
 import type { LoginResponse } from "@/types/authInterfaces";
 import { loginSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,12 +63,24 @@ export default function Login() {
           path: "/",
           sameSite: "lax",
           secure: window.location.protocol === "https:",
+          expires: new Date(userData.tokens.access_expires_at),
         });
         setCookie("tokens", JSON.stringify(userData.tokens), {
           path: "/",
           sameSite: "lax",
           secure: window.location.protocol === "https:",
+          expires: new Date(userData.tokens.refresh_expires_at),
         });
+        const firstRefreshTime =
+          new Date(userData.tokens.access_expires_at).getTime() -
+          Date.now() -
+          REFRESH_THRESHOLD;
+
+        if (firstRefreshTime > 0) {
+          setTimeout(() => {
+            void checkAndRefreshToken();
+          }, firstRefreshTime);
+        }
         setErrorMessage(null);
         router.push("/browse");
       } catch (error) {
@@ -120,7 +136,7 @@ export default function Login() {
         )}
         <Button
           type="submit"
-          className="w-full mt-4"
+          className="w-full mt-4 cursor-pointer"
           disabled={loginMutation.isPending}
         >
           {loginMutation.isPending ? "Logging in..." : "Login"}

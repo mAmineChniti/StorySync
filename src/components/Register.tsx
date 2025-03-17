@@ -67,7 +67,7 @@ export default function Register() {
         setCookie("user", JSON.stringify(userData.user));
         setCookie("tokens", JSON.stringify(userData.tokens));
         setErrorMessage(null);
-        router.push("/home");
+        router.push("/browse");
       } catch (error) {
         console.error("Error setting cookies:", error);
         setErrorMessage("Error setting cookies");
@@ -173,7 +173,7 @@ export default function Register() {
         )}
         <Button
           type="submit"
-          className="w-full mt-4"
+          className="w-full mt-4 cursor-pointer"
           disabled={registerMutation.isPending}
         >
           {registerMutation.isPending ? "Registering..." : "Register"}
