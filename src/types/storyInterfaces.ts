@@ -1,4 +1,4 @@
-import { type ObjectId } from "mongodb";
+import type ObjectId from "bson-objectid";
 
 export interface StoryDetails {
   id: ObjectId;

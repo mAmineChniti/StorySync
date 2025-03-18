@@ -13,6 +13,7 @@ import { formatDate } from "@/lib";
 import { StoryService } from "@/lib/requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
+import type ObjectId from "bson-objectid";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -28,8 +29,8 @@ export default function UserStories() {
     queryFn: () => StoryService.getUserStories(currentPage, limit),
   });
 
-  const mutation = useMutation<void, Error, string>({
-    mutationFn: (storyId: string) => StoryService.delete(storyId),
+  const mutation = useMutation<void, Error, ObjectId>({
+    mutationFn: (storyId: ObjectId) => StoryService.delete(storyId),
     onSuccess: async () => {
       setErrorMessage(null);
       try {
@@ -48,7 +49,7 @@ export default function UserStories() {
 
   const stories = data ?? [];
 
-  const handleDeleteStory = (storyId: string) => {
+  const handleDeleteStory = (storyId: ObjectId) => {
     mutation.mutate(storyId);
   };
 
@@ -149,7 +150,7 @@ export default function UserStories() {
           <div className="space-y-6">
             {stories.map((story) => (
               <div
-                key={story.id.toString()}
+                key={story.id.toHexString()}
                 className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0"
               >
                 <div className="flex-1">
@@ -182,7 +183,7 @@ export default function UserStories() {
                       className="cursor-pointer"
                       size="sm"
                       onClick={() =>
-                        router.push(`/story/${story.id.toString()}`)
+                        router.push(`/story/${story.id.toHexString()}`)
                       }
                     >
                       <Edit className="h-4 w-4 mr-1" />
@@ -192,7 +193,7 @@ export default function UserStories() {
                       className="cursor-pointer"
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleDeleteStory(story.id.toString())}
+                      onClick={() => handleDeleteStory(story.id)}
                       disabled={mutation.isPending}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />

@@ -44,6 +44,7 @@ import {
   Underline as UnderlineIcon,
   Undo2,
 } from "lucide-react";
+import ObjectId from "bson-objectid";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -53,11 +54,12 @@ export default function StoryEditor() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
-  const [userId, setUserId] = useState<string | null>("");
+  const [userId, setUserId] = useState<ObjectId | null>(new ObjectId());
   useEffect(() => {
     setUserId(getUserId());
   }, []);
   const story_id = params?.story_id as string;
+  const storyId = new ObjectId(story_id);
   const lowlight = createLowlight();
   const {
     data: story,
@@ -65,7 +67,7 @@ export default function StoryEditor() {
     error: storyError,
   } = useQuery({
     queryKey: ["story", story_id],
-    queryFn: () => StoryService.getDetails(story_id),
+    queryFn: () => StoryService.getDetails(storyId),
     enabled: !!story_id,
   });
 
@@ -75,13 +77,13 @@ export default function StoryEditor() {
     error: contentError,
   } = useQuery({
     queryKey: ["content", story_id],
-    queryFn: () => StoryService.getContent(story_id),
+    queryFn: () => StoryService.getContent(storyId),
     enabled: !!story_id,
   });
 
   const { data: collaborators } = useQuery({
     queryKey: ["collaborators", story_id],
-    queryFn: () => StoryService.getCollaborators(story_id),
+    queryFn: () => StoryService.getCollaborators(storyId),
     enabled: !!story_id,
   });
 
@@ -138,7 +140,7 @@ export default function StoryEditor() {
   const canEdit = () =>
     story &&
     userId &&
-    (story.owner_id.toString() === userId || collaborators?.includes(userId));
+    (story.owner_id === userId || collaborators?.includes(userId.toHexString()));
 
   if (!story_id)
     return (
