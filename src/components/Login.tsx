@@ -36,7 +36,11 @@ export default function Login() {
     },
   });
   const router = useRouter();
-  const loginMutation = useMutation<LoginResponse, Error, z.infer<typeof loginSchema>>({
+  const loginMutation = useMutation<
+    LoginResponse,
+    Error,
+    z.infer<typeof loginSchema>
+  >({
     mutationFn: (data) => AuthService.login(data),
     onSuccess: async (userData: LoginResponse) => {
       try {

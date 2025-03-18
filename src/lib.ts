@@ -1,6 +1,6 @@
+import ObjectId from "bson-objectid";
 import { getCookie } from "cookies-next/client";
 import { type Tokens, type UserStruct } from "./types/authInterfaces";
-import ObjectId from "bson-objectid";
 export const getAccessToken = (): string | null => {
   const tokenString = getCookie("tokens");
   if (!tokenString) return null;

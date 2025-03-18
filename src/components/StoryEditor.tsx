@@ -21,6 +21,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
+import ObjectId from "bson-objectid";
 import { createLowlight } from "lowlight";
 import {
   AlignCenter,
@@ -44,7 +45,6 @@ import {
   Underline as UnderlineIcon,
   Undo2,
 } from "lucide-react";
-import ObjectId from "bson-objectid";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -140,7 +140,8 @@ export default function StoryEditor() {
   const canEdit = () =>
     story &&
     userId &&
-    (story.owner_id === userId || collaborators?.includes(userId.toHexString()));
+    (story.owner_id === userId ||
+      collaborators?.includes(userId.toHexString()));
 
   if (!story_id)
     return (

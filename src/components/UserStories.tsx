@@ -12,8 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib";
 import { StoryService } from "@/lib/requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
 import type ObjectId from "bson-objectid";
+import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -39,7 +39,8 @@ export default function UserStories() {
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : "Failed to refresh stories list");
+            : "Failed to refresh stories list",
+        );
       }
     },
     onError: (error) => {
