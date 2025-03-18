@@ -15,7 +15,7 @@ import { formatDate } from "@/lib";
 import { AuthService, StoryService } from "@/lib/requests";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { BookOpen, Calendar, Tag, User } from "lucide-react";
-import { type ObjectId } from "mongodb";
+import type ObjectId from "bson-objectid";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -187,7 +187,7 @@ export default function HomeContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                 {filteredStories.map((story) => (
                   <Card
-                    key={story.id.toString()}
+                    key={story.id.toHexString()}
                     className="flex flex-col h-fit w-full max-w-[350px] mx-auto hover:shadow-lg transition-shadow duration-300"
                   >
                     <CardHeader className="pb-2">
@@ -216,7 +216,7 @@ export default function HomeContent() {
                       <Button
                         className="w-full cursor-pointer"
                         onClick={() =>
-                          router.push(`/story/${story.id.toString()}`)
+                          router.push(`/story/${story.id.toHexString()}`)
                         }
                       >
                         <BookOpen className="mr-2 h-4 w-4" /> Read Now

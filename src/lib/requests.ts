@@ -1,10 +1,10 @@
 import { env } from "@/env";
 import { getAccessToken, getUserId } from "@/lib";
-import { type LoginResponse, type RegisterResponse, type UserStruct } from "@/types/authInterfaces";
+import { type Tokens, type LoginResponse, type RegisterResponse, type UserStruct } from "@/types/authInterfaces";
 import { type loginSchema, type registerSchema } from "@/types/authSchemas";
 import type * as storyResponses from "@/types/storyInterfaces";
 import { type storySchema } from "@/types/storySchemas";
-import { type ObjectId } from "mongodb";
+import type ObjectId from "bson-objectid";
 import { type z } from "zod";
 
 const API_CONFIG = {
@@ -13,6 +13,7 @@ const API_CONFIG = {
     ENDPOINTS: {
       LOGIN: "/login",
       REGISTER: "/register",
+      REFRESH: "/refresh",
       FETCH_USER: "/fetchuser",
       UPDATE_USER: "/update",
       FETCH_USER_BY_ID: "/fetchuserbyid"
@@ -76,7 +77,7 @@ export const StoryService = {
     return handleResponse<{ storyId: string }>(response).then(data => data.storyId);
   },
 
-  async getDetails(storyId: string): Promise<storyResponses.StoryDetails> {
+  async getDetails(storyId: ObjectId): Promise<storyResponses.StoryDetails> {
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}`,
       {
@@ -100,7 +101,7 @@ export const StoryService = {
     return handleResponse<storyResponses.StoryResponse>(response).then(data => data.stories);
   },
 
-  async getContent(storyId: string): Promise<storyResponses.StoryContent> {
+  async getContent(storyId: ObjectId): Promise<storyResponses.StoryContent> {
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}`,
       {
@@ -112,7 +113,7 @@ export const StoryService = {
     return handleResponse<{ content: storyResponses.StoryContent }>(response).then(data => data.content);
   },
 
-  async delete(storyId: string): Promise<void> {
+  async delete(storyId: ObjectId): Promise<void> {
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}`,
       {
@@ -124,7 +125,7 @@ export const StoryService = {
     await handleResponse<{ message: string }>(response);
   },
 
-  async getCollaborators(storyId: string): Promise<string[]> {
+  async getCollaborators(storyId: ObjectId): Promise<string[]> {
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}`,
       {
@@ -213,7 +214,7 @@ export const AuthService = {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId.toString() })
+        body: JSON.stringify({ user_id: userId.toHexString() })
       }
     );
     return handleResponse<UserStruct>(response).then(user => ({
@@ -240,12 +241,27 @@ export const AuthService = {
       {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ id: ownerId.toString() })
+        body: JSON.stringify({ id: ownerId.toHexString() })
       }
     );
     return handleResponse<{ user: UserStruct }>(response).then(data => ({
       first_name: data.user.first_name,
       last_name: data.user.last_name
     }));
+  },
+
+  async refreshTokens(refreshToken: string): Promise<Tokens> {
+    const response = await fetch(
+      `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REFRESH}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${refreshToken}`
+        }
+      }
+    );
+    return handleResponse<{ message: string; tokens: Tokens }>(response)
+      .then(data => data.tokens);
   }
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { refreshTokens } from "@/lib/auth";
+import { AuthService } from "@/lib/requests";
 import type { Tokens, UserStruct } from "@/types/authInterfaces";
 import { getCookie, setCookie } from "cookies-next/client";
 import { useRouter } from "next/navigation";
@@ -21,7 +21,7 @@ export const checkAndRefreshToken = async () => {
     const user: UserStruct = JSON.parse(userCookie.toString()) as UserStruct;
 
     if (accessExpiresAt.getTime() - now.getTime() < REFRESH_THRESHOLD) {
-      const newTokens = await refreshTokens(tokens.refresh_token);
+      const newTokens = await AuthService.refreshTokens(tokens.refresh_token);
 
       setCookie("tokens", JSON.stringify(newTokens), {
         path: "/",

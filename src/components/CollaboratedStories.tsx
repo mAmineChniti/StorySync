@@ -15,13 +15,13 @@ import { AuthService, StoryService } from "@/lib/requests";
 import { type StoryDetails } from "@/types/storyInterfaces";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Edit, Eye, Tag, User, Users } from "lucide-react";
-import { type ObjectId } from "mongodb";
+import type ObjectId from "bson-objectid";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const OwnerInfo = ({ ownerId }: { ownerId: ObjectId }) => {
   const { data: ownerData, isLoading } = useQuery({
-    queryKey: ["user", ownerId.toString()],
+    queryKey: ["user", ownerId.toHexString()],
     queryFn: () => AuthService.getProfile(ownerId),
     staleTime: 1000 * 60 * 5,
   });
@@ -135,7 +135,7 @@ export default function CollaboratedStories() {
           <div className="space-y-6">
             {stories?.map((story) => (
               <div
-                key={story.id.toString()}
+                key={story.id.toHexString()}
                 className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0"
               >
                 <div className="flex-1">

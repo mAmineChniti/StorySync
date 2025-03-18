@@ -1,7 +1,7 @@
 import { getCookie } from "cookies-next/client";
 import { type Tokens, type UserStruct } from "./types/authInterfaces";
-
-const getAccessToken = (): string | null => {
+import ObjectId from "bson-objectid";
+export const getAccessToken = (): string | null => {
   const tokenString = getCookie("tokens");
   if (!tokenString) return null;
   try {
@@ -13,7 +13,19 @@ const getAccessToken = (): string | null => {
   }
 };
 
-const formatDate = (dateString: string | Date): string => {
+export const getRefreshToken = (): string | null => {
+  const tokenString = getCookie("tokens");
+  if (!tokenString) return null;
+  try {
+    const tokens = JSON.parse(tokenString) as Tokens;
+    return tokens.refresh_token || null;
+  } catch (error) {
+    console.error("Invalid token format", error);
+    return null;
+  }
+};
+
+export const formatDate = (dateString: string | Date): string => {
   if (!dateString) {
     console.error("Invalid date:", dateString);
     return "N/A";
@@ -32,16 +44,14 @@ const formatDate = (dateString: string | Date): string => {
   });
 };
 
-const getUserId = (): string | null => {
+export const getUserId = (): ObjectId | null => {
   const tokenString = getCookie("user");
   if (!tokenString) return null;
   try {
     const user = JSON.parse(tokenString) as UserStruct;
-    return user.id || null;
+    return new ObjectId(user.id) || null;
   } catch (error) {
     console.error("Invalid token format", error);
     return null;
   }
 };
-
-export { formatDate, getAccessToken, getUserId };
