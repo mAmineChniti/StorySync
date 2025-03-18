@@ -6,7 +6,6 @@ export default function ProfileLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-
     <div className="flex flex-col flex-1 w-full bg-gray-50 text-gray-900 flex-grow">
       <section className="w-full text-center py-12 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
         <h1 className="text-4xl font-bold tracking-tight">Your Profile</h1>

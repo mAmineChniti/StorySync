@@ -25,59 +25,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { env } from "@/env";
-import { getAccessToken } from "@/lib";
+import { StoryService } from "@/lib/requests";
+import { storySchema } from "@/types/storySchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-const storySchema = z.object({
-  title: z
-    .string()
-    .min(10, "Title is required")
-    .max(100, "Title must be less than 100 characters"),
-  description: z
-    .string()
-    .min(100, "Description is required")
-    .max(500, "Description must be less than 500 characters"),
-  genre: z.string().min(1, "Genre is required"),
-  created_at: z.string(),
-  updated_at: z.string(),
-});
-
-type CreateStoryFormValues = z.infer<typeof storySchema>;
-
-const createStory = async (
-  storyData: CreateStoryFormValues,
-): Promise<string> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const accessToken = getAccessToken();
-  if (!accessToken) {
-    throw new Error("No authentication token found");
-  }
-  const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/create-story`, {
-    method: "POST",
-    body: JSON.stringify(storyData),
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  if (!response.ok) {
-    throw new Error("Failed to create story");
-  }
-  return (await response.json()) as string;
-};
+import { type z } from "zod";
 
 export default function CreateStory() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const form = useForm<CreateStoryFormValues>({
+  const form = useForm<z.infer<typeof storySchema>>({
     resolver: zodResolver(storySchema),
     defaultValues: {
       title: "",
@@ -88,8 +50,8 @@ export default function CreateStory() {
     },
   });
 
-  const mutation = useMutation<string, Error, CreateStoryFormValues>({
-    mutationFn: createStory,
+  const mutation = useMutation<string, Error, z.infer<typeof storySchema>>({
+    mutationFn: (data) => StoryService.create(data),
     onSuccess: () => {
       setSubmitted(true);
     },
@@ -114,7 +76,7 @@ export default function CreateStory() {
     "Drama",
   ];
 
-  const onSubmit = (data: CreateStoryFormValues) => {
+  const onSubmit = (data: z.infer<typeof storySchema>) => {
     mutation.mutate(data);
   };
 

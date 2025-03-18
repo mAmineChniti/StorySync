@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { env } from "@/env";
+import { AuthService } from "@/lib/requests";
 import type { RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,27 +21,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
-
-const registerFetch = async (data: z.infer<typeof registerSchema>) => {
-  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
-  const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: data.username,
-      email: data.email,
-      password: data.password,
-      first_name: data.firstName,
-      last_name: data.lastName,
-    }),
-  });
-  if (!response.ok) {
-    throw new Error("Registration failed");
-  }
-  return response.json() as Promise<RegisterResponse>;
-}
 
 export default function Register() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -62,7 +41,7 @@ export default function Register() {
     unknown,
     z.infer<typeof registerSchema>
   >({
-    mutationFn: registerFetch,
+    mutationFn: (data) => AuthService.register(data),
     onSuccess: async (userData) => {
       try {
         setCookie("user", JSON.stringify(userData.user));

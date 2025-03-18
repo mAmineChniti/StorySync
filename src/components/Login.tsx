@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { env } from "@/env";
 import {
   checkAndRefreshToken,
   REFRESH_THRESHOLD,
 } from "@/hooks/useTokenRefresh";
+import { AuthService } from "@/lib/requests";
 import type { LoginResponse } from "@/types/authInterfaces";
 import { loginSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,25 +25,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
-
-const loginUser = async (
-  data: z.infer<typeof loginSchema>,
-): Promise<LoginResponse> => {
-  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
-  const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    throw new Error("Login failed");
-  }
-
-  return (await response.json()) as LoginResponse;
-};
 
 export default function Login() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -55,8 +36,8 @@ export default function Login() {
     },
   });
   const router = useRouter();
-  const loginMutation = useMutation({
-    mutationFn: loginUser,
+  const loginMutation = useMutation<LoginResponse, Error, z.infer<typeof loginSchema>>({
+    mutationFn: (data) => AuthService.login(data),
     onSuccess: async (userData: LoginResponse) => {
       try {
         setCookie("user", JSON.stringify(userData.user), {
