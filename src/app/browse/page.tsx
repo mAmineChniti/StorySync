@@ -1,6 +1,4 @@
-import Footer from "@/components/Footer";
 import HomeContent from "@/components/HomeContent";
-import NavBar from "@/components/NavBar";
 import {
   Card,
   CardContent,
@@ -11,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 
 const FallBack = () => (
-  <div className="flex flex-col w-full bg-gray-50 text-gray-900 mt-16 min-h-screen">
+  <div className="flex flex-col flex-1 w-full bg-gray-50 text-gray-900 ">
     <section className="w-full text-center py-12 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
       <h1 className="text-4xl font-bold tracking-tight">
         <Skeleton className="w-1/2 mx-auto" />
@@ -97,14 +95,8 @@ const FallBack = () => (
 
 export default function Browse() {
   return (
-    <>
-      <NavBar />
-      <main className="flex flex-col min-h-screen w-full items-center justify-between">
-        <Suspense fallback={<FallBack />}>
-          <HomeContent />
-        </Suspense>
-        <Footer />
-      </main>
-    </>
+    <Suspense fallback={<FallBack />}>
+      <HomeContent />
+    </Suspense>
   );
 }

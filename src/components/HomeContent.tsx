@@ -163,10 +163,10 @@ export default function HomeContent() {
     queryFn: async ({ pageParam }) =>
       selectedGenres.length > 0
         ? fetchStoriesByFilter({
-            genres: selectedGenres,
-            page: pageParam,
-            limit,
-          })
+          genres: selectedGenres,
+          page: pageParam,
+          limit,
+        })
         : fetchStories(pageParam, limit),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === limit ? allPages.length + 1 : undefined,
@@ -182,15 +182,15 @@ export default function HomeContent() {
   const filteredStories = allStories.filter((story) =>
     searchQuery
       ? [story.title, story.description].some(
-          (text) =>
-            typeof text === "string" &&
-            text.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
+        (text) =>
+          typeof text === "string" &&
+          text.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
       : true,
   );
 
   return (
-    <div className="flex flex-col w-full bg-gray-50 text-gray-900 mt-16 min-h-screen">
+    <div className="flex flex-col flex-1 w-full bg-gray-50 text-gray-900">
       <section className="w-full text-center py-12 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
         <h1 className="text-4xl font-bold tracking-tight">Discover Stories</h1>
         <p className="mt-4 text-lg max-w-2xl mx-auto">

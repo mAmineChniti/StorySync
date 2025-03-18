@@ -1,13 +1,10 @@
-"use client";
-
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Landing() {
   return (
-    <div className="flex flex-col flex-grow w-full bg-gray-50 text-gray-900 mt-16">
+    <div className="flex flex-col flex-1 w-full bg-gray-50 text-gray-900">
       <section className="w-full text-center py-20 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
         <h1 className="text-5xl font-bold tracking-tight">
           Welcome to StorySync
@@ -58,8 +55,6 @@ export default function Landing() {
           </CardContent>
         </Card>
       </section>
-
-      <Footer />
     </div>
   );
 }
