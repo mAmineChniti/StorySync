@@ -4,11 +4,11 @@ import { type Tokens } from "@/types/authInterfaces";
 export const refreshTokens = async (refreshToken: string): Promise<Tokens> => {
   const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
   const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/refresh`, {
-    method: "POST",
+    method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${refreshToken}`,
     },
-    body: JSON.stringify({ refresh_token: refreshToken }),
   });
 
   if (!response.ok) throw new Error("Token refresh failed");
