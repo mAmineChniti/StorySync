@@ -22,6 +22,27 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
 
+const registerFetch = async (data: z.infer<typeof registerSchema>) => {
+  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
+  const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      first_name: data.firstName,
+      last_name: data.lastName,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error("Registration failed");
+  }
+  return response.json() as Promise<RegisterResponse>;
+}
+
 export default function Register() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
@@ -41,27 +62,7 @@ export default function Register() {
     unknown,
     z.infer<typeof registerSchema>
   >({
-    mutationFn: async (data: z.infer<typeof registerSchema>) => {
-      const response = await fetch(`${env.NEXT_PUBLIC_AUTH_API_URL}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: data.username,
-          email: data.email,
-          password: data.password,
-          first_name: data.firstName,
-          last_name: data.lastName,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
-
-      return response.json() as Promise<RegisterResponse>;
-    },
+    mutationFn: registerFetch,
     onSuccess: async (userData) => {
       try {
         setCookie("user", JSON.stringify(userData.user));

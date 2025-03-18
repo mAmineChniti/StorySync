@@ -130,7 +130,7 @@ export default function Login() {
           )}
         />
         {errorMessage && (
-          <Label className="text-red-500" htmlFor="error">
+          <Label className="text-red-500 mt-2" htmlFor="error">
             {errorMessage}
           </Label>
         )}

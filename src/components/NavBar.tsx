@@ -8,23 +8,22 @@ import {
 } from "@/components/ui/navigation-menu";
 import { deleteCookie, hasCookie } from "cookies-next/client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function NavBar() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const router = useRouter();
-
+  const pathname = usePathname();
   useEffect(() => {
     setIsUserLoggedIn(hasCookie("user"));
-  }, []);
+  }, [pathname]);
 
   const Logout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     deleteCookie("user");
     deleteCookie("tokens");
     router.push("/");
-    router.refresh();
   };
 
   return (
