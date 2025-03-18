@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card";
 import { env } from "@/env";
 import { getAccessToken, getUserId } from "@/lib";
+import { StoryService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
-import { type StoryContent, type StoryDetails } from "@/types/storyResponses";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Highlight from "@tiptap/extension-highlight";
@@ -47,69 +47,6 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const fetchStoryDetails = async (
-  story_id: string,
-): Promise<StoryDetails | null> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const authToken = getAccessToken();
-  if (!authToken) throw new Error("No authentication token found");
-  const response = await fetch(
-    `${NEXT_PUBLIC_STORY_API_URL}/get-story-details`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({ story_id }),
-    },
-  );
-  if (!response.ok) return null;
-  const data = (await response.json()) as {
-    message: string;
-    story: StoryDetails;
-  };
-  return data.story;
-};
-
-const fetchStoryContent = async (
-  story_id: string,
-): Promise<StoryContent | null> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const response = await fetch(
-    `${NEXT_PUBLIC_STORY_API_URL}/get-story-content`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ story_id }),
-    },
-  );
-  if (!response.ok) return null;
-  const data = (await response.json()) as {
-    message: string;
-    content: StoryContent;
-  };
-  return data.content;
-};
-
-const fetchStoryCollaborators = async (story_id: string): Promise<string[]> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const response = await fetch(
-    `${NEXT_PUBLIC_STORY_API_URL}/get-story-collaborators`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ story_id }),
-    },
-  );
-  if (!response.ok) throw new Error("Failed to fetch collaborators");
-  const data = (await response.json()) as {
-    message: string;
-    collaborators: string[];
-  };
-  return data.collaborators;
-};
-
 export default function StoryEditor() {
   const router = useRouter();
   const params = useParams();
@@ -128,7 +65,7 @@ export default function StoryEditor() {
     error: storyError,
   } = useQuery({
     queryKey: ["story", story_id],
-    queryFn: () => fetchStoryDetails(story_id),
+    queryFn: () => StoryService.getDetails(story_id),
     enabled: !!story_id,
   });
 
@@ -138,13 +75,13 @@ export default function StoryEditor() {
     error: contentError,
   } = useQuery({
     queryKey: ["content", story_id],
-    queryFn: () => fetchStoryContent(story_id),
+    queryFn: () => StoryService.getContent(story_id),
     enabled: !!story_id,
   });
 
   const { data: collaborators } = useQuery({
     queryKey: ["collaborators", story_id],
-    queryFn: () => fetchStoryCollaborators(story_id),
+    queryFn: () => StoryService.getCollaborators(story_id),
     enabled: !!story_id,
   });
 

@@ -10,93 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { env } from "@/env";
-import { formatDate, getAccessToken } from "@/lib";
-import { type UserStruct } from "@/types/authInterfaces";
-import { type StoryDetails, type StoryResponse } from "@/types/storyResponses";
+import { formatDate } from "@/lib";
+import { AuthService, StoryService } from "@/lib/requests";
+import { type StoryDetails } from "@/types/storyInterfaces";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Edit, Eye, Tag, User, Users } from "lucide-react";
 import { type ObjectId } from "mongodb";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const fetchCollaboratedStories = async (
-  page: number,
-  limit: number,
-): Promise<StoryDetails[]> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const authToken = getAccessToken();
-  if (!authToken) {
-    console.error("No authentication token found");
-    return [];
-  }
-
-  try {
-    const response = await fetch(
-      `${NEXT_PUBLIC_STORY_API_URL}/collaborations`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ page, limit }),
-      },
-    );
-
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = (await response.json()) as StoryResponse;
-
-    if (!data || !Array.isArray(data.stories)) {
-      return [];
-    }
-
-    return data.stories;
-  } catch (error) {
-    console.error("Error fetching collaborated stories:", error);
-    return [];
-  }
-};
-
-const fetchUserProfile = async (
-  userId: ObjectId,
-): Promise<{ first_name: string; last_name: string }> => {
-  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
-  try {
-    const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/fetchuser`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user_id: userId.toString() }),
-    });
-
-    if (!response.ok) {
-      console.warn("Failed to fetch user profile");
-      return { first_name: "Unknown", last_name: "User" };
-    }
-
-    const responseData = (await response.json()) as {
-      message: string;
-      user: UserStruct;
-    };
-    return {
-      first_name: responseData.user.first_name,
-      last_name: responseData.user.last_name,
-    };
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
-    return { first_name: "Unknown", last_name: "User" };
-  }
-};
-
 const OwnerInfo = ({ ownerId }: { ownerId: ObjectId }) => {
   const { data: ownerData, isLoading } = useQuery({
     queryKey: ["user", ownerId.toString()],
-    queryFn: () => fetchUserProfile(ownerId),
+    queryFn: () => AuthService.getProfile(ownerId),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -116,7 +42,7 @@ export default function CollaboratedStories() {
 
   const { data, isLoading, isError } = useQuery<StoryDetails[]>({
     queryKey: ["collaboratedStories", currentPage],
-    queryFn: () => fetchCollaboratedStories(currentPage, limit),
+    queryFn: () => StoryService.getCollaboratedStories(currentPage, limit),
   });
   const stories = data ?? [];
   if (isLoading) {

@@ -16,8 +16,7 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { env } from "@/env";
-import { getAccessToken } from "@/lib";
+import { AuthService } from "@/lib/requests";
 import { type UserStruct } from "@/types/authInterfaces";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, getCookie, setCookie } from "cookies-next/client";
@@ -25,41 +24,6 @@ import { Edit2, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
-const updateUserProfile = async (
-  updatedData: Partial<UserStruct>,
-): Promise<UserStruct | null> => {
-  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
-  const authToken = getAccessToken();
-  if (!authToken) {
-    return null;
-  }
-
-  try {
-    const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify(updatedData),
-    });
-
-    if (!response.ok) {
-      console.error("Failed to update profile");
-      return null;
-    }
-
-    const responseData = (await response.json()) as {
-      message: string;
-      user: UserStruct;
-    };
-    return responseData.user;
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    return null;
-  }
-};
 
 export default function ProfileInfo() {
   const queryClient = useQueryClient();
@@ -95,8 +59,8 @@ export default function ProfileInfo() {
     }
   }, [user, form]);
 
-  const mutation = useMutation({
-    mutationFn: updateUserProfile,
+  const mutation = useMutation<UserStruct, Error, Partial<UserStruct>>({
+    mutationFn: (data) => AuthService.updateProfile(data),
     onSuccess: (data) => {
       if (data) {
         form.setValue("username", data.username);

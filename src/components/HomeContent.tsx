@@ -11,126 +11,18 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { env } from "@/env";
-import { formatDate, getAccessToken } from "@/lib";
-import { type UserStruct } from "@/types/authInterfaces";
-import type {
-  FetchStoriesByFilterParams,
-  StoryDetails,
-  StoryResponse,
-} from "@/types/storyResponses";
+import { formatDate } from "@/lib";
+import { AuthService, StoryService } from "@/lib/requests";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { BookOpen, Calendar, Tag, User } from "lucide-react";
 import { type ObjectId } from "mongodb";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const fetchStories = async (
-  page: number,
-  limit: number,
-): Promise<StoryDetails[]> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const authToken = getAccessToken();
-  if (!authToken) throw new Error("No authentication token found");
-
-  const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/get-stories`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
-    body: JSON.stringify({ page, limit }),
-  });
-
-  if (!response.ok) {
-    let errorMessage = "Error fetching stories";
-    try {
-      const errorData = (await response.json()) as { message: string };
-      errorMessage = errorData.message || errorMessage;
-    } catch {
-      errorMessage = response.statusText || errorMessage;
-    }
-    throw new Error(errorMessage);
-  }
-
-  const data = (await response.json()) as StoryResponse;
-  return data.stories || [];
-};
-
-const fetchStoriesByFilter = async ({
-  genres,
-  page = 1,
-  limit = 10,
-}: FetchStoriesByFilterParams): Promise<StoryDetails[]> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const authToken = getAccessToken();
-  if (!authToken) throw new Error("No authentication token found");
-
-  const response = await fetch(
-    `${NEXT_PUBLIC_STORY_API_URL}/get-stories-by-filters`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ genres, page, limit }),
-    },
-  );
-
-  if (!response.ok) {
-    let errorMessage = "Error fetching stories";
-    try {
-      const errorData = (await response.json()) as { message: string };
-      errorMessage = errorData.message || errorMessage;
-    } catch {
-      errorMessage = response.statusText || errorMessage;
-    }
-    throw new Error(errorMessage);
-  }
-
-  const data = (await response.json()) as StoryResponse;
-  return data.stories || [];
-};
-
-const fetchOwnerName = async (
-  ownerId: ObjectId,
-): Promise<{ first_name: string; last_name: string }> => {
-  const NEXT_PUBLIC_AUTH_API_URL = env.NEXT_PUBLIC_AUTH_API_URL;
-  const authToken = getAccessToken();
-  if (!authToken) throw new Error("No authentication token found");
-
-  const response = await fetch(`${NEXT_PUBLIC_AUTH_API_URL}/fetchuserbyid`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
-    body: JSON.stringify({ id: ownerId.toString() }),
-  });
-
-  if (!response.ok) {
-    let errorMessage = "Failed to fetch user";
-    try {
-      const errorData = (await response.json()) as { message: string };
-      errorMessage = errorData.message || errorMessage;
-    } catch {
-      errorMessage = response.statusText || errorMessage;
-    }
-    throw new Error(errorMessage);
-  }
-
-  const data = (await response.json()) as {
-    message: string;
-    user: Partial<UserStruct>;
-  };
-  return {
-    first_name: data.user.first_name ?? "Unknown",
-    last_name: data.user.last_name ?? "User",
-  };
-};
-
 const OwnerName = ({ ownerId }: { ownerId: ObjectId }) => {
   const { data, isPending, error } = useQuery({
     queryKey: ["ownerName", ownerId],
-    queryFn: () => fetchOwnerName(ownerId),
+    queryFn: () => AuthService.getUserName(ownerId),
   });
 
   if (isPending) return <span className="line-clamp-1">Loading author...</span>;
@@ -162,12 +54,12 @@ export default function HomeContent() {
     initialPageParam: 1,
     queryFn: async ({ pageParam }) =>
       selectedGenres.length > 0
-        ? fetchStoriesByFilter({
+        ? StoryService.getByFilters({
           genres: selectedGenres,
           page: pageParam,
           limit,
         })
-        : fetchStories(pageParam, limit),
+        : StoryService.list(pageParam, limit),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === limit ? allPages.length + 1 : undefined,
   });

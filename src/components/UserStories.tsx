@@ -9,70 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { env } from "@/env";
-import { formatDate, getAccessToken, getUserId } from "@/lib";
-import { type StoryDetails, type StoryResponse } from "@/types/storyResponses";
+import { formatDate } from "@/lib";
+import { StoryService } from "@/lib/requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-const fetchUserStories = async (
-  page: number,
-  limit: number,
-): Promise<StoryDetails[]> => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const userId = getUserId();
-  if (!userId) throw new Error("User not authenticated");
-
-  const response = await fetch(
-    `${NEXT_PUBLIC_STORY_API_URL}/get-stories-by-user`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, page, limit }),
-    },
-  );
-
-  if (!response.ok) {
-    let errorMessage = "Error fetching user stories";
-    try {
-      const errorData = (await response.json()) as { message: string };
-      errorMessage = errorData.message || errorMessage;
-    } catch {
-      errorMessage = response.statusText || errorMessage;
-    }
-    throw new Error(errorMessage);
-  }
-
-  const data = (await response.json()) as StoryResponse;
-  return data.stories || [];
-};
-
-const deleteStory = async (storyId: string) => {
-  const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-  const authToken = getAccessToken();
-  if (!authToken) throw new Error("User not authenticated");
-  const response = await fetch(`${NEXT_PUBLIC_STORY_API_URL}/delete-story`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${authToken}`,
-    },
-    body: JSON.stringify({ story_id: storyId }),
-  });
-
-  if (!response.ok) {
-    let errorMessage = "Failed to delete story";
-    try {
-      const errorData = (await response.json()) as { message: string };
-      errorMessage = errorData.message || errorMessage;
-    } catch {
-      errorMessage = response.statusText || errorMessage;
-    }
-    throw new Error(errorMessage);
-  }
-};
 
 export default function UserStories() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,17 +25,20 @@ export default function UserStories() {
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["userStories", currentPage],
-    queryFn: () => fetchUserStories(currentPage, limit),
+    queryFn: () => StoryService.getUserStories(currentPage, limit),
   });
 
-  const mutation = useMutation({
-    mutationFn: deleteStory,
+  const mutation = useMutation<void, Error, string>({
+    mutationFn: (storyId: string) => StoryService.delete(storyId),
     onSuccess: async () => {
       setErrorMessage(null);
       try {
         await queryClient.invalidateQueries({ queryKey: ["userStories"] });
       } catch {
-        setErrorMessage("Failed to refresh stories list");
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Failed to refresh stories list");
       }
     },
     onError: (error) => {
