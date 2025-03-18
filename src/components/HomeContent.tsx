@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label";
 import { formatDate } from "@/lib";
 import { AuthService, StoryService } from "@/lib/requests";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { BookOpen, Calendar, Tag, User } from "lucide-react";
 import type ObjectId from "bson-objectid";
+import { BookOpen, Calendar, Tag, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -55,10 +55,10 @@ export default function HomeContent() {
     queryFn: async ({ pageParam }) =>
       selectedGenres.length > 0
         ? StoryService.getByFilters({
-          genres: selectedGenres,
-          page: pageParam,
-          limit,
-        })
+            genres: selectedGenres,
+            page: pageParam,
+            limit,
+          })
         : StoryService.list(pageParam, limit),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === limit ? allPages.length + 1 : undefined,
@@ -74,10 +74,10 @@ export default function HomeContent() {
   const filteredStories = allStories.filter((story) =>
     searchQuery
       ? [story.title, story.description].some(
-        (text) =>
-          typeof text === "string" &&
-          text.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+          (text) =>
+            typeof text === "string" &&
+            text.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
       : true,
   );
 
