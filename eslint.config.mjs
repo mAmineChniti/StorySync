@@ -18,6 +18,13 @@ const eslintConfig = [...compat.extends(
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
 ), {
+    ignores: [
+        "**/.next/**",
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/build/**"
+    ]
+}, {
     plugins: {
         "@typescript-eslint": typescriptEslint,
     },
