@@ -272,7 +272,7 @@ export const AuthService = {
       {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ id: ownerId.toHexString() }),
+        body: JSON.stringify({ user_id: ownerId.toHexString() }),
       },
     );
     return handleResponse<{ user: UserStruct }>(response).then((data) => ({
