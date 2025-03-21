@@ -21,7 +21,7 @@ export const checkAndRefreshToken = async () => {
     const user: UserStruct = JSON.parse(userCookie.toString()) as UserStruct;
 
     if (accessExpiresAt.getTime() - now.getTime() < REFRESH_THRESHOLD) {
-      const newTokens = await AuthService.refreshTokens(tokens.refresh_token);
+      const newTokens = await AuthService.refreshTokens();
 
       setCookie("tokens", JSON.stringify(newTokens), {
         path: "/",
