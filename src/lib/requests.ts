@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { getAccessToken, getUserId } from "@/lib";
+import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/lib";
 import {
   type LoginResponse,
   type RegisterResponse,
@@ -61,15 +61,6 @@ async function handleResponse<T>(response: Response): Promise<T> {
   }
   return response.json() as Promise<T>;
 }
-function getAuthHeaders(): HeadersInit {
-  const token = getAccessToken();
-  if (!token) throw new Error("Authentication required");
-
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-}
 
 export const StoryService = {
   async create(storyData: z.infer<typeof storySchema>): Promise<string> {
@@ -88,11 +79,10 @@ export const StoryService = {
 
   async getDetails(storyId: ObjectId): Promise<storyResponses.StoryDetails> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}/${storyId.toHexString()}`,
       {
-        method: "POST",
+        method: "GET",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ story_id: storyId }),
       },
     );
     return handleResponse<{ story: storyResponses.StoryDetails }>(
@@ -119,11 +109,10 @@ export const StoryService = {
 
   async getContent(storyId: ObjectId): Promise<storyResponses.StoryContent> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}/${storyId.toHexString()}`,
       {
-        method: "POST",
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ story_id: storyId }),
       },
     );
     return handleResponse<{ content: storyResponses.StoryContent }>(
@@ -133,11 +122,10 @@ export const StoryService = {
 
   async delete(storyId: ObjectId): Promise<void> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}/${storyId.toHexString()}`,
       {
         method: "DELETE",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ story_id: storyId }),
       },
     );
     await handleResponse<{ message: string }>(response);
@@ -145,11 +133,10 @@ export const StoryService = {
 
   async getCollaborators(storyId: ObjectId): Promise<string[]> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}/${storyId.toHexString()}`,
       {
-        method: "POST",
+        method: "GET",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ story_id: storyId }),
       },
     );
     return handleResponse<{ collaborators: string[] }>(response).then(
@@ -294,15 +281,14 @@ export const AuthService = {
     }));
   },
 
-  async refreshTokens(refreshToken: string): Promise<Tokens> {
+  async refreshTokens(): Promise<Tokens> {
+    const refreshHeaders = getRefreshHeaders();
+    if (!refreshHeaders) throw new Error("Refresh token not found in cookies");
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REFRESH}`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${refreshToken}`,
-        },
+        headers: refreshHeaders,
       },
     );
     return handleResponse<{ message: string; tokens: Tokens }>(response).then(
