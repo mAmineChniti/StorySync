@@ -14,12 +14,11 @@ import { Label } from "@/components/ui/label";
 import { formatDate } from "@/lib";
 import { AuthService, StoryService } from "@/lib/requests";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import type ObjectId from "bson-objectid";
 import { BookOpen, Calendar, Tag, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const OwnerName = ({ ownerId }: { ownerId: ObjectId }) => {
+const OwnerName = ({ ownerId }: { ownerId: string }) => {
   const { data, isPending, error } = useQuery({
     queryKey: ["ownerName", ownerId],
     queryFn: () => AuthService.getUserName(ownerId),
@@ -55,10 +54,10 @@ export default function HomeContent() {
     queryFn: async ({ pageParam }) =>
       selectedGenres.length > 0
         ? StoryService.getByFilters({
-            genres: selectedGenres,
-            page: pageParam,
-            limit,
-          })
+          genres: selectedGenres,
+          page: pageParam,
+          limit,
+        })
         : StoryService.list(pageParam, limit),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === limit ? allPages.length + 1 : undefined,
@@ -74,10 +73,10 @@ export default function HomeContent() {
   const filteredStories = allStories.filter((story) =>
     searchQuery
       ? [story.title, story.description].some(
-          (text) =>
-            typeof text === "string" &&
-            text.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
+        (text) =>
+          typeof text === "string" &&
+          text.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
       : true,
   );
 
@@ -187,7 +186,7 @@ export default function HomeContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                 {filteredStories.map((story) => (
                   <Card
-                    key={story.id.toHexString()}
+                    key={story.id}
                     className="flex flex-col h-fit w-full max-w-[350px] mx-auto hover:shadow-lg transition-shadow duration-300"
                   >
                     <CardHeader className="pb-2">
@@ -216,7 +215,7 @@ export default function HomeContent() {
                       <Button
                         className="w-full cursor-pointer"
                         onClick={() =>
-                          router.push(`/story/${story.id.toHexString()}`)
+                          router.push(`/story/${story.id}`)
                         }
                       >
                         <BookOpen className="mr-2 h-4 w-4" /> Read Now

@@ -1,4 +1,3 @@
-import ObjectId from "bson-objectid";
 import { getCookie } from "cookies-next";
 import { type Tokens, type UserStruct } from "@/types/authInterfaces";
 
@@ -86,7 +85,7 @@ export const formatDate = (dateInput: string | Date | null | undefined): string 
   }
 };
 
-export const getUserId = (): ObjectId | null => {
+export const getUserId = (): string | null => {
   const result = parseCookie<UserStruct>("user");
 
   if (!result.success) {
@@ -99,13 +98,13 @@ export const getUserId = (): ObjectId | null => {
 
   const userId = result.data.id?.trim();
 
-  if (!userId || !ObjectId.isValid(userId)) {
+  if (!userId && userId.trim().length === 0) {
     console.error("Invalid or missing user ID in cookie");
     return null;
   }
 
   try {
-    return new ObjectId(userId);
+    return userId;
   } catch (error) {
     console.error(
       "ObjectId creation failed:",

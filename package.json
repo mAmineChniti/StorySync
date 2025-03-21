@@ -36,7 +36,6 @@
     "@tiptap/starter-kit": "^2.11.5",
     "@vercel/analytics": "^1.5.0",
     "babel-plugin-react-compiler": "^19.0.0-beta-bafa41b-20250307",
-    "bson-objectid": "^2.0.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookies-next": "^5.1.0",

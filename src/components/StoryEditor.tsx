@@ -21,7 +21,6 @@ import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import ObjectId from "bson-objectid";
 import { createLowlight } from "lowlight";
 import {
   AlignCenter,
@@ -54,12 +53,11 @@ export default function StoryEditor() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
-  const [userId, setUserId] = useState<ObjectId | null>(new ObjectId());
+  const [userId, setUserId] = useState<string | null>("");
   useEffect(() => {
     setUserId(getUserId());
   }, []);
   const story_id = params?.story_id as string;
-  const storyId = new ObjectId(story_id);
   const lowlight = createLowlight();
   const {
     data: story,
@@ -67,7 +65,7 @@ export default function StoryEditor() {
     error: storyError,
   } = useQuery({
     queryKey: ["story", story_id],
-    queryFn: () => StoryService.getDetails(storyId),
+    queryFn: () => StoryService.getDetails(story_id),
     enabled: !!story_id,
   });
 
@@ -77,13 +75,13 @@ export default function StoryEditor() {
     error: contentError,
   } = useQuery({
     queryKey: ["content", story_id],
-    queryFn: () => StoryService.getContent(storyId),
+    queryFn: () => StoryService.getContent(story_id),
     enabled: !!story_id,
   });
 
   const { data: collaborators } = useQuery({
     queryKey: ["collaborators", story_id],
-    queryFn: () => StoryService.getCollaborators(storyId),
+    queryFn: () => StoryService.getCollaborators(story_id),
     enabled: !!story_id,
   });
 
@@ -141,7 +139,7 @@ export default function StoryEditor() {
     story &&
     userId &&
     (story.owner_id === userId ||
-      collaborators?.includes(userId.toHexString()));
+      collaborators?.includes(userId));
 
   if (!story_id)
     return (

@@ -9,7 +9,6 @@ import {
 import { type loginSchema, type registerSchema } from "@/types/authSchemas";
 import type * as storyResponses from "@/types/storyInterfaces";
 import { type storySchema } from "@/types/storySchemas";
-import type ObjectId from "bson-objectid";
 import { type z } from "zod";
 
 const API_CONFIG = {
@@ -77,9 +76,9 @@ export const StoryService = {
     );
   },
 
-  async getDetails(storyId: ObjectId): Promise<storyResponses.StoryDetails> {
+  async getDetails(storyId: string): Promise<storyResponses.StoryDetails> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}/${storyId.toHexString()}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}/${storyId}`,
       {
         method: "GET",
         headers: getAuthHeaders(),
@@ -107,9 +106,9 @@ export const StoryService = {
     );
   },
 
-  async getContent(storyId: ObjectId): Promise<storyResponses.StoryContent> {
+  async getContent(storyId: string): Promise<storyResponses.StoryContent> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}/${storyId.toHexString()}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}/${storyId}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -120,9 +119,9 @@ export const StoryService = {
     ).then((data) => data.content);
   },
 
-  async delete(storyId: ObjectId): Promise<void> {
+  async delete(storyId: string): Promise<void> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}/${storyId.toHexString()}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}/${storyId}`,
       {
         method: "DELETE",
         headers: getAuthHeaders(),
@@ -131,9 +130,9 @@ export const StoryService = {
     await handleResponse<{ message: string }>(response);
   },
 
-  async getCollaborators(storyId: ObjectId): Promise<string[]> {
+  async getCollaborators(storyId: string): Promise<string[]> {
     const response = await fetch(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}/${storyId.toHexString()}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}/${storyId}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -236,14 +235,14 @@ export const AuthService = {
   },
 
   async getProfile(
-    userId: ObjectId,
+    userId: string,
   ): Promise<{ first_name: string; last_name: string }> {
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.FETCH_USER}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId.toHexString() }),
+        body: JSON.stringify({ user_id: userId }),
       },
     );
     return handleResponse<UserStruct>(response).then((user) => ({
@@ -265,14 +264,14 @@ export const AuthService = {
   },
 
   async getUserName(
-    ownerId: ObjectId,
+    ownerId: string,
   ): Promise<{ first_name: string; last_name: string }> {
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.FETCH_USER_BY_ID}`,
       {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ user_id: ownerId.toHexString() }),
+        body: JSON.stringify({ user_id: ownerId }),
       },
     );
     return handleResponse<{ user: UserStruct }>(response).then((data) => ({
