@@ -12,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib";
 import { StoryService } from "@/lib/requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type ObjectId from "bson-objectid";
 import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,8 +28,8 @@ export default function UserStories() {
     queryFn: () => StoryService.getUserStories(currentPage, limit),
   });
 
-  const mutation = useMutation<void, Error, ObjectId>({
-    mutationFn: (storyId: ObjectId) => StoryService.delete(storyId),
+  const mutation = useMutation<void, Error, string>({
+    mutationFn: (storyId: string) => StoryService.delete(storyId),
     onSuccess: async () => {
       setErrorMessage(null);
       try {
@@ -50,7 +49,7 @@ export default function UserStories() {
 
   const stories = data ?? [];
 
-  const handleDeleteStory = (storyId: ObjectId) => {
+  const handleDeleteStory = (storyId: string) => {
     mutation.mutate(storyId);
   };
 
@@ -151,7 +150,7 @@ export default function UserStories() {
           <div className="space-y-6">
             {stories.map((story) => (
               <div
-                key={story.id.toHexString()}
+                key={story.id}
                 className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0"
               >
                 <div className="flex-1">
@@ -184,7 +183,7 @@ export default function UserStories() {
                       className="cursor-pointer"
                       size="sm"
                       onClick={() =>
-                        router.push(`/story/${story.id.toHexString()}`)
+                        router.push(`/story/${story.id}`)
                       }
                     >
                       <Edit className="h-4 w-4 mr-1" />

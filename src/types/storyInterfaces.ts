@@ -1,20 +1,18 @@
-import type ObjectId from "bson-objectid";
-
 export interface StoryDetails {
-  id: ObjectId;
+  id: string;
   title: string;
   description: string;
   genre: string;
-  owner_id: ObjectId;
-  collaborators?: ObjectId[];
+  owner_id: string;
+  collaborators?: string[];
   created_at: string;
   updated_at: string;
-  forkedFrom?: ObjectId | null;
+  forkedFrom?: string | null;
 }
 
 export interface StoryContent {
-  id: ObjectId;
-  story_id: ObjectId;
+  id: string;
+  story_id: string;
   content: string;
 }
 
