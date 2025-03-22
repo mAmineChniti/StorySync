@@ -255,6 +255,6 @@ export default function ProfileInfo() {
           </form>
         </Form>
       </CardContent>
-    </Card >
+    </Card>
   );
 }

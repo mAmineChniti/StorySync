@@ -1,34 +1,61 @@
 "use client";
 
+import { parseCookie } from "@/lib";
 import { AuthService } from "@/lib/requests";
-import type { Tokens, UserStruct } from "@/types/authInterfaces";
-import { getCookie, setCookie } from "cookies-next/client";
+import type { AccessToken, UserStruct } from "@/types/authInterfaces";
+import { setCookie } from "cookies-next/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export const REFRESH_THRESHOLD = 5 * 60 * 1000;
 
 export const checkAndRefreshToken = async () => {
-  const tokensCookie = getCookie("tokens");
-  if (!tokensCookie) return;
-  const userCookie = getCookie("user");
-  if (!userCookie) return;
+  const accessResult = parseCookie<AccessToken>("access");
+  const userResult = parseCookie<UserStruct>("user");
+
+  if (!accessResult.success || !userResult.success) {
+    return;
+  }
 
   try {
-    const tokens: Tokens = JSON.parse(tokensCookie.toString()) as Tokens;
-    const accessExpiresAt = new Date(tokens.access_expires_at);
+    const access = accessResult.data;
+    const user = userResult.data;
+
+    const accessExpiresAt = new Date(access.access_expires_at);
     const now = new Date();
-    const user: UserStruct = JSON.parse(userCookie.toString()) as UserStruct;
 
     if (accessExpiresAt.getTime() - now.getTime() < REFRESH_THRESHOLD) {
       const newTokens = await AuthService.refreshTokens();
 
-      setCookie("tokens", JSON.stringify(newTokens), {
-        path: "/",
-        sameSite: "lax",
-        secure: window.location.protocol === "https:",
-        expires: new Date(newTokens.refresh_expires_at),
-      });
+      setCookie(
+        "access",
+        JSON.stringify({
+          access_token: newTokens.access_token,
+          access_created_at: newTokens.access_created_at,
+          access_expires_at: newTokens.access_expires_at,
+        }),
+        {
+          path: "/",
+          sameSite: "lax",
+          secure: window.location.protocol === "https:",
+          expires: new Date(newTokens.access_expires_at),
+        },
+      );
+
+      setCookie(
+        "refresh",
+        JSON.stringify({
+          refresh_token: newTokens.refresh_token,
+          refresh_created_at: newTokens.refresh_created_at,
+          refresh_expires_at: newTokens.refresh_expires_at,
+        }),
+        {
+          path: "/",
+          sameSite: "lax",
+          secure: window.location.protocol === "https:",
+          expires: new Date(newTokens.refresh_expires_at),
+        },
+      );
 
       setCookie("user", JSON.stringify(user), {
         path: "/",
@@ -42,7 +69,8 @@ export const checkAndRefreshToken = async () => {
   } catch (error) {
     console.error("Token refresh failed:", error);
     setCookie("user", "", { expires: new Date(0) });
-    setCookie("tokens", "", { expires: new Date(0) });
+    setCookie("access", "", { expires: new Date(0) });
+    setCookie("refresh", "", { expires: new Date(0) });
   }
 };
 

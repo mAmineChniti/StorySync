@@ -50,12 +50,34 @@ export default function Login() {
           secure: window.location.protocol === "https:",
           expires: new Date(userData.tokens.access_expires_at),
         });
-        setCookie("tokens", JSON.stringify(userData.tokens), {
-          path: "/",
-          sameSite: "lax",
-          secure: window.location.protocol === "https:",
-          expires: new Date(userData.tokens.refresh_expires_at),
-        });
+        setCookie(
+          "access",
+          JSON.stringify({
+            access_token: userData.tokens.access_token,
+            access_created_at: userData.tokens.access_created_at,
+            access_expires_at: userData.tokens.access_expires_at,
+          }),
+          {
+            path: "/",
+            sameSite: "lax",
+            secure: window.location.protocol === "https:",
+            expires: new Date(userData.tokens.access_expires_at),
+          },
+        );
+        setCookie(
+          "refresh",
+          JSON.stringify({
+            refresh_token: userData.tokens.refresh_token,
+            refresh_created_at: userData.tokens.refresh_created_at,
+            refresh_expires_at: userData.tokens.refresh_expires_at,
+          }),
+          {
+            path: "/",
+            sameSite: "lax",
+            secure: window.location.protocol === "https:",
+            expires: new Date(userData.tokens.refresh_expires_at),
+          },
+        );
         const firstRefreshTime =
           new Date(userData.tokens.access_expires_at).getTime() -
           Date.now() -

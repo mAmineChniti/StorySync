@@ -54,10 +54,10 @@ export default function HomeContent() {
     queryFn: async ({ pageParam }) =>
       selectedGenres.length > 0
         ? StoryService.getByFilters({
-          genres: selectedGenres,
-          page: pageParam,
-          limit,
-        })
+            genres: selectedGenres,
+            page: pageParam,
+            limit,
+          })
         : StoryService.list(pageParam, limit),
     getNextPageParam: (lastPage, allPages) =>
       lastPage.length === limit ? allPages.length + 1 : undefined,
@@ -73,10 +73,10 @@ export default function HomeContent() {
   const filteredStories = allStories.filter((story) =>
     searchQuery
       ? [story.title, story.description].some(
-        (text) =>
-          typeof text === "string" &&
-          text.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+          (text) =>
+            typeof text === "string" &&
+            text.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
       : true,
   );
 
@@ -214,9 +214,7 @@ export default function HomeContent() {
                     <CardFooter className="mt-auto">
                       <Button
                         className="w-full cursor-pointer"
-                        onClick={() =>
-                          router.push(`/story/${story.id}`)
-                        }
+                        onClick={() => router.push(`/story/${story.id}`)}
                       >
                         <BookOpen className="mr-2 h-4 w-4" /> Read Now
                       </Button>
