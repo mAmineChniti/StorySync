@@ -14,9 +14,9 @@ const FallBack = () => (
       <h1 className="text-4xl font-bold tracking-tight">
         <Skeleton className="w-1/2 mx-auto" />
       </h1>
-      <p className="mt-4 text-lg max-w-2xl mx-auto">
+      <div className="mt-4 text-lg max-w-2xl mx-auto">
         <Skeleton className="w-3/4 mx-auto" />
-      </p>
+      </div>
     </section>
 
     <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full px-4 py-8">

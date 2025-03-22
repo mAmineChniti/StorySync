@@ -20,7 +20,7 @@ import { AuthService } from "@/lib/requests";
 import { type UserStruct } from "@/types/authInterfaces";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, getCookie, setCookie } from "cookies-next/client";
-import { Edit2, Save } from "lucide-react";
+import { Edit2, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -104,6 +104,10 @@ export default function ProfileInfo() {
     );
   }
 
+  function handleDeleteUser(): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -114,24 +118,35 @@ export default function ProfileInfo() {
               View and manage your personal information
             </CardDescription>
           </div>
-          <Button
-            className="cursor-pointer"
-            variant="outline"
-            size="sm"
-            onClick={() => setIsEditing(!isEditing)}
-          >
-            {isEditing ? (
-              <>
-                <Edit2 className="h-4 w-4 mr-2" />
-                Cancel
-              </>
-            ) : (
-              <>
-                <Edit2 className="h-4 w-4 mr-2" />
-                Edit Profile
-              </>
-            )}
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              className="cursor-pointer"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              {isEditing ? (
+                <>
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Cancel
+                </>
+              ) : (
+                <>
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Profile
+                </>
+              )}
+            </Button>
+            <Button
+              className="cursor-pointer"
+              variant="destructive"
+              size="sm"
+              onClick={() => handleDeleteUser()}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Account
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -240,6 +255,6 @@ export default function ProfileInfo() {
           </form>
         </Form>
       </CardContent>
-    </Card>
+    </Card >
   );
 }
