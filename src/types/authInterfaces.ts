@@ -16,6 +16,18 @@ export interface Tokens {
   refresh_expires_at: string;
 }
 
+export interface AccessToken {
+  access_token: string;
+  access_created_at: string;
+  access_expires_at: string;
+}
+
+export interface RefreshToken {
+  refresh_token: string;
+  refresh_created_at: string;
+  refresh_expires_at: string;
+}
+
 export interface RegisterResponse {
   message: string;
   user: UserStruct;

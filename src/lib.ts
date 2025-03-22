@@ -42,8 +42,7 @@ export const getRefreshToken = (): string | null => getToken("refresh_token");
 
 export const getAuthHeaders = (): HeadersInit => {
   const token = getAccessToken();
-  if (!token) throw new Error("Authorization token not found in cookies");
-
+  if (!token) window.location.href = "/login";
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -52,7 +51,7 @@ export const getAuthHeaders = (): HeadersInit => {
 
 export const getRefreshHeaders = (): HeadersInit => {
   const token = getRefreshToken();
-  if (!token) throw new Error("Refresh token not found in cookies");
+  if (!token) window.location.href = "/login";
 
   return {
     "Content-Type": "application/json",
