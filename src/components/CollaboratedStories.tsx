@@ -22,7 +22,6 @@ const OwnerInfo = ({ ownerId }: { ownerId: string }) => {
   const { data: ownerData, isLoading } = useQuery({
     queryKey: ["user", ownerId],
     queryFn: () => AuthService.getProfile(ownerId),
-    staleTime: 1000 * 60 * 5,
   });
 
   return isLoading ? (
@@ -42,7 +41,9 @@ export default function CollaboratedStories() {
   const { data, isLoading, isError } = useQuery<StoryDetails[]>({
     queryKey: ["collaboratedStories", currentPage],
     queryFn: () => StoryService.getCollaboratedStories(currentPage, limit),
+    retry: false,
   });
+
   const stories = data ?? [];
   if (isLoading) {
     return (

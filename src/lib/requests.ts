@@ -1,5 +1,10 @@
 import { env } from "@/env";
-import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/lib";
+import {
+  getAccessToken,
+  getAuthHeaders,
+  getRefreshHeaders,
+  getUserId,
+} from "@/lib";
 import {
   type LoginResponse,
   type RegisterResponse,
@@ -64,25 +69,33 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export const StoryService = {
   async create(storyData: z.infer<typeof storySchema>): Promise<string> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return "";
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.CREATE_STORY}`,
       {
         method: "POST",
-        headers: getAuthHeaders(),
+        headers,
         body: JSON.stringify(storyData),
       },
     );
     return handleResponse<{ storyId: string }>(response).then(
-      (data) => data.storyId,
+      (data) => data.storyId ?? "",
     );
   },
 
   async edit(storyId: string, content: string): Promise<void> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return;
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.EDIT_STORY}`,
       {
         method: "PATCH",
-        headers: getAuthHeaders(),
+        headers,
         body: JSON.stringify({ story_id: storyId, content }),
       },
     );
@@ -90,32 +103,40 @@ export const StoryService = {
   },
 
   async getDetails(storyId: string): Promise<storyResponses.StoryDetails> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return {} as storyResponses.StoryDetails;
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}/${storyId}`,
       {
         method: "GET",
-        headers: getAuthHeaders(),
+        headers,
       },
     );
     return handleResponse<{ story: storyResponses.StoryDetails }>(
       response,
-    ).then((data) => data.story);
+    ).then((data) => data.story ?? ({} as storyResponses.StoryDetails));
   },
 
   async list(
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return [];
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
       {
         method: "POST",
-        headers: getAuthHeaders(),
+        headers,
         body: JSON.stringify({ page, limit }),
       },
     );
     return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories,
+      (data) => data.stories ?? [],
     );
   },
 
@@ -124,20 +145,26 @@ export const StoryService = {
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}/${storyId}`,
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
     );
     return handleResponse<{ content: storyResponses.StoryContent }>(
       response,
-    ).then((data) => data.content);
+    ).then((data) => data.content ?? ({} as storyResponses.StoryContent));
   },
 
   async delete(storyId: string): Promise<void> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return;
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}/${storyId}`,
       {
         method: "DELETE",
-        headers: getAuthHeaders(),
+        headers,
       },
     );
     await handleResponse<{ message: string }>(response);
@@ -148,11 +175,10 @@ export const StoryService = {
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}/${storyId}`,
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
       },
     );
     return handleResponse<{ collaborators: string[] }>(response).then(
-      (data) => data.collaborators,
+      (data) => data.collaborators ?? [],
     );
   },
 
@@ -160,16 +186,20 @@ export const StoryService = {
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return [];
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATIONS}`,
       {
         method: "POST",
-        headers: getAuthHeaders(),
+        headers,
         body: JSON.stringify({ page, limit }),
       },
     );
     return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories,
+      (data) => data.stories ?? [],
     );
   },
 
@@ -178,16 +208,20 @@ export const StoryService = {
     page: number;
     limit: number;
   }): Promise<storyResponses.StoryDetails[]> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return [];
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FILTERED_STORIES}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(params),
       },
     );
     return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories,
+      (data) => data.stories ?? [],
     );
   },
 
@@ -196,18 +230,23 @@ export const StoryService = {
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
     const userId = getUserId();
-    if (!userId) throw new Error("Authentication required");
-
+    if (!userId) return [];
+    const token = getAccessToken();
+    if (!token) return [];
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return [];
+    }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.USER_STORIES}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ user_id: userId, page, limit }),
       },
     );
     return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories,
+      (data) => data.stories ?? [],
     );
   },
 };
@@ -259,17 +298,21 @@ export const AuthService = {
       },
     );
     return handleResponse<UserStruct>(response).then((user) => ({
-      first_name: user.first_name,
-      last_name: user.last_name,
+      first_name: user.first_name ?? "",
+      last_name: user.last_name ?? "",
     }));
   },
 
   async updateProfile(updatedData: Partial<UserStruct>): Promise<UserStruct> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return {} as UserStruct;
+    }
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.UPDATE_USER}`,
       {
         method: "PUT",
-        headers: getAuthHeaders(),
+        headers,
         body: JSON.stringify(updatedData),
       },
     );
@@ -280,6 +323,9 @@ export const AuthService = {
     ownerId: string,
   ): Promise<{ first_name: string; last_name: string }> {
     const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return { first_name: "", last_name: "" };
+    }
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.FETCH_USER_BY_ID}`,
       {
@@ -289,14 +335,16 @@ export const AuthService = {
       },
     );
     return handleResponse<{ user: UserStruct }>(response).then((data) => ({
-      first_name: data.user.first_name,
-      last_name: data.user.last_name,
+      first_name: data.user.first_name ?? "",
+      last_name: data.user.last_name ?? "",
     }));
   },
 
   async refreshTokens(): Promise<Tokens> {
     const refreshHeaders = getRefreshHeaders();
-    if (!refreshHeaders) throw new Error("Refresh token not found in cookies");
+    if (!refreshHeaders || Object.keys(refreshHeaders).length === 0) {
+      return {} as Tokens;
+    }
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REFRESH}`,
       {
@@ -305,7 +353,7 @@ export const AuthService = {
       },
     );
     return handleResponse<{ message: string; tokens: Tokens }>(response).then(
-      (data) => data.tokens,
+      (data) => data.tokens ?? ({} as Tokens),
     );
   },
 };

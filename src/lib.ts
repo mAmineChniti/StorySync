@@ -46,7 +46,6 @@ export const getRefreshToken = (): string | null =>
 export const getAuthHeaders = (): HeadersInit => {
   const token = getAccessToken();
   if (!token) {
-    window.location.href = "/login";
     return {};
   }
   return {
