@@ -8,8 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { env } from "@/env";
-import { getAccessToken, getUserId } from "@/lib";
+import { getUserId } from "@/lib";
 import { StoryService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -116,21 +115,13 @@ export default function StoryEditor() {
   }, [content, editor]);
 
   const saveMutation = useMutation({
-    mutationFn: async () => {
-      const NEXT_PUBLIC_STORY_API_URL = env.NEXT_PUBLIC_STORY_API_URL;
-      const authToken = getAccessToken();
-      if (!authToken) throw new Error("No authentication token found");
-      await fetch(`${NEXT_PUBLIC_STORY_API_URL}/edit-story`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({ story_id: story_id, content: editedContent }),
-      });
-    },
+    mutationFn: () => StoryService.edit(story_id, editedContent),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["content", story_id] });
+      setIsEditing(false);
+    },
+    onError: () => {
+      editor?.commands.setContent(content?.content ?? "");
       setIsEditing(false);
     },
   });
@@ -138,8 +129,7 @@ export default function StoryEditor() {
   const canEdit = () =>
     story &&
     userId &&
-    (story.owner_id === userId ||
-      collaborators?.includes(userId));
+    (story.owner_id === userId || collaborators?.includes(userId));
 
   if (!story_id)
     return (

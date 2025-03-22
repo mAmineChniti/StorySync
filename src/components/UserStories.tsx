@@ -182,9 +182,7 @@ export default function UserStories() {
                     <Button
                       className="cursor-pointer"
                       size="sm"
-                      onClick={() =>
-                        router.push(`/story/${story.id}`)
-                      }
+                      onClick={() => router.push(`/story/${story.id}`)}
                     >
                       <Edit className="h-4 w-4 mr-1" />
                       Continue Writing

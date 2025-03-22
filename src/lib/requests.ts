@@ -27,6 +27,7 @@ const API_CONFIG = {
     BASE_URL: env.NEXT_PUBLIC_STORY_API_URL,
     ENDPOINTS: {
       CREATE_STORY: "/create-story",
+      EDIT_STORY: "/edit-story",
       GET_STORIES: "/get-stories",
       STORY_DETAILS: "/get-story-details",
       STORY_CONTENT: "/get-story-content",
@@ -74,6 +75,18 @@ export const StoryService = {
     return handleResponse<{ storyId: string }>(response).then(
       (data) => data.storyId,
     );
+  },
+
+  async edit(storyId: string, content: string): Promise<void> {
+    const response = await fetch(
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.EDIT_STORY}`,
+      {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ story_id: storyId, content }),
+      },
+    );
+    await handleResponse<{ message: string }>(response);
   },
 
   async getDetails(storyId: string): Promise<storyResponses.StoryDetails> {
@@ -266,11 +279,12 @@ export const AuthService = {
   async getUserName(
     ownerId: string,
   ): Promise<{ first_name: string; last_name: string }> {
+    const headers = getAuthHeaders();
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.FETCH_USER_BY_ID}`,
       {
         method: "POST",
-        headers: getAuthHeaders(),
+        headers: headers,
         body: JSON.stringify({ user_id: ownerId }),
       },
     );
