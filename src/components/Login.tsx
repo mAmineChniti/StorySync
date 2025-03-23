@@ -10,17 +10,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  checkAndRefreshToken,
-  REFRESH_THRESHOLD,
-} from "@/hooks/useTokenRefresh";
+import { checkAndRefreshToken } from "@/hooks/useTokenRefresh";
 import { AuthService } from "@/lib/requests";
 import type { LoginResponse } from "@/types/authInterfaces";
 import { loginSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { setCookie } from "cookies-next/client";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -30,26 +27,26 @@ export default function Login() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      identifier: "",
-      password: "",
-    },
+    defaultValues: { identifier: "", password: "" },
   });
   const router = useRouter();
+
   const loginMutation = useMutation<
     LoginResponse,
     Error,
     z.infer<typeof loginSchema>
   >({
     mutationFn: (data) => AuthService.login(data),
-    onSuccess: async (userData: LoginResponse) => {
+    onSuccess: async (userData) => {
       try {
-        setCookie("user", JSON.stringify(userData.user), {
+        const cookieOptions = {
           path: "/",
-          sameSite: "lax",
+          sameSite: "lax" as const,
           secure: window.location.protocol === "https:",
           expires: new Date(userData.tokens.access_expires_at),
-        });
+        };
+
+        setCookie("user", JSON.stringify(userData.user), cookieOptions);
         setCookie(
           "access",
           JSON.stringify({
@@ -57,12 +54,7 @@ export default function Login() {
             access_created_at: userData.tokens.access_created_at,
             access_expires_at: userData.tokens.access_expires_at,
           }),
-          {
-            path: "/",
-            sameSite: "lax",
-            secure: window.location.protocol === "https:",
-            expires: new Date(userData.tokens.access_expires_at),
-          },
+          cookieOptions
         );
         setCookie(
           "refresh",
@@ -71,34 +63,20 @@ export default function Login() {
             refresh_created_at: userData.tokens.refresh_created_at,
             refresh_expires_at: userData.tokens.refresh_expires_at,
           }),
-          {
-            path: "/",
-            sameSite: "lax",
-            secure: window.location.protocol === "https:",
-            expires: new Date(userData.tokens.refresh_expires_at),
-          },
+          cookieOptions
         );
-        const firstRefreshTime =
-          new Date(userData.tokens.access_expires_at).getTime() -
-          Date.now() -
-          REFRESH_THRESHOLD;
 
-        if (firstRefreshTime > 0) {
-          setTimeout(() => {
-            void checkAndRefreshToken();
-          }, firstRefreshTime);
-        }
-        setErrorMessage(null);
+        setTimeout(() => void checkAndRefreshToken(),
+          new Date(userData.tokens.access_expires_at).getTime() - Date.now() - 30000
+        );
+
         router.push("/browse");
-      } catch (error) {
-        console.error("Error setting cookies:", error);
-        setErrorMessage("Failed to set cookies");
+      } catch {
+        setErrorMessage("Login failed. Please try again.");
       }
     },
-    onError: (error: unknown) => {
-      const typedError =
-        error instanceof Error ? error : new Error("An unknown error occurred");
-      setErrorMessage(typedError.message);
+    onError: (error) => {
+      setErrorMessage(error.message);
       form.reset();
     },
   });
@@ -108,47 +86,73 @@ export default function Login() {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FormField
-          name="identifier"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="mt-2">Email</FormLabel>
-              <FormControl>
-                <Input placeholder="you@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="password"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="mt-2">Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="••••••" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {errorMessage && (
-          <Label className="text-red-500 mt-2" htmlFor="error">
-            {errorMessage}
-          </Label>
-        )}
-        <Button
-          type="submit"
-          className="w-full mt-4 cursor-pointer"
-          disabled={loginMutation.isPending}
+    <div className="w-full">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 w-full"
         >
-          {loginMutation.isPending ? "Logging in..." : "Login"}
-        </Button>
-      </form>
-    </Form>
+          <FormField
+            name="identifier"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="example@domain.com"
+                    className="bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors"
+                    autoComplete="email"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="password"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    className="bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors"
+                    autoComplete="current-password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {errorMessage && (
+            <div className="text-destructive text-sm font-medium p-2 rounded bg-destructive/10">
+              {errorMessage}
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="w-full h-12 text-base transition-opacity cursor-pointer"
+            disabled={loginMutation.isPending}
+          >
+            {loginMutation.isPending ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                Signing in...
+              </>
+            ) : (
+              "Continue"
+            )}
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }

@@ -133,7 +133,7 @@ export default function StoryEditor() {
 
   if (!story_id)
     return (
-      <div className="max-w-6xl mx-auto mt-16 p-10 min-h-[80vh] min-w-[80vh] flex flex-col justify-center">
+      <div className="max-w-screen-md w-full mx-auto mt-16 p-4 min-h-[80vh] flex flex-col justify-center">
         <Card className="text-center">
           <CardHeader>
             <CardTitle>Error</CardTitle>
@@ -147,13 +147,13 @@ export default function StoryEditor() {
 
   if (!userId)
     return (
-      <div className="max-w-6xl mx-auto mt-16 p-10 min-h-[80vh] min-w-[80vh] flex flex-col justify-center">
+      <div className="max-w-screen-md w-full mx-auto mt-16 p-4 min-h-[80vh] flex flex-col justify-center">
         <Card className="text-center">
           <CardHeader>
             <CardTitle>Please Login to View</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               You need to be logged in to view this content.
             </p>
           </CardContent>
@@ -165,18 +165,18 @@ export default function StoryEditor() {
     );
 
   return (
-    <div className="max-w-6xl mx-auto mt-16 p-10 min-h-[80vh] min-w-[80vh] flex flex-col justify-center">
-      <Card className="w-full min-h-[60vh]">
+    <div className="max-w-screen-md w-full mx-auto mt-16 p-4 sm:p-8 min-h-[80vh] flex flex-col justify-center">
+      <Card className="w-full shadow-lg dark:shadow-gray-800">
         <CardHeader className="flex justify-center text-center">
           <CardTitle className="text-4xl font-bold">
             {loadingStory ? (
-              <div className="h-10 bg-gray-300 w-1/2 animate-pulse" />
+              <div className="h-10 bg-gray-300 dark:bg-gray-700 w-1/2 animate-pulse" />
             ) : (
-              (story?.title ?? "Error Loading Story")
+              story?.title ?? "Error Loading Story"
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="min-h-[40vh] relative">
+        <CardContent className="relative min-h-[40vh]">
           {!loadingStory && storyError && (
             <p className="text-center text-red-500">
               Error loading story details.
@@ -184,39 +184,41 @@ export default function StoryEditor() {
           )}
           {loadingContent ? (
             <div className="animate-pulse">
-              <div className="h-80 bg-gray-300 rounded" />
+              <div className="h-80 bg-gray-300 dark:bg-gray-700 rounded" />
             </div>
           ) : contentError ? (
             <p className="text-center text-red-500">Error loading content.</p>
           ) : isEditing ? (
-            <div className="prose max-w-none p-4 border rounded-lg relative">
+            <div className="prose max-w-none p-4 border rounded-lg relative bg-white dark:bg-gray-900">
               {editor && (
                 <>
-                  <div className="flex flex-wrap gap-2 mb-4 p-2 bg-gray-50 rounded-t-lg border-b">
+                  <div className="flex flex-wrap gap-2 mb-4 p-2 bg-gray-50 dark:bg-gray-800 rounded-t-lg border-b border-gray-200 dark:border-gray-700">
                     <Button
                       className="cursor-pointer"
                       variant="ghost"
                       size="sm"
-                      onClick={() => editor?.chain().focus().undo().run()}
+                      onClick={() => editor.chain().focus().undo().run()}
                     >
-                      <Undo2 className="h-4 w-4" />
+                      <Undo2 className="h-4 w-4 text-gray-800 dark:text-gray-200" />
                     </Button>
                     <Button
                       className="cursor-pointer"
                       variant="ghost"
                       size="sm"
-                      onClick={() => editor?.chain().focus().redo().run()}
+                      onClick={() => editor.chain().focus().redo().run()}
                     >
-                      <Redo2 className="h-4 w-4" />
+                      <Redo2 className="h-4 w-4 text-gray-800 dark:text-gray-200" />
                     </Button>
-                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2" />
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => editor?.chain().focus().toggleBold().run()}
+                      onClick={() =>
+                        editor.chain().focus().toggleBold().run()
+                      }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("bold") ? "bg-blue-200" : "",
+                        editor.isActive("bold") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <Bold className="h-4 w-4" />
@@ -225,11 +227,11 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().toggleItalic().run()
+                        editor.chain().focus().toggleItalic().run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("italic") ? "bg-blue-200" : "",
+                        editor.isActive("italic") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <Italic className="h-4 w-4" />
@@ -238,11 +240,11 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().toggleUnderline().run()
+                        editor.chain().focus().toggleUnderline().run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("underline") ? "bg-blue-200" : "",
+                        editor.isActive("underline") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <UnderlineIcon className="h-4 w-4" />
@@ -251,31 +253,27 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().toggleHighlight().run()
+                        editor.chain().focus().toggleHighlight().run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("highlight") ? "bg-blue-200" : "",
+                        editor.isActive("highlight") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <Highlighter className="h-4 w-4" />
                     </Button>
-                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2" />
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor
-                          ?.chain()
-                          .focus()
-                          .toggleHeading({ level: 1 })
-                          .run()
+                        editor.chain().focus().toggleHeading({ level: 1 }).run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("heading", { level: 1 })
-                          ? "bg-blue-200"
-                          : "",
+                        editor.isActive("heading", { level: 1 })
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : ""
                       )}
                     >
                       <Heading1 className="h-4 w-4" />
@@ -284,17 +282,13 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor
-                          ?.chain()
-                          .focus()
-                          .toggleHeading({ level: 2 })
-                          .run()
+                        editor.chain().focus().toggleHeading({ level: 2 }).run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("heading", { level: 2 })
-                          ? "bg-blue-200"
-                          : "",
+                        editor.isActive("heading", { level: 2 })
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : ""
                       )}
                     >
                       <Heading2 className="h-4 w-4" />
@@ -303,31 +297,27 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor
-                          ?.chain()
-                          .focus()
-                          .toggleHeading({ level: 3 })
-                          .run()
+                        editor.chain().focus().toggleHeading({ level: 3 }).run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("heading", { level: 3 })
-                          ? "bg-blue-200"
-                          : "",
+                        editor.isActive("heading", { level: 3 })
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : ""
                       )}
                     >
                       <Heading3 className="h-4 w-4" />
                     </Button>
-                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2" />
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().toggleBulletList().run()
+                        editor.chain().focus().toggleBulletList().run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("bulletList") ? "bg-blue-200" : "",
+                        editor.isActive("bulletList") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <List className="h-4 w-4" />
@@ -336,25 +326,25 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().toggleOrderedList().run()
+                        editor.chain().focus().toggleOrderedList().run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("orderedList") ? "bg-blue-200" : "",
+                        editor.isActive("orderedList") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <ListOrdered className="h-4 w-4" />
                     </Button>
-                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2" />
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().toggleBlockquote().run()
+                        editor.chain().focus().toggleBlockquote().run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("blockquote") ? "bg-blue-200" : "",
+                        editor.isActive("blockquote") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <Quote className="h-4 w-4" />
@@ -363,11 +353,11 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().toggleCodeBlock().run()
+                        editor.chain().focus().toggleCodeBlock().run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive("codeBlock") ? "bg-blue-200" : "",
+                        editor.isActive("codeBlock") ? "bg-blue-200 dark:bg-blue-700" : ""
                       )}
                     >
                       <Code className="h-4 w-4" />
@@ -377,23 +367,23 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setHorizontalRule().run()
+                        editor.chain().focus().setHorizontalRule().run()
                       }
                     >
                       <SeparatorHorizontal className="h-4 w-4" />
                     </Button>
-                    <div className="h-6 w-px bg-gray-300 mx-2" />
+                    <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2" />
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign("left").run()
+                        editor.chain().focus().setTextAlign("left").run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive({ textAlign: "left" })
-                          ? "bg-blue-200"
-                          : "",
+                        editor.isActive({ textAlign: "left" })
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : ""
                       )}
                     >
                       <AlignLeft className="h-4 w-4" />
@@ -402,13 +392,13 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign("center").run()
+                        editor.chain().focus().setTextAlign("center").run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive({ textAlign: "center" })
-                          ? "bg-blue-200"
-                          : "",
+                        editor.isActive({ textAlign: "center" })
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : ""
                       )}
                     >
                       <AlignCenter className="h-4 w-4" />
@@ -417,13 +407,13 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign("right").run()
+                        editor.chain().focus().setTextAlign("right").run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive({ textAlign: "right" })
-                          ? "bg-blue-200"
-                          : "",
+                        editor.isActive({ textAlign: "right" })
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : ""
                       )}
                     >
                       <AlignRight className="h-4 w-4" />
@@ -432,33 +422,30 @@ export default function StoryEditor() {
                       variant="ghost"
                       size="sm"
                       onClick={() =>
-                        editor?.chain().focus().setTextAlign("justify").run()
+                        editor.chain().focus().setTextAlign("justify").run()
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor?.isActive({ textAlign: "justify" })
-                          ? "bg-blue-200"
-                          : "",
+                        editor.isActive({ textAlign: "justify" })
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : ""
                       )}
                     >
                       <AlignJustify className="h-4 w-4" />
                     </Button>
                   </div>
-                  <EditorContent
-                    editor={editor}
-                    className="p-4 min-h-[300px] "
-                  />
+                  <EditorContent editor={editor} className="p-4 min-h-[300px]" />
                 </>
               )}
             </div>
           ) : content?.content ? (
             <div
-              className="prose max-w-none p-4"
+              className="prose max-w-none p-4 bg-white dark:bg-gray-900"
               dangerouslySetInnerHTML={{ __html: content.content }}
             />
           ) : (
-            <div className="text-center absolute inset-0 flex flex-col justify-center items-center">
-              <p className="mb-4 text-gray-600 text-lg">
+            <div className="text-center flex flex-col justify-center items-center h-full">
+              <p className="mb-4 text-gray-600 dark:text-gray-300 text-lg">
                 No content yet. Start writing to get started!
               </p>
               {canEdit() && (
@@ -470,7 +457,7 @@ export default function StoryEditor() {
           )}
         </CardContent>
         {canEdit() && (
-          <CardFooter className="flex justify-end gap-2 mt-4">
+          <CardFooter className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4">
             {isEditing ? (
               <>
                 <Button
@@ -494,10 +481,7 @@ export default function StoryEditor() {
               </>
             ) : (
               content?.content && (
-                <Button
-                  className="cursor-pointer"
-                  onClick={() => setIsEditing(true)}
-                >
+                <Button className="cursor-pointer" onClick={() => setIsEditing(true)}>
                   <Edit className="mr-2 h-4 w-4" /> Edit Story
                 </Button>
               )
@@ -505,11 +489,8 @@ export default function StoryEditor() {
           </CardFooter>
         )}
       </Card>
-      <div className="mt-8 flex gap-4 justify-end">
-        <Button
-          className="cursor-pointer"
-          onClick={() => router.push(`/fork/${story_id}`)}
-        >
+      <div className="mt-8 flex justify-end">
+        <Button className="cursor-pointer" onClick={() => router.push(`/fork/${story_id}`)}>
           <GitBranch className="mr-2 h-4 w-4" /> Fork Story
         </Button>
       </div>

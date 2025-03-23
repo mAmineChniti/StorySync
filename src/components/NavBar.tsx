@@ -16,11 +16,12 @@ export default function NavBar() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
   useEffect(() => {
     setIsUserLoggedIn(hasCookie("user"));
   }, [pathname]);
 
-  const Logout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     deleteCookie("user");
     deleteCookie("access");
@@ -30,10 +31,14 @@ export default function NavBar() {
 
   return (
     <NavigationMenu>
-      <NavigationMenuList className="fixed top-0 left-0 w-full h-16 bg-background text-foreground flex items-center px-4 shadow-md z-50">
+      <NavigationMenuList className="fixed top-0 left-0 w-full h-16 bg-background text-foreground flex items-center px-4 sm:px-6 shadow-md z-50 border-b border-border">
+        {/* Home Link */}
         <NavigationMenuItem>
           <Link href="/" passHref legacyBehavior>
-            <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+            <NavigationMenuLink
+              aria-label="Home"
+              className="px-4 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:outline-none active:bg-accent/30"
+            >
               Home
             </NavigationMenuLink>
           </Link>
@@ -41,16 +46,23 @@ export default function NavBar() {
 
         {!isUserLoggedIn ? (
           <>
+            {/* Login/Register Links */}
             <NavigationMenuItem className="ml-auto">
               <Link href="/login" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink
+                  aria-label="Login"
+                  className="px-4 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:outline-none active:bg-accent/30"
+                >
                   Login
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/register" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink
+                  aria-label="Register"
+                  className="px-4 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:outline-none active:bg-accent/30"
+                >
                   Register
                 </NavigationMenuLink>
               </Link>
@@ -58,16 +70,23 @@ export default function NavBar() {
           </>
         ) : (
           <>
+            {/* Authenticated Links */}
             <NavigationMenuItem className="ml-auto">
               <Link href="/browse" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink
+                  aria-label="Browse Stories"
+                  className="px-4 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:outline-none active:bg-accent/30"
+                >
                   Browse Stories
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/profile" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink
+                  aria-label="Profile"
+                  className="px-4 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:outline-none active:bg-accent/30"
+                >
                   Profile
                 </NavigationMenuLink>
               </Link>
@@ -75,8 +94,9 @@ export default function NavBar() {
             <NavigationMenuItem>
               <Link href="#" passHref legacyBehavior>
                 <NavigationMenuLink
-                  onClick={Logout}
-                  className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none"
+                  aria-label="Logout"
+                  onClick={handleLogout}
+                  className="px-4 py-2 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:outline-none active:bg-accent/30"
                 >
                   Logout
                 </NavigationMenuLink>
@@ -84,7 +104,9 @@ export default function NavBar() {
             </NavigationMenuItem>
           </>
         )}
-        <NavigationMenuItem>
+
+        {/* Theme Toggle */}
+        <NavigationMenuItem className="ml-2">
           <ModeToggle />
         </NavigationMenuItem>
       </NavigationMenuList>

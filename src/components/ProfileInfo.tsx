@@ -85,16 +85,16 @@ export default function ProfileInfo() {
 
   if (!user) {
     return (
-      <Card>
+      <Card className="bg-card text-card-foreground border-border">
         <CardHeader>
           <CardTitle>Error</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             Could not load profile. Please re-login and try again.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Button
-            className="cursor-pointer"
+            variant="secondary"
             onClick={() => router.push("/login")}
           >
             Retry
@@ -109,41 +109,32 @@ export default function ProfileInfo() {
   }
 
   return (
-    <Card>
+    <Card className="bg-card text-card-foreground border-border">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div>
             <CardTitle className="text-2xl">Profile Information</CardTitle>
-            <CardDescription>
+            <CardDescription className="text-muted-foreground">
               View and manage your personal information
             </CardDescription>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
-              className="cursor-pointer"
               variant="outline"
               size="sm"
+              className="border-border text-foreground hover:bg-accent gap-2"
               onClick={() => setIsEditing(!isEditing)}
             >
-              {isEditing ? (
-                <>
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Cancel
-                </>
-              ) : (
-                <>
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </>
-              )}
+              <Edit2 className="h-4 w-4" />
+              {isEditing ? "Cancel" : "Edit Profile"}
             </Button>
             <Button
-              className="cursor-pointer"
               variant="destructive"
               size="sm"
+              className="gap-2"
               onClick={() => handleDeleteUser()}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className="h-4 w-4" />
               Delete Account
             </Button>
           </div>
@@ -151,76 +142,82 @@ export default function ProfileInfo() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              name="username"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mt-2">Username</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!isEditing}
-                      placeholder="Username"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField
+                name="username"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!isEditing}
+                        placeholder="Username"
+                        className="bg-background text-foreground border-border"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              name="email"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mt-2">Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!isEditing}
-                      placeholder="Email"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+              <FormField
+                name="email"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!isEditing}
+                        placeholder="Email"
+                        className="bg-background text-foreground border-border"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              name="first_name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mt-2">First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!isEditing}
-                      placeholder="First Name"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+              <FormField
+                name="first_name"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!isEditing}
+                        placeholder="First Name"
+                        className="bg-background text-foreground border-border"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              name="last_name"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="mt-2">Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={!isEditing}
-                      placeholder="Last Name"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+              <FormField
+                name="last_name"
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={!isEditing}
+                        placeholder="Last Name"
+                        className="bg-background text-foreground border-border"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <div className="mt-4 text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               Joined:{" "}
               {user?.date_joined
                 ? new Date(user.date_joined).toLocaleDateString("en-GB")
@@ -228,9 +225,9 @@ export default function ProfileInfo() {
             </div>
 
             {isEditing && (
-              <>
+              <div className="space-y-4">
                 {mutation.isError && (
-                  <div className="mt-2 text-sm text-red-500">
+                  <div className="text-sm text-destructive">
                     {mutation.error instanceof Error
                       ? mutation.error.message
                       : "An unexpected error occurred. Please try again."}
@@ -238,19 +235,19 @@ export default function ProfileInfo() {
                 )}
                 <Button
                   type="submit"
-                  className="cursor-pointer w-full md:w-auto"
+                  className="w-full md:w-auto gap-2"
                   disabled={mutation.isPending}
                 >
                   {mutation.isPending ? (
                     "Saving..."
                   ) : (
                     <>
-                      <Save className="h-4 w-4 mr-2" />
+                      <Save className="h-4 w-4" />
                       Save Changes
                     </>
                   )}
                 </Button>
-              </>
+              </div>
             )}
           </form>
         </Form>
