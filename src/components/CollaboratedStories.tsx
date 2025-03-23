@@ -48,7 +48,7 @@ export default function CollaboratedStories() {
 
   if (isLoading) {
     return (
-      <Card className="bg-card text-card-foreground border-border">
+      <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
         <CardHeader>
           <Skeleton className="h-8 w-2/3 mb-2 bg-muted" />
           <Skeleton className="h-4 w-1/2 bg-muted" />
@@ -87,7 +87,7 @@ export default function CollaboratedStories() {
 
   if (isError) {
     return (
-      <Card className="bg-card text-card-foreground border-border">
+      <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
         <CardHeader>
           <CardTitle>Error</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -104,7 +104,7 @@ export default function CollaboratedStories() {
   }
 
   return (
-    <Card className="bg-card text-card-foreground border-border">
+    <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
       <CardHeader>
         <CardTitle className="text-2xl">Collaborations</CardTitle>
         <CardDescription className="text-muted-foreground">

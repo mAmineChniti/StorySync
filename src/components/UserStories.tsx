@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/lib";
 import { StoryService } from "@/lib/requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
+import { BookOpen, Calendar, Edit, Tag, Trash2, User, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -62,7 +62,7 @@ export default function UserStories() {
 
   if (isLoading) {
     return (
-      <Card className="mx-auto max-w-4xl bg-card text-card-foreground border-border">
+      <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
         <CardHeader>
           <Skeleton className="h-8 w-2/3 mb-2 bg-muted" />
           <Skeleton className="h-4 w-1/2 bg-muted" />
@@ -99,7 +99,7 @@ export default function UserStories() {
 
   if (isError) {
     return (
-      <Card className="mx-auto max-w-4xl bg-card text-card-foreground border-border">
+      <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
         <CardHeader>
           <CardTitle>Error</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -118,7 +118,7 @@ export default function UserStories() {
   }
 
   return (
-    <Card className="mx-auto max-w-4xl bg-card text-card-foreground border-border">
+    <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
       <CardHeader>
         <CardTitle className="text-2xl">My Stories</CardTitle>
         <CardDescription className="text-muted-foreground">
@@ -127,12 +127,13 @@ export default function UserStories() {
         {errorMessage && (
           <div className="bg-destructive/15 text-destructive px-4 py-3 rounded relative mt-4">
             <span className="block sm:inline">{errorMessage}</span>
-            <button
+            <Button
+              variant="destructive"
               className="absolute top-0 right-0 px-3 py-2 text-foreground"
               onClick={() => setErrorMessage(null)}
             >
-              ×
-            </button>
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         )}
       </CardHeader>
