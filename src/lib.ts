@@ -31,6 +31,7 @@ const getToken = (
       : parseCookie<RefreshToken>(cookieName);
 
   if (!result.success) {
+    console.error(`Failed to parse ${cookieName} token: ${result.error}`);
     return null;
   }
 
@@ -48,22 +49,23 @@ export const getAuthHeaders = (): HeadersInit => {
   if (!token) {
     return {};
   }
-  return {
+  const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
+  return headers;
 };
 
 export const getRefreshHeaders = (): HeadersInit => {
   const token = getRefreshToken();
   if (!token) {
-    window.location.href = "/login";
     return {};
   }
-  return {
+  const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
+  return headers;
 };
 
 export const formatDate = (

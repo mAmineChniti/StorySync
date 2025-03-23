@@ -1,11 +1,15 @@
-import { ClientTokenRefresher } from "@/components/ClientTokenRefresher";
 import Footer from "@/components/Footer";
-import NavBar from "@/components/NavBar";
+import { ClientTokenRefresher } from "@/components/ClientTokenRefresher";
+import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/components/providers";
 import "@/styles/globals.css";
-import { Analytics } from "@vercel/analytics/next";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+import NavBar from "@/components/NavBar";
+import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "StorySync",
@@ -17,15 +21,22 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="en" className={`${GeistSans.variable} ${inter.className}`} suppressHydrationWarning>
       <body className="bg-gray-50 text-gray-900">
-        <NavBar />
-        <ClientTokenRefresher />
-        <main className="min-h-[calc(100vh-8rem)] pt-16 pb-16">
-          <Providers>{children}</Providers>
-        </main>
-        <Analytics />
-        <Footer />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NavBar />
+          <ClientTokenRefresher />
+          <main className="min-h-[calc(100vh-8rem)] pt-16 pb-16">
+            <Providers>{children}</Providers>
+          </main>
+          <Analytics />
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -68,10 +68,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export const StoryService = {
-  async create(storyData: z.infer<typeof storySchema>): Promise<string> {
+  async create(storyData: z.infer<typeof storySchema>): Promise<{ message: string; story_id: string }> {
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
-      return "";
+      return { message: "", story_id: "" };
     }
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.CREATE_STORY}`,
@@ -81,9 +81,7 @@ export const StoryService = {
         body: JSON.stringify(storyData),
       },
     );
-    return handleResponse<{ storyId: string }>(response).then(
-      (data) => data.storyId ?? "",
-    );
+    return handleResponse<{ message: string; story_id: string }>(response);
   },
 
   async edit(storyId: string, content: string): Promise<void> {
@@ -123,21 +121,18 @@ export const StoryService = {
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
-    const headers = getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return [];
-    }
+
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
       {
         method: "POST",
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ page, limit }),
       },
     );
-    return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories ?? [],
-    );
+    return handleResponse<storyResponses.StoryResponse>(response).then((data) => data.stories ?? []);
   },
 
   async getContent(storyId: string): Promise<storyResponses.StoryContent> {
@@ -152,7 +147,7 @@ export const StoryService = {
     );
     return handleResponse<{ content: storyResponses.StoryContent }>(
       response,
-    ).then((data) => data.content ?? ({} as storyResponses.StoryContent));
+    ).then((data) => data.content ?? []);
   },
 
   async delete(storyId: string): Promise<void> {
@@ -221,7 +216,7 @@ export const StoryService = {
       },
     );
     return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories ?? [],
+      (data) => data.stories || [],
     );
   },
 

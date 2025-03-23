@@ -19,6 +19,7 @@ import { useState } from "react";
 export default function UserStories() {
   const [currentPage, setCurrentPage] = useState(1);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
   const limit = 5;
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -32,6 +33,7 @@ export default function UserStories() {
     mutationFn: (storyId: string) => StoryService.delete(storyId),
     onSuccess: async () => {
       setErrorMessage(null);
+      setDeletingStoryId(null);
       try {
         await queryClient.invalidateQueries({ queryKey: ["userStories"] });
       } catch {
@@ -44,12 +46,14 @@ export default function UserStories() {
     },
     onError: (error) => {
       setErrorMessage(error.message);
+      setDeletingStoryId(null);
     },
   });
 
   const stories = data ?? [];
 
   const handleDeleteStory = (storyId: string) => {
+    setDeletingStoryId(storyId);
     mutation.mutate(storyId);
   };
 
@@ -58,7 +62,7 @@ export default function UserStories() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="mx-auto max-w-4xl">
         <CardHeader>
           <Skeleton className="h-8 w-2/3 mb-2" />
           <Skeleton className="h-4 w-1/2" />
@@ -68,14 +72,14 @@ export default function UserStories() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0"
+                className="flex flex-col gap-4 border-b pb-6 last:border-0"
               >
                 <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                     <Skeleton className="h-8 w-2/3" />
                   </div>
                   <Skeleton className="h-6 w-full mb-4" />
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600 mb-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
                     <Skeleton className="h-4 w-1/2 mr-1" />
                     <Skeleton className="h-4 w-1/2 mr-1" />
                     <Skeleton className="h-4 w-1/2 mr-1" />
@@ -96,7 +100,7 @@ export default function UserStories() {
 
   if (isError) {
     return (
-      <Card>
+      <Card className="mx-auto max-w-4xl">
         <CardHeader>
           <CardTitle>Error</CardTitle>
           <CardDescription>
@@ -115,14 +119,14 @@ export default function UserStories() {
   }
 
   return (
-    <Card>
+    <Card className="mx-auto max-w-4xl">
       <CardHeader>
         <CardTitle className="text-2xl">My Stories</CardTitle>
         <CardDescription>
           Stories you&apos;ve written and are currently working on
         </CardDescription>
         {errorMessage && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+          <div className="bg-destructive/15 text-destructive px-4 py-3 rounded relative">
             <span className="block sm:inline">{errorMessage}</span>
             <button
               className="absolute top-0 right-0 px-3 py-2"
@@ -136,9 +140,9 @@ export default function UserStories() {
       <CardContent>
         {stories.length === 0 ? (
           <div className="text-center py-12">
-            <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
+            <BookOpen className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-4 text-lg font-medium">No stories yet</h3>
-            <p className="mt-2 text-gray-500">
+            <p className="mt-2 text-muted-foreground">
               You haven&apos;t created any stories yet. Start writing your first
               story!
             </p>
@@ -151,14 +155,14 @@ export default function UserStories() {
             {stories.map((story) => (
               <div
                 key={story.id}
-                className="flex flex-col md:flex-row gap-4 border-b pb-6 last:border-0"
+                className="flex flex-col gap-4 border-b pb-6 last:border-0"
               >
                 <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold">{story.title}</h3>
                   </div>
-                  <p className="text-gray-700 mb-4">{story.description}</p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600 mb-4">
+                  <p className="text-muted-foreground mb-4">{story.description}</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center">
                       <Tag className="h-4 w-4 mr-1" />
                       <span>{story.genre}</span>
@@ -192,10 +196,10 @@ export default function UserStories() {
                       size="sm"
                       variant="destructive"
                       onClick={() => handleDeleteStory(story.id)}
-                      disabled={mutation.isPending}
+                      disabled={deletingStoryId === story.id}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
-                      {mutation.isPending ? "Deleting..." : "Delete"}
+                      {deletingStoryId === story.id ? "Deleting..." : "Delete"}
                     </Button>
                   </div>
                 </div>
@@ -204,9 +208,9 @@ export default function UserStories() {
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
         <Button
-          className="cursor-pointer"
+          className="cursor-pointer w-full sm:w-auto"
           onClick={handlePrevPage}
           disabled={currentPage === 1 || isLoading}
         >
@@ -214,7 +218,7 @@ export default function UserStories() {
         </Button>
         <span className="text-lg">Page {currentPage}</span>
         <Button
-          className="cursor-pointer"
+          className="cursor-pointer w-full sm:w-auto"
           onClick={handleNextPage}
           disabled={stories.length < limit || isLoading}
         >
