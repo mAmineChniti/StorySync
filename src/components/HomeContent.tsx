@@ -29,7 +29,7 @@ const OwnerName = ({ ownerId }: { ownerId: string }) => {
     return <span className="line-clamp-1 text-red-500">{error.message}</span>;
   return (
     <span className="line-clamp-1">
-      {data.first_name} {data.last_name}
+      {data?.first_name} {data?.last_name}
     </span>
   );
 };
@@ -51,16 +51,18 @@ export default function HomeContent() {
   } = useInfiniteQuery({
     queryKey: ["stories", selectedGenres, searchQuery],
     initialPageParam: 1,
-    queryFn: async ({ pageParam }) =>
-      selectedGenres.length > 0
-        ? StoryService.getByFilters({
-            genres: selectedGenres,
-            page: pageParam,
-            limit,
-          })
-        : StoryService.list(pageParam, limit),
+    queryFn: async ({ pageParam }) => {
+      const result = selectedGenres.length > 0
+        ? await StoryService.getByFilters({
+          genres: selectedGenres,
+          page: pageParam,
+          limit,
+        })
+        : await StoryService.list(pageParam, limit);
+      return result;
+    },
     getNextPageParam: (lastPage, allPages) =>
-      lastPage.length === limit ? allPages.length + 1 : undefined,
+      lastPage?.length === limit ? allPages.length + 1 : undefined,
   });
 
   useEffect(() => {
@@ -69,24 +71,26 @@ export default function HomeContent() {
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [selectedGenres, searchQuery, router, searchParams]);
 
-  const allStories = data?.pages.flat() ?? [];
+  const allStories = data?.pages.flat().filter(Boolean) ?? [];
   const filteredStories = allStories.filter((story) =>
-    searchQuery
+    story && searchQuery
       ? [story.title, story.description].some(
-          (text) =>
-            typeof text === "string" &&
-            text.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
-      : true,
+        (text) =>
+          typeof text === "string" &&
+          text.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      : true
   );
+
+  const hasActiveFilters = searchQuery || selectedGenres.length > 0;
+  const showEmptyState = filteredStories.length === 0 && !isFetching;
 
   return (
     <div className="flex flex-col flex-1 w-full bg-gray-50 text-gray-900">
       <section className="w-full text-center py-12 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
         <h1 className="text-4xl font-bold tracking-tight">Discover Stories</h1>
         <p className="mt-4 text-lg max-w-2xl mx-auto">
-          Browse through our collection of stories and find your next favorite
-          read.
+          Browse through our collection of stories and find your next favorite read.
         </p>
       </section>
 
@@ -177,60 +181,80 @@ export default function HomeContent() {
             <div className="flex justify-center items-center py-12">
               <p className="text-lg text-gray-500">Loading stories...</p>
             </div>
-          ) : filteredStories.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-lg text-gray-500">No stories found.</p>
+          ) : showEmptyState ? (
+            <div className="text-center py-12 space-y-4">
+              <p className="text-lg text-gray-500">
+                {hasActiveFilters
+                  ? "No stories match your filters."
+                  : "No stories available yet."}
+              </p>
+              {hasActiveFilters && (
+                <Button
+                  className="cursor-pointer"
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedGenres([]);
+                    setSearchQuery("");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              )}
             </div>
           ) : (
             <div className="flex-1 flex flex-col">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                 {filteredStories.map((story) => (
-                  <Card
-                    key={story.id}
-                    className="flex flex-col h-fit w-full max-w-[350px] mx-auto hover:shadow-lg transition-shadow duration-300"
-                  >
-                    <CardHeader className="pb-2">
-                      <CardTitle className="line-clamp-2 text-lg">
-                        {story.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow overflow-hidden space-y-2">
-                      <div className="flex items-center text-sm text-gray-600">
-                        <User className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <OwnerName ownerId={story.owner_id} />
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Tag className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span className="line-clamp-1">{story.genre}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
-                        <span>Started: {formatDate(story.created_at)}</span>
-                      </div>
-                      <p className="text-gray-700 line-clamp-4 mt-2">
-                        {story.description}
-                      </p>
-                    </CardContent>
-                    <CardFooter className="mt-auto">
-                      <Button
-                        className="w-full cursor-pointer"
-                        onClick={() => router.push(`/story/${story.id}`)}
-                      >
-                        <BookOpen className="mr-2 h-4 w-4" /> Read Now
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                  story && (
+                    <Card
+                      key={story.id}
+                      className="flex flex-col h-fit w-full max-w-[350px] mx-auto hover:shadow-lg transition-shadow duration-300"
+                    >
+                      <CardHeader className="pb-2">
+                        <CardTitle className="line-clamp-2 text-lg">
+                          {story.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex-grow overflow-hidden space-y-2">
+                        <div className="flex items-center text-sm text-gray-600">
+                          <User className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <OwnerName ownerId={story.owner_id} />
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Tag className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="line-clamp-1">{story.genre}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-gray-600">
+                          <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span>Started: {formatDate(story.created_at)}</span>
+                        </div>
+                        <p className="text-gray-700 line-clamp-4 mt-2">
+                          {story.description}
+                        </p>
+                      </CardContent>
+                      <CardFooter className="mt-auto">
+                        <Button
+                          className="w-full cursor-pointer"
+                          onClick={() => router.push(`/story/${story.id}`)}
+                        >
+                          <BookOpen className="mr-2 h-4 w-4" /> Read Now
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  )
                 ))}
               </div>
-              <div className="flex justify-center mt-6">
-                <Button
-                  className="cursor-pointer"
-                  onClick={() => fetchNextPage()}
-                  disabled={!hasNextPage || isFetchingNextPage}
-                >
-                  {isFetchingNextPage ? "Loading more..." : "Load More"}
-                </Button>
-              </div>
+              {hasNextPage && (
+                <div className="flex justify-center mt-6">
+                  <Button
+                    className="cursor-pointer"
+                    onClick={() => fetchNextPage()}
+                    disabled={!hasNextPage || isFetchingNextPage}
+                  >
+                    {isFetchingNextPage ? "Loading more..." : "Load More"}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>

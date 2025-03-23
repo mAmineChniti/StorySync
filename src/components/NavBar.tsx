@@ -10,6 +10,7 @@ import { deleteCookie, hasCookie } from "cookies-next/client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ModeToggle } from "@/components/ModeToggle";
 
 export default function NavBar() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -22,16 +23,17 @@ export default function NavBar() {
   const Logout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     deleteCookie("user");
-    deleteCookie("tokens");
+    deleteCookie("access");
+    deleteCookie("refresh");
     router.push("/");
   };
 
   return (
     <NavigationMenu>
-      <NavigationMenuList className="fixed top-0 left-0 w-full h-16 bg-black text-white flex items-center px-4 shadow-md z-50">
+      <NavigationMenuList className="fixed top-0 left-0 w-full h-16 bg-background text-foreground flex items-center px-4 shadow-md z-50">
         <NavigationMenuItem>
           <Link href="/" passHref legacyBehavior>
-            <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+            <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
               Home
             </NavigationMenuLink>
           </Link>
@@ -41,14 +43,14 @@ export default function NavBar() {
           <>
             <NavigationMenuItem className="ml-auto">
               <Link href="/login" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
                   Login
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/register" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
                   Register
                 </NavigationMenuLink>
               </Link>
@@ -58,14 +60,14 @@ export default function NavBar() {
           <>
             <NavigationMenuItem className="ml-auto">
               <Link href="/browse" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
                   Browse Stories
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/profile" passHref legacyBehavior>
-                <NavigationMenuLink className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
+                <NavigationMenuLink className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none">
                   Profile
                 </NavigationMenuLink>
               </Link>
@@ -74,7 +76,7 @@ export default function NavBar() {
               <Link href="#" passHref legacyBehavior>
                 <NavigationMenuLink
                   onClick={Logout}
-                  className="hover:bg-neutral-300/40 hover:text-white focus:text-white focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none"
+                  className="hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:bg-transparent focus:outline-none active:bg-transparent active:outline-none"
                 >
                   Logout
                 </NavigationMenuLink>
@@ -82,6 +84,9 @@ export default function NavBar() {
             </NavigationMenuItem>
           </>
         )}
+        <NavigationMenuItem>
+          <ModeToggle />
+        </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
   );

@@ -462,7 +462,7 @@ export default function StoryEditor() {
                 No content yet. Start writing to get started!
               </p>
               {canEdit() && (
-                <Button onClick={() => setIsEditing(true)}>
+                <Button className="cursor-pointer" onClick={() => setIsEditing(true)}>
                   <Edit className="mr-2 h-4 w-4" /> Start Writing
                 </Button>
               )}

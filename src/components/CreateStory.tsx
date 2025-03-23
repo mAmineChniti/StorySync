@@ -45,12 +45,10 @@ export default function CreateStory() {
       title: "",
       description: "",
       genre: "",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     },
   });
 
-  const mutation = useMutation<string, Error, z.infer<typeof storySchema>>({
+  const mutation = useMutation<{ message: string; story_id: string }, Error, z.infer<typeof storySchema>>({
     mutationFn: (data) => StoryService.create(data),
     onSuccess: () => {
       setSubmitted(true);
@@ -82,19 +80,26 @@ export default function CreateStory() {
 
   if (submitted) {
     return (
-      <Card>
+      <Card className="mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle className="text-2xl">Story Created</CardTitle>
           <CardDescription>
             Your story has been created successfully.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex justify-end gap-4">
-          <Button className="bg-purple-600 hover:bg-purple-700">
-            Start Writing the Story
+        <CardContent className="flex flex-col sm:flex-row justify-end gap-4">
+          <Button
+            className="bg-purple-600 hover:bg-purple-700 cursor-pointer w-full sm:w-auto"
+            onClick={() => {
+              if (mutation.data?.story_id) {
+                router.push(`/story/${mutation.data.story_id}`);
+              }
+            }}
+          >
+            <BookOpen className="mr-2 h-4 w-4" /> Start Writing the Story
           </Button>
           <Button
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-purple-600 hover:bg-purple-700 cursor-pointer w-full sm:w-auto"
             onClick={() => {
               form.reset();
               setSubmitted(false);
@@ -109,7 +114,7 @@ export default function CreateStory() {
 
   if (error) {
     return (
-      <Card>
+      <Card className="mx-auto max-w-2xl">
         <CardHeader>
           <CardTitle>Error</CardTitle>
           <CardDescription>{error}</CardDescription>
@@ -129,7 +134,7 @@ export default function CreateStory() {
   }
 
   return (
-    <Card>
+    <Card className="mx-auto max-w-2xl">
       <CardHeader>
         <CardTitle className="text-2xl">Create New Story</CardTitle>
         <CardDescription>
@@ -140,8 +145,8 @@ export default function CreateStory() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="md:col-span-2 space-y-4">
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-4">
                 <FormField
                   control={form.control}
                   name="title"
@@ -152,6 +157,7 @@ export default function CreateStory() {
                         <Input
                           placeholder="Enter a captivating title"
                           {...field}
+                          className="w-full"
                         />
                       </FormControl>
                       <FormMessage />
@@ -166,7 +172,7 @@ export default function CreateStory() {
                       <FormLabel>Description</FormLabel>
                       <FormControl>
                         <Textarea
-                          className="resize-none"
+                          className="resize-none w-full"
                           placeholder="What is your story about?"
                           rows={5}
                           {...field}
@@ -186,7 +192,7 @@ export default function CreateStory() {
                         value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger id="genre">
+                        <SelectTrigger id="genre" className="w-full">
                           <SelectValue placeholder="Select a genre" />
                         </SelectTrigger>
                         <SelectContent>
@@ -207,7 +213,7 @@ export default function CreateStory() {
               <Button
                 type="submit"
                 disabled={mutation.isPending}
-                className="bg-purple-600 hover:bg-purple-700 cursor-pointer"
+                className="bg-purple-600 hover:bg-purple-700 cursor-pointer w-full sm:w-auto"
               >
                 {mutation.isPending ? (
                   "Creating Story..."
