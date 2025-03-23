@@ -5,6 +5,9 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+export const eighteenYearsAgo = new Date();
+eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+
 export const registerSchema = z
   .object({
     username: z
@@ -13,12 +16,15 @@ export const registerSchema = z
     email: z.string().email(),
     password: z.string().min(6),
     confirmPassword: z.string().min(6),
-    firstName: z
-      .string()
+    first_name: z.string()
       .min(3, { message: "First name must be at least 3 characters" }),
-    lastName: z
-      .string()
+    last_name: z.string()
       .min(3, { message: "Last name must be at least 3 characters" }),
+    birthdate: z.date({ 
+      required_error: "Birthdate is required" 
+    }).refine((date) => date <= eighteenYearsAgo, {
+      message: "You must be at least 18 years old to register"
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

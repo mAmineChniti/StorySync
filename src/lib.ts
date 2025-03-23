@@ -80,7 +80,7 @@ export const formatDate = (
   try {
     return new Intl.DateTimeFormat("en-GB", {
       year: "numeric",
-      month: "long",
+      month: "numeric",
       day: "numeric",
       timeZone: "UTC",
     }).format(date);

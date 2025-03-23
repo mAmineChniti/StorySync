@@ -4,6 +4,7 @@ export interface UserStruct {
   email: string;
   first_name: string;
   last_name: string;
+  birthdate: string;
   date_joined: string;
 }
 
@@ -46,4 +47,5 @@ export interface RegisterRequest {
   password: string;
   first_name: string;
   last_name: string;
+  birthdate: string;
 }

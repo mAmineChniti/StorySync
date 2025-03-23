@@ -15,17 +15,29 @@ import type { RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, CalendarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 export default function Register() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { username: "", email: "", password: "", confirmPassword: "", firstName: "", lastName: "" },
+    defaultValues: { 
+      username: "", 
+      email: "", 
+      password: "", 
+      confirmPassword: "", 
+      first_name: "", 
+      last_name: "",
+      birthdate: undefined,
+    },
   });
   const router = useRouter();
 
@@ -67,7 +79,7 @@ export default function Register() {
           />
 
           <FormField
-            name="firstName"
+            name="first_name"
             control={form.control}
             render={({ field }) => (
               <FormItem>
@@ -85,7 +97,7 @@ export default function Register() {
           />
 
           <FormField
-            name="lastName"
+            name="last_name"
             control={form.control}
             render={({ field }) => (
               <FormItem>
@@ -156,6 +168,54 @@ export default function Register() {
                 <FormMessage />
               </FormItem>
             )}
+          />
+
+          <FormField
+            name="birthdate"
+            control={form.control}
+            render={({ field }) => {
+              // Calculate minimum valid birthdate (18 years ago from today)
+              const eighteenYearsAgo = new Date();
+              eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+              
+              return (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Birthdate</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Select your birthdate (18+ only)</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date > eighteenYearsAgo || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           {errorMessage && (
