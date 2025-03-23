@@ -118,6 +118,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+ 
+  html {
+    @apply transition-colors duration-1000; /* Smooth theme transition */
+  }
+  
   body {
     @apply bg-background text-foreground;
   }

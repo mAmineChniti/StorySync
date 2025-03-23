@@ -4,9 +4,9 @@ import Link from "next/link";
 
 export default function Landing() {
   return (
-    <div className="flex flex-col flex-1 w-full bg-gray-50 text-gray-900">
-      <section className="w-full text-center py-20 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
-        <h1 className="text-5xl font-bold tracking-tight">
+    <div className="flex flex-col flex-1 w-full bg-background text-foreground">
+      <section className="w-full text-center py-20 bg-gradient-to-r from-purple-500 to-indigo-600 text-white dark:from-purple-700 dark:to-indigo-800">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
           Welcome to StorySync
         </h1>
         <p className="mt-4 text-lg max-w-2xl mx-auto">
@@ -18,8 +18,8 @@ export default function Landing() {
         </Button>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 my-16 px-6 max-w-6xl mx-auto">
-        <Card className="shadow-lg">
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 my-16 px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
+        <Card className="shadow-lg bg-card text-card-foreground border border-border">
           <CardHeader>
             <CardTitle>🔍 Discover Stories</CardTitle>
           </CardHeader>
@@ -31,7 +31,7 @@ export default function Landing() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg bg-card text-card-foreground border border-border">
           <CardHeader>
             <CardTitle>✍️ Collaborate with Writers</CardTitle>
           </CardHeader>
@@ -43,7 +43,7 @@ export default function Landing() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg bg-card text-card-foreground border border-border">
           <CardHeader>
             <CardTitle>📖 Share & Publish</CardTitle>
           </CardHeader>

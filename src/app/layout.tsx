@@ -22,7 +22,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${inter.className}`} suppressHydrationWarning>
-      <body className="bg-gray-50 text-gray-900">
+      <body className="bg-background text-primary-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

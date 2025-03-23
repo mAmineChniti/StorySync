@@ -94,7 +94,7 @@ export const useTokenRefresh = () => {
         const result = await checkAndRefreshToken();
 
         if (!result.success) {
-          router.push("/login");
+          router.push("/");
           return;
         }
 

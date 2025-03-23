@@ -62,32 +62,31 @@ export default function UserStories() {
 
   if (isLoading) {
     return (
-      <Card className="mx-auto max-w-4xl">
+      <Card className="mx-auto max-w-4xl bg-card text-card-foreground border-border">
         <CardHeader>
-          <Skeleton className="h-8 w-2/3 mb-2" />
-          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-8 w-2/3 mb-2 bg-muted" />
+          <Skeleton className="h-4 w-1/2 bg-muted" />
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="flex flex-col gap-4 border-b pb-6 last:border-0"
+                className="flex flex-col gap-4 border-b border-border pb-6 last:border-0"
               >
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                    <Skeleton className="h-8 w-2/3" />
+                    <Skeleton className="h-8 w-2/3 bg-muted" />
                   </div>
-                  <Skeleton className="h-6 w-full mb-4" />
+                  <Skeleton className="h-6 w-full mb-4 bg-muted" />
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
-                    <Skeleton className="h-4 w-1/2 mr-1" />
-                    <Skeleton className="h-4 w-1/2 mr-1" />
-                    <Skeleton className="h-4 w-1/2 mr-1" />
-                    <Skeleton className="h-4 w-1/2 mr-1" />
+                    {[1, 2, 3, 4].map((i) => (
+                      <Skeleton key={i} className="h-4 w-1/2 bg-muted" />
+                    ))}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-8 w-32" />
+                    <Skeleton className="h-8 w-32 bg-muted" />
+                    <Skeleton className="h-8 w-32 bg-muted" />
                   </div>
                 </div>
               </div>
@@ -100,17 +99,17 @@ export default function UserStories() {
 
   if (isError) {
     return (
-      <Card className="mx-auto max-w-4xl">
+      <Card className="mx-auto max-w-4xl bg-card text-card-foreground border-border">
         <CardHeader>
           <CardTitle>Error</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             {error instanceof Error
               ? error.message
               : "There was an error loading your stories"}
           </CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button className="cursor-pointer" onClick={() => router.refresh()}>
+          <Button variant="secondary" onClick={() => router.refresh()}>
             Retry
           </Button>
         </CardFooter>
@@ -119,17 +118,17 @@ export default function UserStories() {
   }
 
   return (
-    <Card className="mx-auto max-w-4xl">
+    <Card className="mx-auto max-w-4xl bg-card text-card-foreground border-border">
       <CardHeader>
         <CardTitle className="text-2xl">My Stories</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-muted-foreground">
           Stories you&apos;ve written and are currently working on
         </CardDescription>
         {errorMessage && (
-          <div className="bg-destructive/15 text-destructive px-4 py-3 rounded relative">
+          <div className="bg-destructive/15 text-destructive px-4 py-3 rounded relative mt-4">
             <span className="block sm:inline">{errorMessage}</span>
             <button
-              className="absolute top-0 right-0 px-3 py-2"
+              className="absolute top-0 right-0 px-3 py-2 text-foreground"
               onClick={() => setErrorMessage(null)}
             >
               ×
@@ -146,7 +145,7 @@ export default function UserStories() {
               You haven&apos;t created any stories yet. Start writing your first
               story!
             </p>
-            <Button className="cursor-pointer mt-4">
+            <Button className="mt-4" onClick={() => router.push("/create-story")}>
               Create Your First Story
             </Button>
           </div>
@@ -155,50 +154,50 @@ export default function UserStories() {
             {stories.map((story) => (
               <div
                 key={story.id}
-                className="flex flex-col gap-4 border-b pb-6 last:border-0"
+                className="flex flex-col gap-4 border-b border-border pb-6 last:border-0"
               >
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold">{story.title}</h3>
                   </div>
                   <p className="text-muted-foreground mb-4">{story.description}</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center">
-                      <Tag className="h-4 w-4 mr-1" />
-                      <span>{story.genre}</span>
+                      <Tag className="h-4 w-4 mr-1 flex-shrink-0" />
+                      <span className="line-clamp-1">{story.genre}</span>
                     </div>
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
+                      <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
                       <span>Started: {formatDate(story.created_at)}</span>
                     </div>
                     <div className="flex items-center">
-                      <Edit className="h-4 w-4 mr-1" />
+                      <Edit className="h-4 w-4 mr-1 flex-shrink-0" />
                       <span>Updated: {formatDate(story.updated_at)}</span>
                     </div>
                     <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1" />
+                      <User className="h-4 w-4 mr-1 flex-shrink-0" />
                       <span>
                         {story.collaborators?.length ?? 0} Collaborators
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
-                      className="cursor-pointer"
                       size="sm"
                       onClick={() => router.push(`/story/${story.id}`)}
+                      className="gap-2"
                     >
-                      <Edit className="h-4 w-4 mr-1" />
+                      <Edit className="h-4 w-4" />
                       Continue Writing
                     </Button>
                     <Button
-                      className="cursor-pointer"
                       size="sm"
                       variant="destructive"
                       onClick={() => handleDeleteStory(story.id)}
                       disabled={deletingStoryId === story.id}
+                      className="gap-2"
                     >
-                      <Trash2 className="h-4 w-4 mr-1" />
+                      <Trash2 className="h-4 w-4" />
                       {deletingStoryId === story.id ? "Deleting..." : "Delete"}
                     </Button>
                   </div>
@@ -210,7 +209,8 @@ export default function UserStories() {
       </CardContent>
       <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
         <Button
-          className="cursor-pointer w-full sm:w-auto"
+          variant="outline"
+          className="w-full sm:w-auto border-border"
           onClick={handlePrevPage}
           disabled={currentPage === 1 || isLoading}
         >
@@ -218,7 +218,8 @@ export default function UserStories() {
         </Button>
         <span className="text-lg">Page {currentPage}</span>
         <Button
-          className="cursor-pointer w-full sm:w-auto"
+          variant="outline"
+          className="w-full sm:w-auto border-border"
           onClick={handleNextPage}
           disabled={stories.length < limit || isLoading}
         >

@@ -80,26 +80,28 @@ export default function CreateStory() {
 
   if (submitted) {
     return (
-      <Card className="mx-auto max-w-2xl">
+      <Card className="mx-auto max-w-2xl bg-card text-card-foreground border-border">
         <CardHeader>
           <CardTitle className="text-2xl">Story Created</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             Your story has been created successfully.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col sm:flex-row justify-end gap-4">
           <Button
-            className="bg-purple-600 hover:bg-purple-700 cursor-pointer w-full sm:w-auto"
+            className="w-full sm:w-auto gap-2 cursor-pointer"
             onClick={() => {
               if (mutation.data?.story_id) {
                 router.push(`/story/${mutation.data.story_id}`);
               }
             }}
           >
-            <BookOpen className="mr-2 h-4 w-4" /> Start Writing the Story
+            <BookOpen className="h-4 w-4" />
+            Start Writing the Story
           </Button>
           <Button
-            className="bg-purple-600 hover:bg-purple-700 cursor-pointer w-full sm:w-auto"
+            variant="outline"
+            className="w-full sm:w-auto border-border cursor-pointer"
             onClick={() => {
               form.reset();
               setSubmitted(false);
@@ -114,13 +116,17 @@ export default function CreateStory() {
 
   if (error) {
     return (
-      <Card className="mx-auto max-w-2xl">
+      <Card className="mx-auto max-w-2xl bg-card text-card-foreground border-border">
         <CardHeader>
           <CardTitle>Error</CardTitle>
-          <CardDescription>{error}</CardDescription>
+          <CardDescription className="text-destructive">
+            {error}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Button
+            variant="secondary"
+            className="cursor-pointer"
             onClick={() => {
               setError(null);
               router.refresh();
@@ -134,12 +140,11 @@ export default function CreateStory() {
   }
 
   return (
-    <Card className="mx-auto max-w-2xl">
+    <Card className="mx-auto max-w-2xl bg-card text-card-foreground border-border">
       <CardHeader>
         <CardTitle className="text-2xl">Create New Story</CardTitle>
-        <CardDescription>
-          Start your new writing journey and share your creativity with the
-          world
+        <CardDescription className="text-muted-foreground">
+          Start your new writing journey and share your creativity with the world
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -157,7 +162,7 @@ export default function CreateStory() {
                         <Input
                           placeholder="Enter a captivating title"
                           {...field}
-                          className="w-full"
+                          className="bg-background border-border"
                         />
                       </FormControl>
                       <FormMessage />
@@ -172,7 +177,7 @@ export default function CreateStory() {
                       <FormLabel>Description</FormLabel>
                       <FormControl>
                         <Textarea
-                          className="resize-none w-full"
+                          className="resize-none bg-background border-border"
                           placeholder="What is your story about?"
                           rows={5}
                           {...field}
@@ -192,12 +197,12 @@ export default function CreateStory() {
                         value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger id="genre" className="w-full">
+                        <SelectTrigger id="genre" className="bg-background border-border">
                           <SelectValue placeholder="Select a genre" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-background border-border">
                           {genres.map((genre) => (
-                            <SelectItem key={genre} value={genre}>
+                            <SelectItem key={genre} value={genre} className="hover:bg-accent">
                               {genre}
                             </SelectItem>
                           ))}
@@ -213,13 +218,13 @@ export default function CreateStory() {
               <Button
                 type="submit"
                 disabled={mutation.isPending}
-                className="bg-purple-600 hover:bg-purple-700 cursor-pointer w-full sm:w-auto"
+                className="w-full sm:w-auto gap-2 cursor-pointer"
               >
                 {mutation.isPending ? (
                   "Creating Story..."
                 ) : (
                   <>
-                    <BookOpen className="mr-2 h-4 w-4" />
+                    <BookOpen className="h-4 w-4" />
                     Create Story
                   </>
                 )}
