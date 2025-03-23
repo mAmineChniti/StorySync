@@ -2,87 +2,10 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
-import { DayPicker, useNavigation, type CaptionProps } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-
-function YearMonthSelector({ displayMonth }: CaptionProps) {
-  const { goToMonth } = useNavigation();
-  const currentYear = new Date().getFullYear();
-
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
-
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const handleYearChange = (year: string) => {
-    const newDate = new Date(displayMonth);
-    newDate.setFullYear(parseInt(year));
-    goToMonth(newDate);
-  };
-
-  const handleMonthChange = (month: string) => {
-    const newDate = new Date(displayMonth);
-    newDate.setMonth(months.indexOf(month));
-    goToMonth(newDate);
-  };
-
-  return (
-    <div className="flex justify-center items-center gap-2">
-      <Select
-        value={displayMonth.getFullYear().toString()}
-        onValueChange={handleYearChange}
-      >
-        <SelectTrigger className="w-[100px]">
-          <SelectValue placeholder="Year" />
-        </SelectTrigger>
-        <SelectContent className="max-h-[300px]">
-          {years.map((year) => (
-            <SelectItem key={year} value={year.toString()}>
-              {year}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      <Select
-        value={months[displayMonth.getMonth()]}
-        onValueChange={handleMonthChange}
-      >
-        <SelectTrigger className="w-[130px]">
-          <SelectValue placeholder="Month" />
-        </SelectTrigger>
-        <SelectContent>
-          {months.map((month) => (
-            <SelectItem key={month} value={month}>
-              {month}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
 
 function Calendar({
   className,
@@ -98,7 +21,7 @@ function Calendar({
         months: "flex flex-col sm:flex-row gap-2",
         month: "flex flex-col gap-4",
         caption: "flex justify-center pt-1 relative items-center w-full",
-        caption_label: "text-sm font-medium hidden", // Hide the default caption label
+        caption_label: "text-sm font-medium",
         nav: "flex items-center gap-1",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -143,7 +66,6 @@ function Calendar({
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("size-4", className)} {...props} />
         ),
-        Caption: YearMonthSelector,
       }}
       {...props}
     />
