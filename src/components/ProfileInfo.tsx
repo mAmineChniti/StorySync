@@ -7,13 +7,19 @@ import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { AuthService } from "@/lib/requests";
 import { type UserStruct } from "@/types/authInterfaces";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCookie, setCookie } from "cookies-next/client";
-import { Edit2, Save, Trash2, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { setCookie, deleteCookie } from "cookies-next/client";
+import { Edit2, Loader2, Save, Trash2, CalendarIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { formatDate, parseCookie } from "@/lib";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { eighteenYearsAgo } from "@/types/authSchemas";
 
 export default function ProfileInfo() {
   const queryClient = useQueryClient();
@@ -25,7 +31,7 @@ export default function ProfileInfo() {
   const router = useRouter();
 
   const form = useForm<Partial<UserStruct>>({
-    defaultValues: { username: "", email: "", first_name: "", last_name: "" }
+    defaultValues: { username: "", email: "", first_name: "", last_name: "", birthdate: "" }
   });
 
   useEffect(() => {
@@ -34,7 +40,9 @@ export default function ProfileInfo() {
   }, []);
 
   useEffect(() => {
-    if (user) form.reset(user);
+    if (user) {
+      form.reset(user);
+    }
   }, [user, form]);
 
   const updateMutation = useMutation({
@@ -54,7 +62,21 @@ export default function ProfileInfo() {
   });
 
   const onUpdateSubmit = (data: Partial<UserStruct>) => {
-    updateMutation.mutate(data);
+    // Create a copy of the data to submit
+    const userDataToSubmit: Partial<UserStruct> = { ...data };
+    
+    try {
+      // Handle the birthdate conversion - cast to any to bypass TypeScript checks
+      const birthdate: any = userDataToSubmit.birthdate;
+      if (birthdate && typeof birthdate.toISOString === 'function') {
+        // Convert Date to string in YYYY-MM-DD format
+        userDataToSubmit.birthdate = birthdate.toISOString().split('T')[0];
+      }
+    } catch (error) {
+      console.error("Error converting birthdate:", error);
+    }
+    
+    updateMutation.mutate(userDataToSubmit);
   }
 
   const deleteMutation = useMutation({
@@ -183,7 +205,59 @@ export default function ProfileInfo() {
                     </FormItem>
                   )}
                 />
-              ))}
+              ))}      
+              <FormField
+                name="birthdate"
+                control={form.control}
+                render={({ field }) => {
+                  let dateValue: Date | undefined = undefined;
+                  if (field.value) {
+                    if (typeof field.value === 'string') {
+                      dateValue = new Date(field.value);
+                    } else if (field.value && typeof field.value === 'object' && 'getMonth' in field.value) {
+                      dateValue = field.value as Date;
+                    }
+                  }
+                      
+                  return (
+                    <FormItem>
+                      <FormLabel>Birthdate</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !dateValue && "text-muted-foreground"
+                              )}
+                              disabled={!isEditing || updateMutation.isPending}
+                            >
+                              {dateValue ? (
+                                format(dateValue, "PPP")
+                              ) : (
+                                <span>Optional: Pick a date (18+ only)</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={dateValue}
+                            onSelect={(newDate) => field.onChange(newDate)}
+                            disabled={(date) =>
+                              date > eighteenYearsAgo || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </FormItem>
+                  );
+                }}
+              />
             </div>
             <div className="text-sm">
               Joined: {formatDate(user?.date_joined)}
