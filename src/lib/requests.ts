@@ -26,6 +26,7 @@ const API_CONFIG = {
       FETCH_USER: "/fetchuser",
       UPDATE_USER: "/update",
       FETCH_USER_BY_ID: "/fetchuserbyid",
+      DELETE_USER: "/delete",
     },
   },
   STORY: {
@@ -273,8 +274,8 @@ export const AuthService = {
           username: data.username,
           email: data.email,
           password: data.password,
-          first_name: data.firstName,
-          last_name: data.lastName,
+          first_name: data.first_name,
+          last_name: data.last_name,
         }),
       },
     );
@@ -333,6 +334,21 @@ export const AuthService = {
       first_name: data.user.first_name ?? "",
       last_name: data.user.last_name ?? "",
     }));
+  },
+
+  async deleteAccount(): Promise<void> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return;
+    }
+    const response = await fetch(
+      `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.DELETE_USER}`,
+      {
+        method: "DELETE",
+        headers,
+      },
+    );
+    await handleResponse<{ message: string }>(response);
   },
 
   async refreshTokens(): Promise<Tokens> {

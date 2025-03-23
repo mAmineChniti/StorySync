@@ -1,251 +1,211 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { AuthService } from "@/lib/requests";
 import { type UserStruct } from "@/types/authInterfaces";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCookie, getCookie, setCookie } from "cookies-next/client";
-import { Edit2, Save, Trash2 } from "lucide-react";
+import { deleteCookie, setCookie } from "cookies-next/client";
+import { Edit2, Save, Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { formatDate, parseCookie } from "@/lib";
 
 export default function ProfileInfo() {
   const queryClient = useQueryClient();
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [user, setUser] = useState<UserStruct | null>(null);
   const router = useRouter();
 
-  const [user, setUser] = useState<UserStruct | null>(null);
-
-  useEffect(() => {
-    const userData = getCookie("user");
-    if (userData) {
-      setUser(JSON.parse(userData) as UserStruct);
-    }
-  }, []);
-
   const form = useForm<Partial<UserStruct>>({
-    defaultValues: {
-      username: user?.username ?? "",
-      email: user?.email ?? "",
-      first_name: user?.first_name ?? "",
-      last_name: user?.last_name ?? "",
-    },
+    defaultValues: { username: "", email: "", first_name: "", last_name: "" }
   });
 
   useEffect(() => {
-    if (user) {
-      form.reset({
-        username: user.username,
-        email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
-      });
-    }
+    const userData = parseCookie<UserStruct>("user");
+    if (userData.success) setUser(userData.data);
+  }, []);
+
+  useEffect(() => {
+    if (user) form.reset(user);
   }, [user, form]);
 
-  const mutation = useMutation<UserStruct, Error, Partial<UserStruct>>({
-    mutationFn: (data) => AuthService.updateProfile(data),
+  const updateMutation = useMutation({
+    mutationFn: (data: Partial<UserStruct>) => AuthService.updateProfile(data),
     onSuccess: (data) => {
       if (data) {
-        form.setValue("username", data.username);
-        form.setValue("email", data.email);
-        form.setValue("first_name", data.first_name);
-        form.setValue("last_name", data.last_name);
-
         queryClient.setQueryData(["userProfile"], data);
         deleteCookie("user");
         setCookie("user", JSON.stringify(data));
         setIsEditing(false);
+        setUpdateError(null);
       }
     },
-    onError: (error) => {
-      console.error("Error updating profile:", error);
-    },
+    onError: (error: Error) => {
+      setUpdateError(error.message || "Failed to update profile");
+    }
   });
 
-  const onSubmit = (formData: Partial<UserStruct>) => {
-    mutation.mutate(formData);
+  const onUpdateSubmit = (data: Partial<UserStruct>) => {
+    updateMutation.mutate(data);
+  }
+
+  const deleteMutation = useMutation({
+    mutationFn: () => AuthService.deleteAccount(),
+    onSuccess: () => {
+      deleteCookie("user");
+      deleteCookie("auth_token");
+      queryClient.removeQueries({ queryKey: ["userProfile"] });
+      router.push("/login");
+    },
+    onError: (error: Error) => {
+      setDeleteError(error.message || "Failed to delete account");
+    }
+  });
+
+  const onDeleteSubmit = () => {
+    deleteMutation.mutate();
+  }
+
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+    setUpdateError(null);
+    if (isEditing) form.reset(user!);
   };
 
-  if (!user) {
-    return (
-      <Card className="bg-card text-card-foreground border-border">
-        <CardHeader>
-          <CardTitle>Error</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Could not load profile. Please re-login and try again.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="secondary"
-            onClick={() => router.push("/login")}
-          >
-            Retry
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  function handleDeleteUser(): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
-    <Card className="bg-card text-card-foreground border-border">
+    <Card className="mx-auto max-w-7xl border-border">
       <CardHeader className="pb-2">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div>
             <CardTitle className="text-2xl">Profile Information</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              View and manage your personal information
-            </CardDescription>
+            <CardDescription>Manage your personal information</CardDescription>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="border-border text-foreground hover:bg-accent gap-2"
-              onClick={() => setIsEditing(!isEditing)}
+              className="gap-2 cursor-pointer"
+              onClick={handleEditToggle}
+              disabled={updateMutation.isPending}
             >
-              <Edit2 className="h-4 w-4" />
-              {isEditing ? "Cancel" : "Edit Profile"}
+              {updateMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Edit2 className="h-4 w-4" />
+              )}
+              {isEditing ? "Cancel" : "Edit"}
             </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="gap-2"
-              onClick={() => handleDeleteUser()}
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete Account
-            </Button>
+
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={(open) => {
+              setIsDeleteDialogOpen(open);
+              setDeleteError(null);
+            }}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="gap-2 cursor-pointer"
+                  disabled={deleteMutation.isPending}
+                >
+                  {deleteMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                  {deleteMutation.isPending ? "Deleting..." : "Delete Account"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="border-border">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete your account and all data.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                {deleteError && (
+                  <div className="text-destructive text-sm px-6">
+                    {deleteError}
+                  </div>
+                )}
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="border-border">
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive hover:bg-destructive/90"
+                    onClick={() => onDeleteSubmit()}
+                    disabled={deleteMutation.isPending}
+                  >
+                    {deleteMutation.isPending && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Confirm Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onUpdateSubmit)}
+            className="space-y-4"
+          >
             <div className="grid gap-4 md:grid-cols-2">
-              <FormField
-                name="username"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!isEditing}
-                        placeholder="Username"
-                        className="bg-background text-foreground border-border"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="email"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!isEditing}
-                        placeholder="Email"
-                        className="bg-background text-foreground border-border"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="first_name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!isEditing}
-                        placeholder="First Name"
-                        className="bg-background text-foreground border-border"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="last_name"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={!isEditing}
-                        placeholder="Last Name"
-                        className="bg-background text-foreground border-border"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+              {["username", "email", "first_name", "last_name"].map((field) => (
+                <FormField
+                  key={field}
+                  name={field as keyof UserStruct}
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {field.name.split('_').map(word =>
+                          word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          disabled={!isEditing || updateMutation.isPending}
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              ))}
             </div>
-
-            <div className="text-sm text-muted-foreground">
-              Joined:{" "}
-              {user?.date_joined
-                ? new Date(user.date_joined).toLocaleDateString("en-GB")
-                : "N/A"}
+            <div className="text-sm">
+              Joined: {formatDate(user?.date_joined)}
             </div>
-
             {isEditing && (
               <div className="space-y-4">
-                {mutation.isError && (
-                  <div className="text-sm text-destructive">
-                    {mutation.error instanceof Error
-                      ? mutation.error.message
-                      : "An unexpected error occurred. Please try again."}
+                {updateError && (
+                  <div className="text-destructive text-sm">
+                    {updateError}
                   </div>
                 )}
                 <Button
                   type="submit"
-                  className="w-full md:w-auto gap-2"
-                  disabled={mutation.isPending}
+                  className="gap-2 cursor-pointer"
+                  disabled={updateMutation.isPending}
                 >
-                  {mutation.isPending ? (
-                    "Saving..."
+                  {updateMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <>
-                      <Save className="h-4 w-4" />
-                      Save Changes
-                    </>
+                    <Save className="h-4 w-4" />
                   )}
+                  Save Changes
                 </Button>
               </div>
             )}

@@ -86,7 +86,7 @@ export default function HomeContent() {
   const showEmptyState = filteredStories.length === 0 && !isFetching;
 
   return (
-    <div className="flex flex-col flex-1 w-full bg-background text-foreground pt-16 sm:pt-0">
+    <div className="flex flex-col flex-1 w-full bg-background text-foreground">
       <section className="w-full text-center py-8 sm:py-12  bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
         <h1 className="text-2xl sm:text-4xl font-bold tracking-tight px-2">
           Discover Stories

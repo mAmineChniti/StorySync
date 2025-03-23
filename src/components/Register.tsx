@@ -25,7 +25,7 @@ export default function Register() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { username: "", email: "", password: "", confirmPassword: "", firstName: "", lastName: "" },
+    defaultValues: { username: "", email: "", password: "", confirmPassword: "", first_name: "", last_name: "" },
   });
   const router = useRouter();
 
@@ -67,7 +67,7 @@ export default function Register() {
           />
 
           <FormField
-            name="firstName"
+            name="first_name"
             control={form.control}
             render={({ field }) => (
               <FormItem>
@@ -85,7 +85,7 @@ export default function Register() {
           />
 
           <FormField
-            name="lastName"
+            name="last_name"
             control={form.control}
             render={({ field }) => (
               <FormItem>
