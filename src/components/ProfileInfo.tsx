@@ -119,6 +119,11 @@ export default function ProfileInfo() {
     if (isEditing) form.reset(user!);
   };
 
+  const onDeleteCancel = () => {
+    setIsDeleteDialogOpen(false);
+    setDeleteError(null);
+  };
+
   return (
     <Card className="mx-auto max-w-7xl border-border">
       <CardHeader className="pb-2">
@@ -146,14 +151,18 @@ export default function ProfileInfo() {
             <AlertDialog
               open={isDeleteDialogOpen}
               onOpenChange={(open) => {
-                setIsDeleteDialogOpen(open);
-                setDeleteError(null);
+                if (!open) {
+                  onDeleteCancel();
+                } else {
+                  setIsDeleteDialogOpen(true);
+                }
               }}
             >
               <AlertDialogTrigger asChild>
                 <Button
                   variant="destructive"
                   size="sm"
+                  type="button"
                   className="gap-2 cursor-pointer"
                   disabled={deleteMutation.isPending}
                 >
@@ -165,10 +174,16 @@ export default function ProfileInfo() {
                   {deleteMutation.isPending ? "Deleting..." : "Delete Account"}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="border-border">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-                  <AlertDialogDescription>
+              <AlertDialogContent
+                onClick={onDeleteCancel}
+                onEscapeKeyDown={() => onDeleteCancel}
+                className="border-border bg-background text-foreground max-w-[95vw] sm:max-w-md mx-2 sm:mx-0 p-4 sm:p-6"
+              >
+                <AlertDialogHeader className="space-y-4">
+                  <AlertDialogTitle className="text-lg sm:text-xl">
+                    Confirm Deletion
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-sm sm:text-base">
                     This will permanently delete your account and all data.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -177,12 +192,12 @@ export default function ProfileInfo() {
                     {deleteError}
                   </div>
                 )}
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="border-border">
+                <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-6">
+                  <AlertDialogCancel className="cursor-pointer border-border bg-muted text-muted-foreground hover:bg-muted/90 w-full sm:w-auto">
                     Cancel
                   </AlertDialogCancel>
                   <AlertDialogAction
-                    className="bg-destructive hover:bg-destructive/90"
+                    className="cursor-pointer bg-destructive text-white hover:bg-destructive/70 w-full sm:w-auto"
                     onClick={() => onDeleteSubmit()}
                     disabled={deleteMutation.isPending}
                   >
