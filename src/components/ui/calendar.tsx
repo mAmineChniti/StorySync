@@ -1,41 +1,51 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, CaptionProps, useNavigation } from "react-day-picker"
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import * as React from "react";
+import { DayPicker, useNavigation, type CaptionProps } from "react-day-picker";
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
-function YearMonthSelector({ 
-  displayMonth
-}: CaptionProps) {
-  const { goToMonth } = useNavigation()
-  const currentYear = new Date().getFullYear()
-  
-  // Generate a range of years (from 100 years ago to current year)
-  const years = Array.from({ length: 100 }, (_, i) => currentYear - i)
-  
-  // Array of all months
+function YearMonthSelector({ displayMonth }: CaptionProps) {
+  const { goToMonth } = useNavigation();
+  const currentYear = new Date().getFullYear();
+
+  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ]
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
-  // Handle year selection
   const handleYearChange = (year: string) => {
-    const newDate = new Date(displayMonth)
-    newDate.setFullYear(parseInt(year))
-    goToMonth(newDate)
-  }
+    const newDate = new Date(displayMonth);
+    newDate.setFullYear(parseInt(year));
+    goToMonth(newDate);
+  };
 
-  // Handle month selection
   const handleMonthChange = (month: string) => {
-    const newDate = new Date(displayMonth)
-    newDate.setMonth(months.indexOf(month))
-    goToMonth(newDate)
-  }
+    const newDate = new Date(displayMonth);
+    newDate.setMonth(months.indexOf(month));
+    goToMonth(newDate);
+  };
 
   return (
     <div className="flex justify-center items-center gap-2">
@@ -71,7 +81,7 @@ function YearMonthSelector({
         </SelectContent>
       </Select>
     </div>
-  )
+  );
 }
 
 function Calendar({
@@ -92,7 +102,7 @@ function Calendar({
         nav: "flex items-center gap-1",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "size-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          "size-7 bg-transparent p-0 opacity-50 hover:opacity-100",
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
@@ -105,11 +115,11 @@ function Calendar({
           "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-range-end)]:rounded-r-md",
           props.mode === "range"
             ? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
-            : "[&:has([aria-selected])]:rounded-md"
+            : "[&:has([aria-selected])]:rounded-md",
         ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "size-8 p-0 font-normal aria-selected:opacity-100"
+          "size-8 p-0 font-normal aria-selected:opacity-100",
         ),
         day_range_start:
           "day-range-start aria-selected:bg-primary aria-selected:text-primary-foreground",
@@ -133,11 +143,11 @@ function Calendar({
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("size-4", className)} {...props} />
         ),
-        Caption: YearMonthSelector
+        Caption: YearMonthSelector,
       }}
       {...props}
     />
-  )
+  );
 }
 
-export { Calendar }
+export { Calendar };

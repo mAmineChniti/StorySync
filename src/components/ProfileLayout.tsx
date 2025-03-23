@@ -12,7 +12,8 @@ export default function ProfileLayout({
           Your Profile
         </h1>
         <p className="mt-2 sm:mt-4 text-sm sm:text-lg max-w-2xl mx-auto px-4">
-          Manage your profile, view your stories, and start new creative journeys.
+          Manage your profile, view your stories, and start new creative
+          journeys.
         </p>
       </section>
       <div className="w-full px-4 sm:px-6 lg:px-8">

@@ -1,13 +1,13 @@
-import Footer from "@/components/Footer";
 import { ClientTokenRefresher } from "@/components/ClientTokenRefresher";
-import { Analytics } from "@vercel/analytics/next";
+import Footer from "@/components/Footer";
+import NavBar from "@/components/NavBar";
 import { Providers } from "@/components/providers";
+import { ThemeProvider } from "@/components/theme-provider";
 import "@/styles/globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import NavBar from "@/components/NavBar";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +21,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${inter.className}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${GeistSans.variable} ${inter.className}`}
+      suppressHydrationWarning
+    >
       <body className="bg-background text-primary-foreground">
         <ThemeProvider
           attribute="class"

@@ -48,7 +48,11 @@ export default function CreateStory() {
     },
   });
 
-  const mutation = useMutation<{ message: string; story_id: string }, Error, z.infer<typeof storySchema>>({
+  const mutation = useMutation<
+    { message: string; story_id: string },
+    Error,
+    z.infer<typeof storySchema>
+  >({
     mutationFn: (data) => StoryService.create(data),
     onSuccess: () => {
       setSubmitted(true);
@@ -144,7 +148,8 @@ export default function CreateStory() {
       <CardHeader>
         <CardTitle className="text-2xl">Create New Story</CardTitle>
         <CardDescription className="text-muted-foreground">
-          Start your new writing journey and share your creativity with the world
+          Start your new writing journey and share your creativity with the
+          world
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -197,12 +202,19 @@ export default function CreateStory() {
                         value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger id="genre" className="bg-background border-border">
+                        <SelectTrigger
+                          id="genre"
+                          className="bg-background border-border"
+                        >
                           <SelectValue placeholder="Select a genre" />
                         </SelectTrigger>
                         <SelectContent className="bg-background border-border">
                           {genres.map((genre) => (
-                            <SelectItem key={genre} value={genre} className="hover:bg-accent">
+                            <SelectItem
+                              key={genre}
+                              value={genre}
+                              className="hover:bg-accent"
+                            >
                               {genre}
                             </SelectItem>
                           ))}

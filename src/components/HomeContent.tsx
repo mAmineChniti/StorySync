@@ -26,7 +26,9 @@ const OwnerName = ({ ownerId }: { ownerId: string }) => {
 
   if (isPending) return <span className="line-clamp-1">Loading author...</span>;
   if (error)
-    return <span className="line-clamp-1 text-destructive">{error.message}</span>;
+    return (
+      <span className="line-clamp-1 text-destructive">{error.message}</span>
+    );
   return (
     <span className="line-clamp-1">
       {data?.first_name} {data?.last_name}
@@ -52,13 +54,14 @@ export default function HomeContent() {
     queryKey: ["stories", selectedGenres, searchQuery],
     initialPageParam: 1,
     queryFn: async ({ pageParam }) => {
-      const result = selectedGenres.length > 0
-        ? await StoryService.getByFilters({
-          genres: selectedGenres,
-          page: pageParam,
-          limit,
-        })
-        : await StoryService.list(pageParam, limit);
+      const result =
+        selectedGenres.length > 0
+          ? await StoryService.getByFilters({
+              genres: selectedGenres,
+              page: pageParam,
+              limit,
+            })
+          : await StoryService.list(pageParam, limit);
       return result;
     },
     getNextPageParam: (lastPage, allPages) =>
@@ -75,11 +78,11 @@ export default function HomeContent() {
   const filteredStories = allStories.filter((story) =>
     story && searchQuery
       ? [story.title, story.description].some(
-        (text) =>
-          typeof text === "string" &&
-          text.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-      : true
+          (text) =>
+            typeof text === "string" &&
+            text.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : true,
   );
 
   const hasActiveFilters = searchQuery || selectedGenres.length > 0;
@@ -92,7 +95,8 @@ export default function HomeContent() {
           Discover Stories
         </h1>
         <p className="mt-2 sm:mt-4 text-sm sm:text-lg max-w-2xl mx-auto px-4">
-          Browse through our collection of stories and find your next favorite read.
+          Browse through our collection of stories and find your next favorite
+          read.
         </p>
       </section>
 
@@ -214,45 +218,46 @@ export default function HomeContent() {
           ) : (
             <div className="flex-1 flex flex-col">
               <div className="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
-                {filteredStories.map((story) => (
-                  story && (
-                    <Card
-                      key={story.id}
-                      className="flex flex-col h-fit w-full mx-auto min-[480px]:max-w-none sm:max-w-[350px] hover:shadow-lg transition-shadow duration-300 bg-card text-card-foreground border-border"
-                    >
-                      <CardHeader className="pb-2">
-                        <CardTitle className="line-clamp-2 text-base sm:text-lg">
-                          {story.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="flex-grow overflow-hidden space-y-2">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <User className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <OwnerName ownerId={story.owner_id} />
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Tag className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span className="line-clamp-1">{story.genre}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
-                          <span>Started: {formatDate(story.created_at)}</span>
-                        </div>
-                        <p className="text-foreground line-clamp-4 mt-2 text-sm sm:text-base">
-                          {story.description}
-                        </p>
-                      </CardContent>
-                      <CardFooter className="mt-auto">
-                        <Button
-                          className="w-full text-sm sm:text-base cursor-pointer"
-                          onClick={() => router.push(`/story/${story.id}`)}
-                        >
-                          <BookOpen className="mr-2 h-4 w-4" /> Read Now
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  )
-                ))}
+                {filteredStories.map(
+                  (story) =>
+                    story && (
+                      <Card
+                        key={story.id}
+                        className="flex flex-col h-fit w-full mx-auto min-[480px]:max-w-none sm:max-w-[350px] hover:shadow-lg transition-shadow duration-300 bg-card text-card-foreground border-border"
+                      >
+                        <CardHeader className="pb-2">
+                          <CardTitle className="line-clamp-2 text-base sm:text-lg">
+                            {story.title}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow overflow-hidden space-y-2">
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <User className="h-4 w-4 mr-1 flex-shrink-0" />
+                            <OwnerName ownerId={story.owner_id} />
+                          </div>
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <Tag className="h-4 w-4 mr-1 flex-shrink-0" />
+                            <span className="line-clamp-1">{story.genre}</span>
+                          </div>
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
+                            <span>Started: {formatDate(story.created_at)}</span>
+                          </div>
+                          <p className="text-foreground line-clamp-4 mt-2 text-sm sm:text-base">
+                            {story.description}
+                          </p>
+                        </CardContent>
+                        <CardFooter className="mt-auto">
+                          <Button
+                            className="w-full text-sm sm:text-base cursor-pointer"
+                            onClick={() => router.push(`/story/${story.id}`)}
+                          >
+                            <BookOpen className="mr-2 h-4 w-4" /> Read Now
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    ),
+                )}
               </div>
               {hasNextPage && (
                 <div className="flex justify-center mt-4 sm:mt-6">

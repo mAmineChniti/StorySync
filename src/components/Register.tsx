@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -10,38 +11,45 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { AuthService } from "@/lib/requests";
+import { cn } from "@/lib/utils";
 import type { RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 
 export default function Register() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { 
-      username: "", 
-      email: "", 
-      password: "", 
-      confirmPassword: "", 
-      first_name: "", 
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      first_name: "",
       last_name: "",
       birthdate: undefined,
     },
   });
   const router = useRouter();
 
-  const registerMutation = useMutation<RegisterResponse, Error, z.infer<typeof registerSchema>>({
+  const registerMutation = useMutation<
+    RegisterResponse,
+    Error,
+    z.infer<typeof registerSchema>
+  >({
     mutationFn: (data) => AuthService.register(data),
     onSuccess: () => {
       router.push("/login");
@@ -59,7 +67,10 @@ export default function Register() {
   return (
     <div className="w-full">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 w-full"
+        >
           <FormField
             name="username"
             control={form.control}
@@ -177,7 +188,7 @@ export default function Register() {
               // Calculate minimum valid birthdate (18 years ago from today)
               const eighteenYearsAgo = new Date();
               eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
-              
+
               return (
                 <FormItem className="flex flex-col">
                   <FormLabel>Birthdate</FormLabel>
@@ -188,7 +199,7 @@ export default function Register() {
                           variant="outline"
                           className={cn(
                             "w-full pl-3 text-left font-normal bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
@@ -206,7 +217,8 @@ export default function Register() {
                         selected={field.value}
                         onSelect={field.onChange}
                         disabled={(date) =>
-                          date > eighteenYearsAgo || date < new Date("1900-01-01")
+                          date > eighteenYearsAgo ||
+                          date < new Date("1900-01-01")
                         }
                         initialFocus
                       />

@@ -1,5 +1,6 @@
 "use client";
 
+import { ModeToggle } from "@/components/ModeToggle";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -7,11 +8,10 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { deleteCookie, hasCookie } from "cookies-next/client";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ModeToggle } from "@/components/ModeToggle";
-import Image from "next/image";
 
 export default function NavBar() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
