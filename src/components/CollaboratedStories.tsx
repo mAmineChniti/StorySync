@@ -91,11 +91,16 @@ export default function CollaboratedStories() {
         <CardHeader>
           <CardTitle>Error</CardTitle>
           <CardDescription className="text-muted-foreground">
-            There was an error loading your collaborations. Please try again later.
+            There was an error loading your collaborations. Please try again
+            later.
           </CardDescription>
         </CardHeader>
         <CardFooter>
-          <Button className="cursor-pointer" variant="secondary" onClick={() => router.refresh()}>
+          <Button
+            className="cursor-pointer"
+            variant="secondary"
+            onClick={() => router.refresh()}
+          >
             Retry
           </Button>
         </CardFooter>
@@ -138,7 +143,9 @@ export default function CollaboratedStories() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold">{story.title}</h3>
                   </div>
-                  <p className="text-muted-foreground mb-4">{story.description}</p>
+                  <p className="text-muted-foreground mb-4">
+                    {story.description}
+                  </p>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center">
                       <Tag className="h-4 w-4 mr-1 flex-shrink-0" />
@@ -160,7 +167,11 @@ export default function CollaboratedStories() {
                       <Edit className="h-4 w-4" />
                       Contribute
                     </Button>
-                    <Button size="sm" variant="outline" className="gap-2 border-border cursor-pointer">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-2 border-border cursor-pointer"
+                    >
                       <Eye className="h-4 w-4" />
                       View Story
                     </Button>

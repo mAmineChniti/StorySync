@@ -49,7 +49,7 @@ export default function ProfileSidebar() {
               "text-sm sm:text-base h-10 sm:h-11",
               pathname === item.url
                 ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                : "hover:bg-accent hover:text-accent-foreground"
+                : "hover:bg-accent hover:text-accent-foreground",
             )}
             onClick={() => router.push(item.url)}
           >

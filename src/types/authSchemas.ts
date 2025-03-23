@@ -16,15 +16,19 @@ export const registerSchema = z
     email: z.string().email(),
     password: z.string().min(6),
     confirmPassword: z.string().min(6),
-    first_name: z.string()
+    first_name: z
+      .string()
       .min(3, { message: "First name must be at least 3 characters" }),
-    last_name: z.string()
+    last_name: z
+      .string()
       .min(3, { message: "Last name must be at least 3 characters" }),
-    birthdate: z.date({ 
-      required_error: "Birthdate is required" 
-    }).refine((date) => date <= eighteenYearsAgo, {
-      message: "You must be at least 18 years old to register"
-    }),
+    birthdate: z
+      .date({
+        required_error: "Birthdate is required",
+      })
+      .refine((date) => date <= eighteenYearsAgo, {
+        message: "You must be at least 18 years old to register",
+      }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

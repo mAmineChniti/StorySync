@@ -69,7 +69,9 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export const StoryService = {
-  async create(storyData: z.infer<typeof storySchema>): Promise<{ message: string; story_id: string }> {
+  async create(
+    storyData: z.infer<typeof storySchema>,
+  ): Promise<{ message: string; story_id: string }> {
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return { message: "", story_id: "" };
@@ -122,7 +124,6 @@ export const StoryService = {
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
-
     const response = await fetch(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
       {
@@ -133,7 +134,9 @@ export const StoryService = {
         body: JSON.stringify({ page, limit }),
       },
     );
-    return handleResponse<storyResponses.StoryResponse>(response).then((data) => data.stories ?? []);
+    return handleResponse<storyResponses.StoryResponse>(response).then(
+      (data) => data.stories ?? [],
+    );
   },
 
   async getContent(storyId: string): Promise<storyResponses.StoryContent> {

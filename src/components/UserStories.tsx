@@ -146,7 +146,10 @@ export default function UserStories() {
               You haven&apos;t created any stories yet. Start writing your first
               story!
             </p>
-            <Button className="mt-4" onClick={() => router.push("/create-story")}>
+            <Button
+              className="mt-4"
+              onClick={() => router.push("/create-story")}
+            >
               Create Your First Story
             </Button>
           </div>
@@ -161,7 +164,9 @@ export default function UserStories() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold">{story.title}</h3>
                   </div>
-                  <p className="text-muted-foreground mb-4">{story.description}</p>
+                  <p className="text-muted-foreground mb-4">
+                    {story.description}
+                  </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
                     <div className="flex items-center">
                       <Tag className="h-4 w-4 mr-1 flex-shrink-0" />

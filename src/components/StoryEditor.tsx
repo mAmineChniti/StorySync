@@ -172,7 +172,7 @@ export default function StoryEditor() {
             {loadingStory ? (
               <div className="h-10 bg-gray-300 dark:bg-gray-700 w-1/2 animate-pulse" />
             ) : (
-              story?.title ?? "Error Loading Story"
+              (story?.title ?? "Error Loading Story")
             )}
           </CardTitle>
         </CardHeader>
@@ -213,12 +213,12 @@ export default function StoryEditor() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() =>
-                        editor.chain().focus().toggleBold().run()
-                      }
+                      onClick={() => editor.chain().focus().toggleBold().run()}
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("bold") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("bold")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <Bold className="h-4 w-4" />
@@ -231,7 +231,9 @@ export default function StoryEditor() {
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("italic") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("italic")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <Italic className="h-4 w-4" />
@@ -244,7 +246,9 @@ export default function StoryEditor() {
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("underline") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("underline")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <UnderlineIcon className="h-4 w-4" />
@@ -257,7 +261,9 @@ export default function StoryEditor() {
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("highlight") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("highlight")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <Highlighter className="h-4 w-4" />
@@ -273,7 +279,7 @@ export default function StoryEditor() {
                         "cursor-pointer",
                         editor.isActive("heading", { level: 1 })
                           ? "bg-blue-200 dark:bg-blue-700"
-                          : ""
+                          : "",
                       )}
                     >
                       <Heading1 className="h-4 w-4" />
@@ -288,7 +294,7 @@ export default function StoryEditor() {
                         "cursor-pointer",
                         editor.isActive("heading", { level: 2 })
                           ? "bg-blue-200 dark:bg-blue-700"
-                          : ""
+                          : "",
                       )}
                     >
                       <Heading2 className="h-4 w-4" />
@@ -303,7 +309,7 @@ export default function StoryEditor() {
                         "cursor-pointer",
                         editor.isActive("heading", { level: 3 })
                           ? "bg-blue-200 dark:bg-blue-700"
-                          : ""
+                          : "",
                       )}
                     >
                       <Heading3 className="h-4 w-4" />
@@ -317,7 +323,9 @@ export default function StoryEditor() {
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("bulletList") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("bulletList")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <List className="h-4 w-4" />
@@ -330,7 +338,9 @@ export default function StoryEditor() {
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("orderedList") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("orderedList")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <ListOrdered className="h-4 w-4" />
@@ -344,7 +354,9 @@ export default function StoryEditor() {
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("blockquote") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("blockquote")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <Quote className="h-4 w-4" />
@@ -357,7 +369,9 @@ export default function StoryEditor() {
                       }
                       className={cn(
                         "cursor-pointer",
-                        editor.isActive("codeBlock") ? "bg-blue-200 dark:bg-blue-700" : ""
+                        editor.isActive("codeBlock")
+                          ? "bg-blue-200 dark:bg-blue-700"
+                          : "",
                       )}
                     >
                       <Code className="h-4 w-4" />
@@ -383,7 +397,7 @@ export default function StoryEditor() {
                         "cursor-pointer",
                         editor.isActive({ textAlign: "left" })
                           ? "bg-blue-200 dark:bg-blue-700"
-                          : ""
+                          : "",
                       )}
                     >
                       <AlignLeft className="h-4 w-4" />
@@ -398,7 +412,7 @@ export default function StoryEditor() {
                         "cursor-pointer",
                         editor.isActive({ textAlign: "center" })
                           ? "bg-blue-200 dark:bg-blue-700"
-                          : ""
+                          : "",
                       )}
                     >
                       <AlignCenter className="h-4 w-4" />
@@ -413,7 +427,7 @@ export default function StoryEditor() {
                         "cursor-pointer",
                         editor.isActive({ textAlign: "right" })
                           ? "bg-blue-200 dark:bg-blue-700"
-                          : ""
+                          : "",
                       )}
                     >
                       <AlignRight className="h-4 w-4" />
@@ -428,13 +442,16 @@ export default function StoryEditor() {
                         "cursor-pointer",
                         editor.isActive({ textAlign: "justify" })
                           ? "bg-blue-200 dark:bg-blue-700"
-                          : ""
+                          : "",
                       )}
                     >
                       <AlignJustify className="h-4 w-4" />
                     </Button>
                   </div>
-                  <EditorContent editor={editor} className="p-4 min-h-[300px]" />
+                  <EditorContent
+                    editor={editor}
+                    className="p-4 min-h-[300px]"
+                  />
                 </>
               )}
             </div>
@@ -449,7 +466,10 @@ export default function StoryEditor() {
                 No content yet. Start writing to get started!
               </p>
               {canEdit() && (
-                <Button className="cursor-pointer" onClick={() => setIsEditing(true)}>
+                <Button
+                  className="cursor-pointer"
+                  onClick={() => setIsEditing(true)}
+                >
                   <Edit className="mr-2 h-4 w-4" /> Start Writing
                 </Button>
               )}
@@ -481,7 +501,10 @@ export default function StoryEditor() {
               </>
             ) : (
               content?.content && (
-                <Button className="cursor-pointer" onClick={() => setIsEditing(true)}>
+                <Button
+                  className="cursor-pointer"
+                  onClick={() => setIsEditing(true)}
+                >
                   <Edit className="mr-2 h-4 w-4" /> Edit Story
                 </Button>
               )
@@ -490,7 +513,10 @@ export default function StoryEditor() {
         )}
       </Card>
       <div className="mt-8 flex justify-end">
-        <Button className="cursor-pointer" onClick={() => router.push(`/fork/${story_id}`)}>
+        <Button
+          className="cursor-pointer"
+          onClick={() => router.push(`/fork/${story_id}`)}
+        >
           <GitBranch className="mr-2 h-4 w-4" /> Fork Story
         </Button>
       </div>

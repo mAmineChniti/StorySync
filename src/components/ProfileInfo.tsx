@@ -1,25 +1,50 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { AuthService } from "@/lib/requests";
-import { type UserStruct } from "@/types/authInterfaces";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { setCookie, deleteCookie } from "cookies-next/client";
-import { Edit2, Loader2, Save, Trash2, CalendarIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { formatDate, parseCookie } from "@/lib";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { formatDate, parseCookie } from "@/lib";
+import { AuthService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { type UserStruct } from "@/types/authInterfaces";
 import { eighteenYearsAgo } from "@/types/authSchemas";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteCookie, setCookie } from "cookies-next/client";
+import { format } from "date-fns";
+import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 export default function ProfileInfo() {
   const queryClient = useQueryClient();
@@ -31,7 +56,13 @@ export default function ProfileInfo() {
   const router = useRouter();
 
   const form = useForm<Partial<UserStruct>>({
-    defaultValues: { username: "", email: "", first_name: "", last_name: "", birthdate: "" }
+    defaultValues: {
+      username: "",
+      email: "",
+      first_name: "",
+      last_name: "",
+      birthdate: "",
+    },
   });
 
   useEffect(() => {
@@ -58,26 +89,12 @@ export default function ProfileInfo() {
     },
     onError: (error: Error) => {
       setUpdateError(error.message || "Failed to update profile");
-    }
+    },
   });
 
   const onUpdateSubmit = (data: Partial<UserStruct>) => {
-    // Create a copy of the data to submit
-    const userDataToSubmit: Partial<UserStruct> = { ...data };
-    
-    try {
-      // Handle the birthdate conversion - cast to any to bypass TypeScript checks
-      const birthdate: any = userDataToSubmit.birthdate;
-      if (birthdate && typeof birthdate.toISOString === 'function') {
-        // Convert Date to string in YYYY-MM-DD format
-        userDataToSubmit.birthdate = birthdate.toISOString().split('T')[0];
-      }
-    } catch (error) {
-      console.error("Error converting birthdate:", error);
-    }
-    
-    updateMutation.mutate(userDataToSubmit);
-  }
+    updateMutation.mutate(data);
+  };
 
   const deleteMutation = useMutation({
     mutationFn: () => AuthService.deleteAccount(),
@@ -89,12 +106,12 @@ export default function ProfileInfo() {
     },
     onError: (error: Error) => {
       setDeleteError(error.message || "Failed to delete account");
-    }
+    },
   });
 
   const onDeleteSubmit = () => {
     deleteMutation.mutate();
-  }
+  };
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -126,10 +143,13 @@ export default function ProfileInfo() {
               {isEditing ? "Cancel" : "Edit"}
             </Button>
 
-            <AlertDialog open={isDeleteDialogOpen} onOpenChange={(open) => {
-              setIsDeleteDialogOpen(open);
-              setDeleteError(null);
-            }}>
+            <AlertDialog
+              open={isDeleteDialogOpen}
+              onOpenChange={(open) => {
+                setIsDeleteDialogOpen(open);
+                setDeleteError(null);
+              }}
+            >
               <AlertDialogTrigger asChild>
                 <Button
                   variant="destructive"
@@ -192,9 +212,13 @@ export default function ProfileInfo() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        {field.name.split('_').map(word =>
-                          word.charAt(0).toUpperCase() + word.slice(1)
-                        ).join(' ')}
+                        {field.name
+                          .split("_")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(" ")}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -205,20 +229,24 @@ export default function ProfileInfo() {
                     </FormItem>
                   )}
                 />
-              ))}      
+              ))}
               <FormField
                 name="birthdate"
                 control={form.control}
                 render={({ field }) => {
                   let dateValue: Date | undefined = undefined;
                   if (field.value) {
-                    if (typeof field.value === 'string') {
+                    if (typeof field.value === "string") {
                       dateValue = new Date(field.value);
-                    } else if (field.value && typeof field.value === 'object' && 'getMonth' in field.value) {
+                    } else if (
+                      field.value &&
+                      typeof field.value === "object" &&
+                      "getMonth" in field.value
+                    ) {
                       dateValue = field.value as Date;
                     }
                   }
-                      
+
                   return (
                     <FormItem>
                       <FormLabel>Birthdate</FormLabel>
@@ -229,7 +257,7 @@ export default function ProfileInfo() {
                               variant="outline"
                               className={cn(
                                 "w-full pl-3 text-left font-normal",
-                                !dateValue && "text-muted-foreground"
+                                !dateValue && "text-muted-foreground",
                               )}
                               disabled={!isEditing || updateMutation.isPending}
                             >
@@ -248,7 +276,8 @@ export default function ProfileInfo() {
                             selected={dateValue}
                             onSelect={(newDate) => field.onChange(newDate)}
                             disabled={(date) =>
-                              date > eighteenYearsAgo || date < new Date("1900-01-01")
+                              date > eighteenYearsAgo ||
+                              date < new Date("1900-01-01")
                             }
                             initialFocus
                           />
@@ -265,9 +294,7 @@ export default function ProfileInfo() {
             {isEditing && (
               <div className="space-y-4">
                 {updateError && (
-                  <div className="text-destructive text-sm">
-                    {updateError}
-                  </div>
+                  <div className="text-destructive text-sm">{updateError}</div>
                 )}
                 <Button
                   type="submit"

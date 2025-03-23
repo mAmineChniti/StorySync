@@ -54,7 +54,7 @@ export default function Login() {
             access_created_at: userData.tokens.access_created_at,
             access_expires_at: userData.tokens.access_expires_at,
           }),
-          cookieOptions
+          cookieOptions,
         );
         setCookie(
           "refresh",
@@ -63,11 +63,14 @@ export default function Login() {
             refresh_created_at: userData.tokens.refresh_created_at,
             refresh_expires_at: userData.tokens.refresh_expires_at,
           }),
-          cookieOptions
+          cookieOptions,
         );
 
-        setTimeout(() => void checkAndRefreshToken(),
-          new Date(userData.tokens.access_expires_at).getTime() - Date.now() - 30000
+        setTimeout(
+          () => void checkAndRefreshToken(),
+          new Date(userData.tokens.access_expires_at).getTime() -
+            Date.now() -
+            30000,
         );
 
         router.push("/browse");
