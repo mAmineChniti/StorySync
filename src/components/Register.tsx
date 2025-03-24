@@ -16,13 +16,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { formatDate } from "@/lib";
 import { AuthService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
 import type { RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -203,7 +203,7 @@ export default function Register() {
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            formatDate(field.value)
                           ) : (
                             <span>Select your birthdate (18+ only)</span>
                           )}

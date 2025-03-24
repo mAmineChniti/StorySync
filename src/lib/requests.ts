@@ -42,6 +42,7 @@ const API_CONFIG = {
       COLLABORATIONS: "/collaborations",
       FILTERED_STORIES: "/get-stories-by-filters",
       DELETE_STORY: "/delete-story",
+      DELETE_ALL_STORIES: "/delete-all-stories",
     },
   },
 } as const;
@@ -248,6 +249,21 @@ export const StoryService = {
       (data) => data.stories ?? [],
     );
   },
+
+  async deleteAllStories(): Promise<void> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return;
+    }
+    const response = await fetch(
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_ALL_STORIES}`,
+      {
+        method: "DELETE",
+        headers,
+      },
+    );
+    await handleResponse<{ message: string }>(response);
+  }
 };
 
 export const AuthService = {

@@ -34,13 +34,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { formatDate, parseCookie } from "@/lib";
-import { AuthService } from "@/lib/requests";
+import { AuthService, StoryService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
 import { type UserStruct } from "@/types/authInterfaces";
 import { eighteenYearsAgo } from "@/types/authSchemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, setCookie } from "cookies-next/client";
-import { format } from "date-fns";
 import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -96,8 +95,11 @@ export default function ProfileInfo() {
     updateMutation.mutate(data);
   };
 
-  const deleteMutation = useMutation({
-    mutationFn: () => AuthService.deleteAccount(),
+  const accountDeleteMutation = useMutation({
+    mutationFn: async () => {
+      await StoryService.deleteAllStories();
+      await AuthService.deleteAccount();
+    },
     onSuccess: () => {
       deleteCookie("user");
       deleteCookie("auth_token");
@@ -110,7 +112,7 @@ export default function ProfileInfo() {
   });
 
   const onDeleteSubmit = () => {
-    deleteMutation.mutate();
+    accountDeleteMutation.mutate();
   };
 
   const handleEditToggle = () => {
@@ -164,14 +166,14 @@ export default function ProfileInfo() {
                   size="sm"
                   type="button"
                   className="gap-2 cursor-pointer"
-                  disabled={deleteMutation.isPending}
+                  disabled={accountDeleteMutation.isPending}
                 >
-                  {deleteMutation.isPending ? (
+                  {accountDeleteMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Trash2 className="h-4 w-4" />
                   )}
-                  {deleteMutation.isPending ? "Deleting..." : "Delete Account"}
+                  {accountDeleteMutation.isPending ? "Deleting..." : "Delete Account"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent
@@ -184,7 +186,8 @@ export default function ProfileInfo() {
                     Confirm Deletion
                   </AlertDialogTitle>
                   <AlertDialogDescription className="text-sm sm:text-base">
-                    This will permanently delete your account and all data.
+                    This will permanently delete your account and all associated stories.
+                    All stories you have created will be permanently removed.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 {deleteError && (
@@ -199,9 +202,9 @@ export default function ProfileInfo() {
                   <AlertDialogAction
                     className="cursor-pointer bg-destructive text-white hover:bg-destructive/70 w-full sm:w-auto"
                     onClick={() => onDeleteSubmit()}
-                    disabled={deleteMutation.isPending}
+                    disabled={accountDeleteMutation.isPending}
                   >
-                    {deleteMutation.isPending && (
+                    {accountDeleteMutation.isPending && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
                     Confirm Delete
@@ -276,9 +279,7 @@ export default function ProfileInfo() {
                               )}
                               disabled={!isEditing || updateMutation.isPending}
                             >
-                              {dateValue ? (
-                                format(dateValue, "PPP")
-                              ) : (
+                              {dateValue ? formatDate(dateValue) : (
                                 <span>Optional: Pick a date (18+ only)</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -289,7 +290,9 @@ export default function ProfileInfo() {
                           <Calendar
                             mode="single"
                             selected={dateValue}
-                            onSelect={(newDate) => field.onChange(newDate)}
+                            onSelect={(newDate) => {
+                              field.onChange(newDate);
+                            }}
                             disabled={(date) =>
                               date > eighteenYearsAgo ||
                               date < new Date("1900-01-01")

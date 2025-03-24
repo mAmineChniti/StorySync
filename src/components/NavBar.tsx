@@ -37,7 +37,7 @@ export default function NavBar() {
           <Link href="/" passHref legacyBehavior>
             <NavigationMenuLink
               aria-label="Home"
-              className="px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent/20 focus:outline-none active:bg-accent/30"
+              className="px-3 py-1 rounded-md hover:bg-transparent hover:text-inherit focus:outline-none focus:bg-transparent"
             >
               <Image
                 src="/favicon.ico"

@@ -82,7 +82,6 @@ export const formatDate = (
       year: "numeric",
       month: "numeric",
       day: "numeric",
-      timeZone: "UTC",
     }).format(date);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
