@@ -4,7 +4,7 @@ import { parseCookie } from "@/lib";
 import { AuthService } from "@/lib/requests";
 import type { AccessToken, UserStruct } from "@/types/authInterfaces";
 import { deleteCookie, setCookie } from "cookies-next/client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export const REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -100,8 +100,10 @@ export const checkAndRefreshToken = async () => {
 
 export const useTokenRefresh = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    const isAuthPage = pathname === "/login" || pathname === "/register";
     let timeoutId: NodeJS.Timeout;
 
     const checkAuthState = async () => {
@@ -109,7 +111,9 @@ export const useTokenRefresh = () => {
         const result = await checkAndRefreshToken();
 
         if (!result.success) {
-          router.push("/");
+          if (!isAuthPage) {
+            router.push("/");
+          }
           return;
         }
 
@@ -146,5 +150,5 @@ export const useTokenRefresh = () => {
       clearTimeout(timeoutId);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [router]);
+  }, [router, pathname]);
 };
