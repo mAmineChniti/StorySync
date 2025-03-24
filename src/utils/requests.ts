@@ -1,5 +1,4 @@
 import { env } from "@/env";
-import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/lib";
 import {
   type LoginRequest,
   type LoginResponse,
@@ -9,6 +8,7 @@ import {
   type UserStruct,
 } from "@/types/authInterfaces";
 import type * as storyResponses from "@/types/storyInterfaces";
+import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/utils/lib";
 
 const API_CONFIG = {
   AUTH: {

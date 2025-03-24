@@ -8,9 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getUserId } from "@/lib";
-import { StoryService } from "@/lib/requests";
-import { cn } from "@/lib/utils";
+import { getUserId } from "@/utils/lib";
+import { StoryService } from "@/utils/requests";
+import { cn } from "@/utils/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Highlight from "@tiptap/extension-highlight";

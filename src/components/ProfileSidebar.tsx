@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { BookOpen, Edit, PenTool, User } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 

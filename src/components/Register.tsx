@@ -16,11 +16,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatDate } from "@/lib";
-import { AuthService } from "@/lib/requests";
-import { cn } from "@/lib/utils";
 import type { RegisterRequest, RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
+import { formatDate } from "@/utils/lib";
+import { AuthService } from "@/utils/requests";
+import { cn } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { CalendarIcon, Loader2 } from "lucide-react";

@@ -33,11 +33,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatDate, parseCookie } from "@/lib";
-import { AuthService, StoryService } from "@/lib/requests";
-import { cn } from "@/lib/utils";
 import { type UserStruct } from "@/types/authInterfaces";
 import { eighteenYearsAgo } from "@/types/authSchemas";
+import { formatDate, parseCookie } from "@/utils/lib";
+import { AuthService, StoryService } from "@/utils/requests";
+import { cn } from "@/utils/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, setCookie } from "cookies-next/client";
 import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
