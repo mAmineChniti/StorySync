@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { DayPicker, useNavigation, type CaptionProps } from "react-day-picker";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Select,
@@ -11,6 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import * as React from "react";
+import { DayPicker, useNavigation, type CaptionProps } from "react-day-picker";
 
 function YearMonthSelector({ displayMonth }: CaptionProps) {
   const { goToMonth } = useNavigation();

@@ -1,16 +1,12 @@
 import { env } from "@/env";
+import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/lib";
 import {
-  getAuthHeaders,
-  getRefreshHeaders,
-  getUserId,
-} from "@/lib";
-import {
-  type RegisterRequest,
+  type LoginRequest,
   type LoginResponse,
+  type RegisterRequest,
   type RegisterResponse,
   type Tokens,
   type UserStruct,
-  type LoginRequest,
 } from "@/types/authInterfaces";
 import type * as storyResponses from "@/types/storyInterfaces";
 
@@ -48,7 +44,7 @@ const API_CONFIG = {
 type ApiError = {
   message?: string;
   [key: string]: unknown;
-}
+};
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
@@ -201,7 +197,9 @@ export const StoryService = {
     );
   },
 
-  async getByFilters(params: storyResponses.FetchStoriesByFilterParams): Promise<storyResponses.StoryDetails[]> {
+  async getByFilters(
+    params: storyResponses.FetchStoriesByFilterParams,
+  ): Promise<storyResponses.StoryDetails[]> {
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return [];
@@ -255,13 +253,11 @@ export const StoryService = {
       },
     );
     await handleResponse<{ message: string }>(response);
-  }
+  },
 };
 
 export const AuthService = {
-  async login(
-    credentials: LoginRequest,
-  ): Promise<LoginResponse> {
+  async login(credentials: LoginRequest): Promise<LoginResponse> {
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.LOGIN}`,
       {
@@ -273,9 +269,7 @@ export const AuthService = {
     return handleResponse<LoginResponse>(response);
   },
 
-  async register(
-    data: RegisterRequest,
-  ): Promise<RegisterResponse> {
+  async register(data: RegisterRequest): Promise<RegisterResponse> {
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REGISTER}`,
       {

@@ -69,8 +69,8 @@ export default function Login() {
         setTimeout(
           () => void checkAndRefreshToken(),
           new Date(userData.tokens.access_expires_at).getTime() -
-          Date.now() -
-          30000,
+            Date.now() -
+            30000,
         );
 
         router.push("/browse");
