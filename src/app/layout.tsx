@@ -29,11 +29,7 @@ export default function RootLayout({
       <ClientTokenRefresher />
       <Analytics />
       <body className="bg-background text-primary-foreground min-h-screen">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NavBar />
           <main className="pt-16 pb-16 w-full bg-background text-primary-foreground">
             <Providers>{children}</Providers>

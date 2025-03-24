@@ -193,7 +193,7 @@ export default function UserStories() {
                     <Button
                       size="sm"
                       onClick={() => router.push(`/story/${story.id}`)}
-                      className="gap-2"
+                      className="gap-2 cursor-pointer"
                     >
                       <Edit className="h-4 w-4" />
                       Continue Writing
@@ -203,7 +203,7 @@ export default function UserStories() {
                       variant="destructive"
                       onClick={() => handleDeleteStory(story.id)}
                       disabled={deletingStoryId === story.id}
-                      className="gap-2"
+                      className="gap-2 cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                       {deletingStoryId === story.id ? "Deleting..." : "Delete"}

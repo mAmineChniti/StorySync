@@ -173,7 +173,9 @@ export default function ProfileInfo() {
                   ) : (
                     <Trash2 className="h-4 w-4" />
                   )}
-                  {accountDeleteMutation.isPending ? "Deleting..." : "Delete Account"}
+                  {accountDeleteMutation.isPending
+                    ? "Deleting..."
+                    : "Delete Account"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent
@@ -186,8 +188,9 @@ export default function ProfileInfo() {
                     Confirm Deletion
                   </AlertDialogTitle>
                   <AlertDialogDescription className="text-sm sm:text-base">
-                    This will permanently delete your account and all associated stories.
-                    All stories you have created will be permanently removed.
+                    This will permanently delete your account and all associated
+                    stories. All stories you have created will be permanently
+                    removed.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 {deleteError && (
@@ -279,7 +282,9 @@ export default function ProfileInfo() {
                               )}
                               disabled={!isEditing || updateMutation.isPending}
                             >
-                              {dateValue ? formatDate(dateValue) : (
+                              {dateValue ? (
+                                formatDate(dateValue)
+                              ) : (
                                 <span>Optional: Pick a date (18+ only)</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />

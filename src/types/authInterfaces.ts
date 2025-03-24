@@ -6,7 +6,7 @@ export type UserStruct = {
   last_name: string;
   birthdate: string;
   date_joined: string;
-}
+};
 
 export type Tokens = {
   access_token: string;
@@ -15,31 +15,31 @@ export type Tokens = {
   refresh_token: string;
   refresh_created_at: string;
   refresh_expires_at: string;
-}
+};
 
 export type AccessToken = {
   access_token: string;
   access_created_at: string;
   access_expires_at: string;
-}
+};
 
 export type RefreshToken = {
   refresh_token: string;
   refresh_created_at: string;
   refresh_expires_at: string;
-}
+};
 
 export type RegisterResponse = {
   message: string;
   user: UserStruct;
   tokens: Tokens;
-}
+};
 
 export type LoginResponse = {
   message: string;
   user: UserStruct;
   tokens: Tokens;
-}
+};
 
 export type RegisterRequest = {
   username: string;
@@ -48,9 +48,9 @@ export type RegisterRequest = {
   first_name: string;
   last_name: string;
   birthdate: string;
-}
+};
 
 export type LoginRequest = {
   identifier: string;
   password: string;
-}
+};

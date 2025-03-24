@@ -19,7 +19,7 @@ import {
 import { formatDate } from "@/lib";
 import { AuthService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
-import type { RegisterResponse, RegisterRequest } from "@/types/authInterfaces";
+import type { RegisterRequest, RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -207,7 +207,7 @@ export default function Register() {
                           variant="outline"
                           className={cn(
                             "w-full pl-3 text-left font-normal bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
@@ -224,7 +224,10 @@ export default function Register() {
                         mode="single"
                         selected={field.value}
                         onSelect={(selectedDate) => {
-                          if (selectedDate && selectedDate <= eighteenYearsAgo) {
+                          if (
+                            selectedDate &&
+                            selectedDate <= eighteenYearsAgo
+                          ) {
                             field.onChange(selectedDate);
                           }
                         }}
