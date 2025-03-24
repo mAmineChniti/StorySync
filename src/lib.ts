@@ -3,7 +3,7 @@ import type {
   RefreshToken,
   UserStruct,
 } from "@/types/authInterfaces";
-import { getCookie } from "cookies-next";
+import { getCookie } from "cookies-next/client";
 
 type SafeParseResult<T> =
   | { success: true; data: T }
