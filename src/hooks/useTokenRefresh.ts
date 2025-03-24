@@ -7,7 +7,7 @@ import { deleteCookie, setCookie } from "cookies-next/client";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export const REFRESH_THRESHOLD = 5 * 60 * 1000;
+const REFRESH_THRESHOLD = 5 * 60 * 1000;
 
 const handleLogout = () => {
   deleteCookie("user");

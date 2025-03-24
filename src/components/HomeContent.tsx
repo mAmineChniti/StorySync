@@ -22,6 +22,8 @@ const OwnerName = ({ ownerId }: { ownerId: string }) => {
   const { data, isPending, error } = useQuery({
     queryKey: ["ownerName", ownerId],
     queryFn: () => AuthService.getUserName(ownerId),
+    staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
   });
 
   if (isPending) return <span className="line-clamp-1">Loading author...</span>;
@@ -51,8 +53,10 @@ export default function HomeContent() {
     hasNextPage,
     error,
   } = useInfiniteQuery({
-    queryKey: ["stories", selectedGenres, searchQuery],
+    queryKey: ["stories", selectedGenres, searchQuery, limit],
     initialPageParam: 1,
+    staleTime: 30 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     queryFn: async ({ pageParam }) => {
       const result =
         selectedGenres.length > 0

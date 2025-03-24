@@ -25,8 +25,10 @@ export default function UserStories() {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["userStories", currentPage],
+    queryKey: ["userStories", currentPage, limit],
     queryFn: () => StoryService.getUserStories(currentPage, limit),
+    staleTime: 30 * 60 * 1000,
+    gcTime: 20 * 60 * 1000,
   });
 
   const mutation = useMutation<void, Error, string>({
@@ -147,7 +149,7 @@ export default function UserStories() {
               story!
             </p>
             <Button
-              className="mt-4"
+              className="mt-4 cursor-pointer"
               onClick={() => router.push("/create-story")}
             >
               Create Your First Story

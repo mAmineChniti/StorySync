@@ -19,7 +19,7 @@ import {
 import { formatDate } from "@/lib";
 import { AuthService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
-import type { RegisterResponse } from "@/types/authInterfaces";
+import type { RegisterResponse, RegisterRequest } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -48,7 +48,7 @@ export default function Register() {
   const registerMutation = useMutation<
     RegisterResponse,
     Error,
-    z.infer<typeof registerSchema>
+    RegisterRequest
   >({
     mutationFn: (data) => AuthService.register(data),
     onSuccess: () => {
@@ -61,7 +61,15 @@ export default function Register() {
   });
 
   const onSubmit = (data: z.infer<typeof registerSchema>) => {
-    registerMutation.mutate(data);
+    const registerData: RegisterRequest = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      birthdate: data.birthdate.toISOString(),
+    };
+    registerMutation.mutate(registerData);
   };
 
   return (
@@ -199,13 +207,13 @@ export default function Register() {
                           variant="outline"
                           className={cn(
                             "w-full pl-3 text-left font-normal bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors",
-                            !field.value && "text-muted-foreground",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value ? (
                             formatDate(field.value)
                           ) : (
-                            <span>Select your birthdate (18+ only)</span>
+                            <span>Pick a date</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -215,11 +223,12 @@ export default function Register() {
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > eighteenYearsAgo ||
-                          date < new Date("1900-01-01")
-                        }
+                        onSelect={(selectedDate) => {
+                          if (selectedDate && selectedDate <= eighteenYearsAgo) {
+                            field.onChange(selectedDate);
+                          }
+                        }}
+                        disabled={(date) => date > eighteenYearsAgo}
                         initialFocus
                       />
                     </PopoverContent>
@@ -243,8 +252,8 @@ export default function Register() {
           >
             {registerMutation.isPending ? (
               <>
-                <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                Registering...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating Account...
               </>
             ) : (
               "Create Account"

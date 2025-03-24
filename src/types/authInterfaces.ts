@@ -1,4 +1,4 @@
-export interface UserStruct {
+export type UserStruct = {
   id: string;
   username: string;
   email: string;
@@ -8,7 +8,7 @@ export interface UserStruct {
   date_joined: string;
 }
 
-export interface Tokens {
+export type Tokens = {
   access_token: string;
   access_created_at: string;
   access_expires_at: string;
@@ -17,35 +17,40 @@ export interface Tokens {
   refresh_expires_at: string;
 }
 
-export interface AccessToken {
+export type AccessToken = {
   access_token: string;
   access_created_at: string;
   access_expires_at: string;
 }
 
-export interface RefreshToken {
+export type RefreshToken = {
   refresh_token: string;
   refresh_created_at: string;
   refresh_expires_at: string;
 }
 
-export interface RegisterResponse {
+export type RegisterResponse = {
   message: string;
   user: UserStruct;
   tokens: Tokens;
 }
 
-export interface LoginResponse {
+export type LoginResponse = {
   message: string;
   user: UserStruct;
   tokens: Tokens;
 }
 
-export interface RegisterRequest {
+export type RegisterRequest = {
   username: string;
   email: string;
   password: string;
   first_name: string;
   last_name: string;
   birthdate: string;
+}
+
+export type LoginRequest = {
+  identifier: string;
+  password: string;
 }
