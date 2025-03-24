@@ -25,8 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { StoryService } from "@/lib/requests";
 import { storySchema } from "@/types/storySchemas";
+import { StoryService } from "@/utils/requests";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { BookOpen } from "lucide-react";

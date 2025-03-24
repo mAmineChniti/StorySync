@@ -10,9 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate } from "@/lib";
-import { AuthService, StoryService } from "@/lib/requests";
 import { type StoryDetails } from "@/types/storyInterfaces";
+import { formatDate } from "@/utils/lib";
+import { AuthService, StoryService } from "@/utils/requests";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Edit, Eye, Tag, User, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
