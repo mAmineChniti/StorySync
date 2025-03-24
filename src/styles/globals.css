@@ -140,7 +140,7 @@
   }
 
   html {
-    @apply transition-colors duration-1000; /* Smooth theme transition */
+    @apply transition-colors duration-1000;
   }
 
   body {

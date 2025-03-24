@@ -65,6 +65,8 @@ export default function StoryEditor() {
   } = useQuery({
     queryKey: ["story", story_id],
     queryFn: () => StoryService.getDetails(story_id),
+    staleTime: 30 * 60 * 1000,
+    gcTime: 20 * 60 * 1000,
     enabled: !!story_id,
   });
 
@@ -75,12 +77,16 @@ export default function StoryEditor() {
   } = useQuery({
     queryKey: ["content", story_id],
     queryFn: () => StoryService.getContent(story_id),
+    staleTime: 30 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     enabled: !!story_id,
   });
 
   const { data: collaborators } = useQuery({
     queryKey: ["collaborators", story_id],
     queryFn: () => StoryService.getCollaborators(story_id),
+    staleTime: 60 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     enabled: !!story_id,
   });
 

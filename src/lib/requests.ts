@@ -1,20 +1,18 @@
 import { env } from "@/env";
 import {
-  getAccessToken,
   getAuthHeaders,
   getRefreshHeaders,
   getUserId,
 } from "@/lib";
 import {
+  type RegisterRequest,
   type LoginResponse,
   type RegisterResponse,
   type Tokens,
   type UserStruct,
+  type LoginRequest,
 } from "@/types/authInterfaces";
-import { type loginSchema, type registerSchema } from "@/types/authSchemas";
 import type * as storyResponses from "@/types/storyInterfaces";
-import { type storySchema } from "@/types/storySchemas";
-import { type z } from "zod";
 
 const API_CONFIG = {
   AUTH: {
@@ -47,7 +45,7 @@ const API_CONFIG = {
   },
 } as const;
 
-interface ApiError {
+type ApiError = {
   message?: string;
   [key: string]: unknown;
 }
@@ -71,7 +69,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export const StoryService = {
   async create(
-    storyData: z.infer<typeof storySchema>,
+    storyData: storyResponses.StoryRequest,
   ): Promise<{ message: string; story_id: string }> {
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
@@ -203,11 +201,7 @@ export const StoryService = {
     );
   },
 
-  async getByFilters(params: {
-    genres?: string[];
-    page: number;
-    limit: number;
-  }): Promise<storyResponses.StoryDetails[]> {
+  async getByFilters(params: storyResponses.FetchStoriesByFilterParams): Promise<storyResponses.StoryDetails[]> {
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return [];
@@ -231,8 +225,6 @@ export const StoryService = {
   ): Promise<storyResponses.StoryDetails[]> {
     const userId = getUserId();
     if (!userId) return [];
-    const token = getAccessToken();
-    if (!token) return [];
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return [];
@@ -268,7 +260,7 @@ export const StoryService = {
 
 export const AuthService = {
   async login(
-    credentials: z.infer<typeof loginSchema>,
+    credentials: LoginRequest,
   ): Promise<LoginResponse> {
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.LOGIN}`,
@@ -282,7 +274,7 @@ export const AuthService = {
   },
 
   async register(
-    data: z.infer<typeof registerSchema>,
+    data: RegisterRequest,
   ): Promise<RegisterResponse> {
     const response = await fetch(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REGISTER}`,

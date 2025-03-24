@@ -26,19 +26,18 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${inter.className}`}
       suppressHydrationWarning
     >
-      <body className="bg-background text-primary-foreground">
+      <ClientTokenRefresher />
+      <Analytics />
+      <body className="bg-background text-primary-foreground min-h-screen">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
         >
           <NavBar />
-          <ClientTokenRefresher />
-          <main className="min-h-[calc(100vh-8rem)] pt-16 pb-16">
+          <main className="pt-16 pb-16 w-full bg-background text-primary-foreground">
             <Providers>{children}</Providers>
           </main>
-          <Analytics />
           <Footer />
         </ThemeProvider>
       </body>

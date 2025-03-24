@@ -39,9 +39,8 @@ const getToken = (
   return typeof token === "string" ? token.trim() : null;
 };
 
-export const getAccessToken = (): string | null =>
-  getToken("access", "access_token");
-export const getRefreshToken = (): string | null =>
+const getAccessToken = (): string | null => getToken("access", "access_token");
+const getRefreshToken = (): string | null =>
   getToken("refresh", "refresh_token");
 
 export const getAuthHeaders = (): HeadersInit => {
