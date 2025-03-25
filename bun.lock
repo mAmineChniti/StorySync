@@ -15,7 +15,7 @@
         "@radix-ui/react-slot": "^1.1.2",
         "@t3-oss/env-nextjs": "^0.12.0",
         "@tanstack/react-query": "^5.67.2",
-        "@thatguyjamal/type-fetch": "^0.1.5",
+        "@thatguyjamal/type-fetch": "^0.2.0",
         "@tiptap/extension-code-block-lowlight": "^2.11.5",
         "@tiptap/extension-highlight": "^2.11.5",
         "@tiptap/extension-horizontal-rule": "^2.11.5",
@@ -307,7 +307,7 @@
 
     "@tanstack/react-query": ["@tanstack/react-query@5.69.0", "", { "dependencies": { "@tanstack/query-core": "5.69.0" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-Ift3IUNQqTcaFa1AiIQ7WCb/PPy8aexZdq9pZWLXhfLcLxH0+PZqJ2xFImxCpdDZrFRZhLJrh76geevS5xjRhA=="],
 
-    "@thatguyjamal/type-fetch": ["@thatguyjamal/type-fetch@0.1.5", "", {}, "sha512-MEAbKAIiKGfGH9tvc8HIjn7rVWI5CphX+dWt16a2OCJW6UwIUFTHsebU5NVliSvXP+Uz2fkHDl8q5sKmyPBwDw=="],
+    "@thatguyjamal/type-fetch": ["@thatguyjamal/type-fetch@0.2.0", "", {}, "sha512-bNjJokGmNXxpvtoKEfA1WlrnfT2XFfLb+aY/48nw7kkXzfU4uXvNcEf8uHybBt5nD41O9pxFGjlNBGcPG6BiKw=="],
 
     "@tiptap/core": ["@tiptap/core@2.11.5", "", { "peerDependencies": { "@tiptap/pm": "^2.7.0" } }, "sha512-jb0KTdUJaJY53JaN7ooY3XAxHQNoMYti/H6ANo707PsLXVeEqJ9o8+eBup1JU5CuwzrgnDc2dECt2WIGX9f8Jw=="],
 

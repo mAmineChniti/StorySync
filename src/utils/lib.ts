@@ -49,7 +49,6 @@ export const getAuthHeaders = (): HeadersInit => {
     return {};
   }
   const headers = {
-    "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
   return headers;
@@ -61,7 +60,6 @@ export const getRefreshHeaders = (): HeadersInit => {
     return {};
   }
   const headers = {
-    "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
   return headers;

@@ -9,6 +9,14 @@ import {
 } from "@/types/authInterfaces";
 import type * as storyResponses from "@/types/storyInterfaces";
 import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/utils/lib";
+import { TFetchClient } from "@thatguyjamal/type-fetch";
+
+const tfetch = new TFetchClient({
+  retry: {
+    count: 2,
+    delay: 1000,
+  },
+});
 
 const API_CONFIG = {
   AUTH: {
@@ -71,15 +79,18 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return { message: "", story_id: "" };
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.post<{
+      message: string;
+      story_id: string;
+    }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.CREATE_STORY}`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify(storyData),
-      },
+      headers,
+      { type: "json", data: storyData },
     );
-    return handleResponse<{ message: string; story_id: string }>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data ?? { message: "", story_id: "" };
   },
 
   async edit(storyId: string, content: string): Promise<void> {
@@ -91,7 +102,10 @@ export const StoryService = {
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.EDIT_STORY}`,
       {
         method: "PATCH",
-        headers,
+        headers: {
+          "Content-Type": "application/json",
+          ...headers,
+        },
         body: JSON.stringify({ story_id: storyId, content }),
       },
     );
@@ -103,50 +117,44 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return {} as storyResponses.StoryDetails;
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.get<{
+      story: storyResponses.StoryDetails;
+    }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}/${storyId}`,
-      {
-        method: "GET",
-        headers,
-      },
+      headers,
     );
-    return handleResponse<{ story: storyResponses.StoryDetails }>(
-      response,
-    ).then((data) => data.story ?? ({} as storyResponses.StoryDetails));
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data?.story ?? ({} as storyResponses.StoryDetails);
   },
 
   async list(
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
-    const response = await fetch(
+    const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ page, limit }),
-      },
+      getAuthHeaders(),
+      { type: "json", data: { page, limit } },
     );
-    return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories ?? [],
-    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data?.stories ?? [];
   },
 
   async getContent(storyId: string): Promise<storyResponses.StoryContent> {
-    const response = await fetch(
+    const { data, error } = await tfetch.get<{
+      content: storyResponses.StoryContent;
+    }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}/${storyId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
+      getAuthHeaders() ?? {},
     );
-    return handleResponse<{ content: storyResponses.StoryContent }>(
-      response,
-    ).then((data) => data.content ?? []);
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data?.content ?? ([] as unknown as storyResponses.StoryContent);
   },
 
   async delete(storyId: string): Promise<void> {
@@ -154,26 +162,24 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
-    const response = await fetch(
+    const { error } = await tfetch.delete<{ message: string }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}/${storyId}`,
-      {
-        method: "DELETE",
-        headers,
-      },
+      headers,
     );
-    await handleResponse<{ message: string }>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
   },
 
   async getCollaborators(storyId: string): Promise<string[]> {
-    const response = await fetch(
+    const { data, error } = await tfetch.get<string[]>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}/${storyId}`,
-      {
-        method: "GET",
-      },
+      getAuthHeaders(),
     );
-    return handleResponse<{ collaborators: string[] }>(response).then(
-      (data) => data.collaborators ?? [],
-    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data ?? [];
   },
 
   async getCollaboratedStories(
@@ -184,17 +190,15 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return [];
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATIONS}`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ page, limit }),
-      },
+      headers,
+      { type: "json", data: { page, limit } },
     );
-    return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories ?? [],
-    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data?.stories ?? [];
   },
 
   async getByFilters(
@@ -204,17 +208,15 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return [];
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FILTERED_STORIES}`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify(params),
-      },
+      headers,
+      { type: "json", data: params },
     );
-    return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories || [],
-    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data?.stories ?? [];
   },
 
   async getUserStories(
@@ -227,17 +229,15 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return [];
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.USER_STORIES}`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ user_id: userId, page, limit }),
-      },
+      headers,
+      { type: "json", data: { user_id: userId, page, limit } },
     );
-    return handleResponse<storyResponses.StoryResponse>(response).then(
-      (data) => data.stories ?? [],
-    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data?.stories ?? [];
   },
 
   async deleteAllStories(): Promise<void> {
@@ -245,63 +245,64 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
-    const response = await fetch(
+    const { error } = await tfetch.delete<{ message: string }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_ALL_STORIES}`,
-      {
-        method: "DELETE",
-        headers,
-      },
+      headers,
     );
-    await handleResponse<{ message: string }>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
   },
 };
 
 export const AuthService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await fetch(
+    const { data, error } = await tfetch.post<LoginResponse>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.LOGIN}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      },
+      { "Content-Type": "application/json" },
+      { type: "json", data: credentials },
     );
-    return handleResponse<LoginResponse>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data ?? ({} as LoginResponse);
   },
 
   async register(data: RegisterRequest): Promise<RegisterResponse> {
-    const response = await fetch(
+    const { data: responseData, error } = await tfetch.post<RegisterResponse>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REGISTER}`,
+      { "Content-Type": "application/json" },
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        type: "json",
+        data: {
           username: data.username,
           email: data.email,
           password: data.password,
           first_name: data.first_name,
           last_name: data.last_name,
-        }),
+        },
       },
     );
-    return handleResponse<RegisterResponse>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
+    return responseData ?? ({} as RegisterResponse);
   },
 
   async getProfile(
     userId: string,
   ): Promise<{ first_name: string; last_name: string }> {
-    const response = await fetch(
+    const { data, error } = await tfetch.post<UserStruct>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.FETCH_USER}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId }),
-      },
+      { type: "json", data: { user_id: userId } },
     );
-    return handleResponse<UserStruct>(response).then((user) => ({
-      first_name: user.first_name ?? "",
-      last_name: user.last_name ?? "",
-    }));
+    if (error) {
+      throw new Error(error.message);
+    }
+    return {
+      first_name: data?.first_name ?? "",
+      last_name: data?.last_name ?? "",
+    };
   },
 
   async updateProfile(updatedData: Partial<UserStruct>): Promise<UserStruct> {
@@ -309,15 +310,15 @@ export const AuthService = {
     if (!headers || Object.keys(headers).length === 0) {
       return {} as UserStruct;
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.put<UserStruct>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.UPDATE_USER}`,
-      {
-        method: "PUT",
-        headers,
-        body: JSON.stringify(updatedData),
-      },
+      headers,
+      { type: "json", data: updatedData },
     );
-    return handleResponse<UserStruct>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data ?? ({} as UserStruct);
   },
 
   async getUserName(
@@ -327,18 +328,18 @@ export const AuthService = {
     if (!headers || Object.keys(headers).length === 0) {
       return { first_name: "", last_name: "" };
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.post<{ user: UserStruct }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.FETCH_USER_BY_ID}`,
-      {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({ user_id: ownerId }),
-      },
+      headers,
+      { type: "json", data: { user_id: ownerId } },
     );
-    return handleResponse<{ user: UserStruct }>(response).then((data) => ({
-      first_name: data.user.first_name ?? "",
-      last_name: data.user.last_name ?? "",
-    }));
+    if (error) {
+      throw new Error(error.message);
+    }
+    return {
+      first_name: data?.user.first_name ?? "",
+      last_name: data?.user.last_name ?? "",
+    };
   },
 
   async deleteAccount(): Promise<void> {
@@ -346,14 +347,13 @@ export const AuthService = {
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
-    const response = await fetch(
+    const { error } = await tfetch.delete<{ message: string }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.DELETE_USER}`,
-      {
-        method: "DELETE",
-        headers,
-      },
+      headers,
     );
-    await handleResponse<{ message: string }>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
   },
 
   async refreshTokens(): Promise<Tokens> {
@@ -361,15 +361,13 @@ export const AuthService = {
     if (!refreshHeaders || Object.keys(refreshHeaders).length === 0) {
       return {} as Tokens;
     }
-    const response = await fetch(
+    const { data, error } = await tfetch.get<{ tokens: Tokens }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REFRESH}`,
-      {
-        method: "GET",
-        headers: refreshHeaders,
-      },
+      refreshHeaders,
     );
-    return handleResponse<{ message: string; tokens: Tokens }>(response).then(
-      (data) => data.tokens ?? ({} as Tokens),
-    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data?.tokens ?? ({} as Tokens);
   },
 };
