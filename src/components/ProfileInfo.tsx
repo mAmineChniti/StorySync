@@ -33,7 +33,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { type UserStruct } from "@/types/authInterfaces";
+import { type UpdateRequest, type UserStruct } from "@/types/authInterfaces";
 import { eighteenYearsAgo } from "@/types/authSchemas";
 import { formatDate, parseCookie } from "@/utils/lib";
 import { AuthService, StoryService } from "@/utils/requests";
@@ -44,23 +44,27 @@ import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type * as z from "zod";
+
+import { type profileUpdateSchema } from "@/types/authSchemas";
 
 export default function ProfileInfo() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [updateError, setUpdateError] = useState<string | null>(null);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [user, setUser] = useState<UserStruct | null>(null);
   const router = useRouter();
 
-  const form = useForm<Partial<UserStruct>>({
+  const form = useForm<z.infer<typeof profileUpdateSchema>>({
     defaultValues: {
       username: "",
       email: "",
       first_name: "",
       last_name: "",
-      birthdate: "",
+      birthdate: undefined,
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -71,43 +75,82 @@ export default function ProfileInfo() {
 
   useEffect(() => {
     if (user) {
-      form.reset(user);
+      form.reset({
+        username: user.username,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        birthdate: user.birthdate ? new Date(user.birthdate) : undefined,
+        password: "",
+        confirmPassword: "",
+      });
     }
   }, [user, form]);
 
-  const updateMutation = useMutation({
-    mutationFn: (data: Partial<UserStruct>) => AuthService.updateProfile(data),
+  const updateMutation = useMutation<UserStruct, Error, UpdateRequest>({
+    mutationFn: (data) => AuthService.updateProfile(data),
     onSuccess: (data) => {
-      if (data) {
-        queryClient.setQueryData(["userProfile"], data);
-        deleteCookie("user");
-        setCookie("user", JSON.stringify(data));
-        setIsEditing(false);
-        setUpdateError(null);
-      }
+      toast.success("Profile updated successfully");
+      queryClient.setQueryData(["userProfile"], data);
+      deleteCookie("user");
+      setCookie("user", JSON.stringify(data));
+      setIsEditing(false);
     },
     onError: (error: Error) => {
-      setUpdateError(error.message || "Failed to update profile");
+      toast.error(error.message || "Failed to update profile");
     },
   });
 
-  const onUpdateSubmit = (data: Partial<UserStruct>) => {
-    updateMutation.mutate(data);
+  const onUpdateSubmit = (data: z.infer<typeof profileUpdateSchema>) => {
+    if (!user) return;
+
+    const updatedData: UpdateRequest = {};
+
+    if (data.username && data.username !== user.username) {
+      updatedData.username = data.username;
+    }
+    if (data.email && data.email !== user.email) {
+      updatedData.email = data.email;
+    }
+    if (data.first_name && data.first_name !== user.first_name) {
+      updatedData.first_name = data.first_name;
+    }
+    if (data.last_name && data.last_name !== user.last_name) {
+      updatedData.last_name = data.last_name;
+    }
+    if (
+      data.birthdate &&
+      (!user.birthdate ||
+        new Date(user.birthdate).toISOString() !== data.birthdate.toISOString())
+    ) {
+      updatedData.birthdate = data.birthdate.toISOString();
+    }
+    if (data.password) {
+      updatedData.password = data.password;
+    }
+
+    if (Object.keys(updatedData).length > 0) {
+      updateMutation.mutate(updatedData);
+    } else {
+      toast.info("No changes to update");
+      setIsEditing(false);
+    }
   };
 
-  const accountDeleteMutation = useMutation({
+  const accountDeleteMutation = useMutation<void, Error>({
     mutationFn: async () => {
       await StoryService.deleteAllStories();
       await AuthService.deleteAccount();
     },
     onSuccess: () => {
+      toast.success("Account deleted successfully");
       deleteCookie("user");
       deleteCookie("auth_token");
       queryClient.removeQueries({ queryKey: ["userProfile"] });
       router.push("/login");
     },
     onError: (error: Error) => {
-      setDeleteError(error.message || "Failed to delete account");
+      toast.error(error.message || "Failed to delete account");
     },
   });
 
@@ -117,13 +160,20 @@ export default function ProfileInfo() {
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
-    setUpdateError(null);
-    if (isEditing) form.reset(user!);
+    if (isEditing)
+      form.reset({
+        username: user?.username ?? "",
+        email: user?.email ?? "",
+        first_name: user?.first_name ?? "",
+        last_name: user?.last_name ?? "",
+        birthdate: user?.birthdate ? new Date(user.birthdate) : undefined,
+        password: "",
+        confirmPassword: "",
+      });
   };
 
   const onDeleteCancel = () => {
     setIsDeleteDialogOpen(false);
-    setDeleteError(null);
   };
 
   return (
@@ -193,11 +243,6 @@ export default function ProfileInfo() {
                     removed.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                {deleteError && (
-                  <div className="text-destructive text-sm px-6">
-                    {deleteError}
-                  </div>
-                )}
                 <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-6">
                   <AlertDialogCancel className="cursor-pointer border-border bg-muted text-muted-foreground hover:bg-muted/90 w-full sm:w-auto">
                     Cancel
@@ -225,32 +270,34 @@ export default function ProfileInfo() {
             className="space-y-4"
           >
             <div className="grid gap-4 md:grid-cols-2">
-              {["username", "email", "first_name", "last_name"].map((field) => (
-                <FormField
-                  key={field}
-                  name={field as keyof UserStruct}
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {field.name
-                          .split("_")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1),
-                          )
-                          .join(" ")}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={!isEditing || updateMutation.isPending}
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              ))}
+              {(["username", "email", "first_name", "last_name"] as const).map(
+                (field) => (
+                  <FormField
+                    key={field}
+                    name={field}
+                    control={form.control}
+                    render={({ field: inputField }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {field
+                            .split("_")
+                            .map(
+                              (word) =>
+                                word.charAt(0).toUpperCase() + word.slice(1),
+                            )
+                            .join(" ")}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            disabled={!isEditing || updateMutation.isPending}
+                            {...inputField}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ),
+              )}
               <FormField
                 name="birthdate"
                 control={form.control}
@@ -264,7 +311,7 @@ export default function ProfileInfo() {
                       typeof field.value === "object" &&
                       "getMonth" in field.value
                     ) {
-                      dateValue = field.value as Date;
+                      dateValue = field.value;
                     }
                   }
 
@@ -311,25 +358,67 @@ export default function ProfileInfo() {
                 }}
               />
             </div>
-            <div className="text-sm">
+            {isEditing && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter new password"
+                          className="w-full"
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel>Confirm Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Confirm password"
+                          className="w-full"
+                          value={field.value ?? ""}
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+            <div className="text-sm mt-4">
               Joined: {formatDate(user?.date_joined)}
             </div>
             {isEditing && (
               <div className="space-y-4">
-                {updateError && (
-                  <div className="text-destructive text-sm">{updateError}</div>
-                )}
                 <Button
                   type="submit"
                   className="gap-2 cursor-pointer"
                   disabled={updateMutation.isPending}
                 >
                   {updateMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Saving Changes...
+                    </>
                   ) : (
-                    <Save className="h-4 w-4" />
+                    <>
+                      <Save className="h-4 w-4" />
+                      Save Changes
+                    </>
                   )}
-                  Save Changes
                 </Button>
               </div>
             )}

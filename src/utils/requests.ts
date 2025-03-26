@@ -5,6 +5,7 @@ import {
   type RegisterRequest,
   type RegisterResponse,
   type Tokens,
+  type UpdateRequest,
   type UserStruct,
 } from "@/types/authInterfaces";
 import type * as storyResponses from "@/types/storyInterfaces";
@@ -29,6 +30,7 @@ const API_CONFIG = {
       UPDATE_USER: "/update",
       FETCH_USER_BY_ID: "/fetchuserbyid",
       DELETE_USER: "/delete",
+      RESEND_CONFIRMATION_EMAIL: "/resend-confirmation-email",
     },
   },
   STORY: {
@@ -43,6 +45,7 @@ const API_CONFIG = {
       USER_STORIES: "/get-stories-by-user",
       COLLABORATIONS: "/collaborations",
       FILTERED_STORIES: "/get-stories-by-filters",
+      FORK_STORY: "/fork-story",
       DELETE_STORY: "/delete-story",
       DELETE_ALL_STORIES: "/delete-all-stories",
     },
@@ -240,6 +243,21 @@ export const StoryService = {
     return data?.stories ?? [];
   },
 
+  async forkStory(storyId: string): Promise<storyResponses.ForkStoryResponse> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return { message: "", story_id: "" };
+    }
+    const { data, error } = await tfetch.get<storyResponses.ForkStoryResponse>(
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FORK_STORY}${storyId}`,
+      headers,
+    );
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data ?? { message: "", story_id: "" };
+  },
+
   async deleteAllStories(): Promise<void> {
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
@@ -280,6 +298,7 @@ export const AuthService = {
           password: data.password,
           first_name: data.first_name,
           last_name: data.last_name,
+          birthdate: data.birthdate,
         },
       },
     );
@@ -305,7 +324,7 @@ export const AuthService = {
     };
   },
 
-  async updateProfile(updatedData: Partial<UserStruct>): Promise<UserStruct> {
+  async updateProfile(updatedData: UpdateRequest): Promise<UserStruct> {
     const headers = getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return {} as UserStruct;
@@ -369,5 +388,19 @@ export const AuthService = {
       throw new Error(error.message);
     }
     return data?.tokens ?? ({} as Tokens);
+  },
+
+  async resendConfirmationEmail(): Promise<void> {
+    const headers = getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return;
+    }
+    const { error } = await tfetch.get<{ message: string }>(
+      `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.RESEND_CONFIRMATION_EMAIL}`,
+      headers,
+    );
+    if (error) {
+      throw new Error(error.message);
+    }
   },
 };

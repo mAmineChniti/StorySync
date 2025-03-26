@@ -19,12 +19,11 @@ import { useMutation } from "@tanstack/react-query";
 import { setCookie } from "cookies-next/client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type * as z from "zod";
 
 export default function Login() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { identifier: "", password: "" },
@@ -73,13 +72,18 @@ export default function Login() {
             30000,
         );
 
+        if (!userData.user.email_confirmed) {
+          router.push("/email-confirmation");
+          return;
+        }
+
         router.push("/browse");
       } catch {
-        setErrorMessage("Login failed. Please try again.");
+        toast.error("Login failed. Please try again.");
       }
     },
     onError: (error) => {
-      setErrorMessage(error.message);
+      toast.error(error.message || "Login failed");
       form.reset();
     },
   });
@@ -133,13 +137,6 @@ export default function Login() {
               </FormItem>
             )}
           />
-
-          {errorMessage && (
-            <div className="text-destructive text-sm font-medium p-2 rounded bg-destructive/10">
-              {errorMessage}
-            </div>
-          )}
-
           <Button
             type="submit"
             className="w-full h-12 text-base transition-opacity cursor-pointer"
@@ -148,7 +145,7 @@ export default function Login() {
             {loginMutation.isPending ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                Signing in...
+                Loggin in...
               </>
             ) : (
               "Login"

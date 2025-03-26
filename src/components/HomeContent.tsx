@@ -78,7 +78,13 @@ export default function HomeContent() {
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [selectedGenres, searchQuery, router, searchParams]);
 
-  const allStories = data?.pages.flat().filter(Boolean) ?? [];
+  const allStories =
+    (data?.pages.flat().filter(Boolean) ?? []).length > 0
+      ? (data?.pages.flat().filter(Boolean) ?? []).sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        )
+      : [];
   const filteredStories = allStories.filter((story) =>
     story && searchQuery
       ? [story.title, story.description].some(
@@ -153,11 +159,11 @@ export default function HomeContent() {
                       <Checkbox
                         id={`genre-${genre}`}
                         checked={selectedGenres.includes(genre)}
-                        onCheckedChange={() =>
+                        onCheckedChange={(checked) =>
                           setSelectedGenres((prev) =>
-                            prev.includes(genre)
-                              ? prev.filter((g) => g !== genre)
-                              : [...prev, genre],
+                            checked
+                              ? [...prev, genre]
+                              : prev.filter((g) => g !== genre),
                           )
                         }
                         className="text-primary-foreground border-border"
@@ -247,7 +253,7 @@ export default function HomeContent() {
                             <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
                             <span>Started: {formatDate(story.created_at)}</span>
                           </div>
-                          <p className="text-foreground line-clamp-4 mt-2 text-sm sm:text-base">
+                          <p className="text-foreground break-words line-clamp-4 mt-2 text-sm sm:text-base">
                             {story.description}
                           </p>
                         </CardContent>

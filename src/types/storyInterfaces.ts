@@ -32,3 +32,8 @@ export type StoryRequest = {
   description: string;
   genre: string;
 };
+
+export type ForkStoryResponse = {
+  message: string;
+  story_id: string;
+};

@@ -104,7 +104,7 @@ export const useTokenRefresh = () => {
 
   useEffect(() => {
     const isAuthPage = pathname === "/login" || pathname === "/register";
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: number;
 
     const checkAuthState = async () => {
       try {
@@ -127,7 +127,7 @@ export const useTokenRefresh = () => {
             void checkAuthState().catch((error) => {
               console.error("Background sync failed:", error);
             });
-          }, nextCheck);
+          }, nextCheck) as unknown as number;
         }
       } catch (error) {
         console.error("Auth check failed:", error);
