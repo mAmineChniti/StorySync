@@ -61,7 +61,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.0",
     "@eslint/js": "^9.22.0",
-    "@tailwindcss/postcss": "^4.0.15",
+    "@tailwindcss/postcss": "^4.0.17",
     "@tanstack/eslint-plugin-query": "^5.68.0",
     "@types/eslint": "^9.6.1",
     "@types/node": "^22.13.10",
