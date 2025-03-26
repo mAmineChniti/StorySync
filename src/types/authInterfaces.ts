@@ -5,6 +5,7 @@ export type UserStruct = {
   first_name: string;
   last_name: string;
   birthdate: string;
+  email_confirmed: boolean;
   date_joined: string;
 };
 
@@ -48,6 +49,15 @@ export type RegisterRequest = {
   first_name: string;
   last_name: string;
   birthdate: string;
+};
+
+export type UpdateRequest = {
+  username?: string;
+  email?: string;
+  password?: string;
+  first_name?: string;
+  last_name?: string;
+  birthdate?: string;
 };
 
 export type LoginRequest = {

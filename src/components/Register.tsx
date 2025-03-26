@@ -25,12 +25,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type * as z from "zod";
 
 export default function Register() {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -55,8 +54,7 @@ export default function Register() {
       router.push("/login");
     },
     onError: (error) => {
-      setErrorMessage(error.message);
-      form.reset();
+      toast.error(error.message || "Registration failed");
     },
   });
 
@@ -193,7 +191,6 @@ export default function Register() {
             name="birthdate"
             control={form.control}
             render={({ field }) => {
-              // Calculate minimum valid birthdate (18 years ago from today)
               const eighteenYearsAgo = new Date();
               eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
 
@@ -241,12 +238,6 @@ export default function Register() {
               );
             }}
           />
-
-          {errorMessage && (
-            <div className="text-destructive text-sm font-medium p-2 rounded bg-destructive/10">
-              {errorMessage}
-            </div>
-          )}
 
           <Button
             type="submit"

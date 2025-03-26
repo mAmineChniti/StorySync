@@ -56,7 +56,11 @@ function YearMonthSelector({ displayMonth }: CaptionProps) {
         </SelectTrigger>
         <SelectContent className="max-h-[300px]">
           {years.map((year) => (
-            <SelectItem key={year} value={year.toString()}>
+            <SelectItem
+              className="cursor-pointer"
+              key={year}
+              value={year.toString()}
+            >
               {year}
             </SelectItem>
           ))}
@@ -72,7 +76,7 @@ function YearMonthSelector({ displayMonth }: CaptionProps) {
         </SelectTrigger>
         <SelectContent>
           {months.map((month) => (
-            <SelectItem key={month} value={month}>
+            <SelectItem className="cursor-pointer" key={month} value={month}>
               {month}
             </SelectItem>
           ))}

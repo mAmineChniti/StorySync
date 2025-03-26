@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { type ForkStoryResponse } from "@/types/storyInterfaces";
 import { getUserId } from "@/utils/lib";
 import { StoryService } from "@/utils/requests";
 import { cn } from "@/utils/utils";
@@ -37,6 +38,7 @@ import {
   Italic,
   List,
   ListOrdered,
+  Loader2,
   Quote,
   Redo2,
   SeparatorHorizontal,
@@ -45,6 +47,7 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function StoryEditor() {
   const router = useRouter();
@@ -53,9 +56,13 @@ export default function StoryEditor() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
   const [userId, setUserId] = useState<string | null>("");
+  const [isForkLoading, setIsForkLoading] = useState(false);
+  const [forkedStoryId, setForkedStoryId] = useState<string | null>(null);
+
   useEffect(() => {
     setUserId(getUserId());
   }, []);
+
   const story_id = params?.story_id as string;
   const lowlight = createLowlight();
   const {
@@ -89,6 +96,35 @@ export default function StoryEditor() {
     gcTime: 30 * 60 * 1000,
     enabled: !!story_id,
   });
+
+  const forkQuery = useQuery<ForkStoryResponse, Error>({
+    queryKey: ["fork", story_id],
+    queryFn: async () => StoryService.forkStory(story_id),
+    enabled: false,
+    retry: false,
+  });
+
+  const handleForkStory = async () => {
+    setIsForkLoading(true);
+    await forkQuery
+      .refetch()
+      .then((result) => {
+        if (result.data?.story_id) {
+          setForkedStoryId(result.data.story_id);
+          toast.success("Story forked successfully");
+        }
+      })
+      .catch((_error) => {
+        toast.error("Failed to fork story");
+      });
+    setIsForkLoading(false);
+  };
+
+  const handleStartWriting = () => {
+    if (forkedStoryId) {
+      router.push(`/story/${forkedStoryId}`);
+    }
+  };
 
   const editor = useEditor({
     extensions: [
@@ -128,6 +164,9 @@ export default function StoryEditor() {
     },
     onError: () => {
       editor?.commands.setContent(content?.content ?? "");
+      toast.error("Failed to save changes", {
+        description: "Please try again",
+      });
       setIsEditing(false);
     },
   });
@@ -520,10 +559,30 @@ export default function StoryEditor() {
       </Card>
       <div className="mt-8 flex justify-end">
         <Button
-          className="cursor-pointer"
-          onClick={() => router.push(`/fork/${story_id}`)}
+          onClick={forkedStoryId ? handleStartWriting : handleForkStory}
+          disabled={isForkLoading || forkQuery.isLoading}
+          className="flex items-center gap-2 cursor-pointer"
         >
-          <GitBranch className="mr-2 h-4 w-4" /> Fork Story
+          {forkedStoryId ? (
+            <>
+              <Edit className="mr-2 h-4 w-4" />
+              Start Writing Now
+            </>
+          ) : (
+            <>
+              {isForkLoading || forkQuery.isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Forking Story...
+                </>
+              ) : (
+                <>
+                  <GitBranch className="mr-2 h-4 w-4" />
+                  Fork Story
+                </>
+              )}
+            </>
+          )}
         </Button>
       </div>
     </div>

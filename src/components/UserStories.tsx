@@ -12,13 +12,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate } from "@/utils/lib";
 import { StoryService } from "@/utils/requests";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Calendar, Edit, Tag, Trash2, User, X } from "lucide-react";
+import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function UserStories() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
   const limit = 5;
   const router = useRouter();
@@ -34,12 +34,11 @@ export default function UserStories() {
   const mutation = useMutation<void, Error, string>({
     mutationFn: (storyId: string) => StoryService.delete(storyId),
     onSuccess: async () => {
-      setErrorMessage(null);
-      setDeletingStoryId(null);
       try {
         await queryClient.invalidateQueries({ queryKey: ["userStories"] });
-      } catch {
-        setErrorMessage(
+        toast.success("Story deleted successfully");
+      } catch (error) {
+        toast.error(
           error instanceof Error
             ? error.message
             : "Failed to refresh stories list",
@@ -47,8 +46,7 @@ export default function UserStories() {
       }
     },
     onError: (error) => {
-      setErrorMessage(error.message);
-      setDeletingStoryId(null);
+      toast.error(error.message);
     },
   });
 
@@ -126,18 +124,6 @@ export default function UserStories() {
         <CardDescription className="text-muted-foreground">
           Stories you&apos;ve written and are currently working on
         </CardDescription>
-        {errorMessage && (
-          <div className="bg-destructive/15 text-destructive px-4 py-3 rounded relative mt-4">
-            <span className="block sm:inline">{errorMessage}</span>
-            <Button
-              variant="destructive"
-              className="absolute top-0 right-0 px-3 py-2 text-foreground"
-              onClick={() => setErrorMessage(null)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
       </CardHeader>
       <CardContent>
         {stories.length === 0 ? (
@@ -166,7 +152,7 @@ export default function UserStories() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold">{story.title}</h3>
                   </div>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-muted-foreground line-clamp-4 break-words mb-4">
                     {story.description}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">

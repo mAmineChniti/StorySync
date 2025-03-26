@@ -33,11 +33,11 @@ import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { type z } from "zod";
 
 export default function CreateStory() {
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const form = useForm<z.infer<typeof storySchema>>({
     resolver: zodResolver(storySchema),
@@ -58,7 +58,15 @@ export default function CreateStory() {
       setSubmitted(true);
     },
     onError: (error) => {
-      setError(error.message);
+      toast.error(error.message, {
+        description: "An error occurred while creating the story",
+        action: {
+          label: "Retry",
+          onClick: () => {
+            router.refresh();
+          },
+        },
+      });
     },
   });
 
@@ -112,31 +120,6 @@ export default function CreateStory() {
             }}
           >
             Add Another Story
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
-        <CardHeader>
-          <CardTitle>Error</CardTitle>
-          <CardDescription className="text-destructive">
-            {error}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="secondary"
-            className="cursor-pointer"
-            onClick={() => {
-              setError(null);
-              router.refresh();
-            }}
-          >
-            Retry
           </Button>
         </CardContent>
       </Card>
@@ -213,7 +196,7 @@ export default function CreateStory() {
                             <SelectItem
                               key={genre}
                               value={genre}
-                              className="hover:bg-accent"
+                              className="hover:bg-accent cursor-pointer"
                             >
                               {genre}
                             </SelectItem>
