@@ -97,7 +97,7 @@ export default function ProfileInfo() {
       setIsEditing(false);
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to update profile");
+      toast.error((JSON.parse(error.message) as { message: string }).message);
     },
   });
 
@@ -150,7 +150,7 @@ export default function ProfileInfo() {
       router.push("/login");
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Failed to delete account");
+      toast.error((JSON.parse(error.message) as { message: string }).message);
     },
   });
 
@@ -324,7 +324,7 @@ export default function ProfileInfo() {
                             <Button
                               variant="outline"
                               className={cn(
-                                "w-full pl-3 text-left font-normal",
+                                "w-full pl-3 text-left font-normal cursor-pointer",
                                 !dateValue && "text-muted-foreground",
                               )}
                               disabled={!isEditing || updateMutation.isPending}
@@ -332,7 +332,7 @@ export default function ProfileInfo() {
                               {dateValue ? (
                                 formatDate(dateValue)
                               ) : (
-                                <span>Optional: Pick a date (18+ only)</span>
+                                <span>Pick a date</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>

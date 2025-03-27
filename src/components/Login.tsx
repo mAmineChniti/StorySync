@@ -1,5 +1,7 @@
 "use client";
 
+import { PasswordResetEmailStage } from "@/components/PasswordResetEmailStage";
+import { PasswordResetTokenStage } from "@/components/PasswordResetTokenStage";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -19,16 +21,20 @@ import { useMutation } from "@tanstack/react-query";
 import { setCookie } from "cookies-next/client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
 
 export default function Login() {
-  const form = useForm({
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
+  const [resetStage, setResetStage] = useState<"email" | "token">("email");
+  const router = useRouter();
+
+  const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { identifier: "", password: "" },
   });
-  const router = useRouter();
 
   const loginMutation = useMutation<
     LoginResponse,
@@ -83,25 +89,43 @@ export default function Login() {
       }
     },
     onError: (error) => {
-      toast.error(error.message || "Login failed");
-      form.reset();
+      toast.error((JSON.parse(error.message) as { message: string }).message);
+      loginForm.reset();
     },
   });
 
-  const onSubmit = (data: z.infer<typeof loginSchema>) => {
+  const onLoginSubmit = (data: z.infer<typeof loginSchema>) => {
     loginMutation.mutate(data);
   };
 
+  if (isPasswordReset) {
+    return (
+      <div className="w-full">
+        {resetStage === "email" ? (
+          <PasswordResetEmailStage
+            onBackToLogin={() => setIsPasswordReset(false)}
+            onResetEmailSent={() => setResetStage("token")}
+          />
+        ) : (
+          <PasswordResetTokenStage
+            onBackToEmailStage={() => setResetStage("email")}
+            onPasswordResetComplete={() => setIsPasswordReset(false)}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
-      <Form {...form}>
+      <Form {...loginForm}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={loginForm.handleSubmit(onLoginSubmit)}
           className="space-y-6 w-full"
         >
           <FormField
             name="identifier"
-            control={form.control}
+            control={loginForm.control}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -120,7 +144,7 @@ export default function Login() {
 
           <FormField
             name="password"
-            control={form.control}
+            control={loginForm.control}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
@@ -138,6 +162,14 @@ export default function Login() {
             )}
           />
           <Button
+            type="button"
+            variant="link"
+            className="text-sm text-muted-foreground w-full justify-start px-0 cursor-pointer"
+            onClick={() => setIsPasswordReset(true)}
+          >
+            Forgot Password?
+          </Button>
+          <Button
             type="submit"
             className="w-full h-12 text-base transition-opacity cursor-pointer"
             disabled={loginMutation.isPending}
@@ -145,7 +177,7 @@ export default function Login() {
             {loginMutation.isPending ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                Loggin in...
+                Logging in...
               </>
             ) : (
               "Login"

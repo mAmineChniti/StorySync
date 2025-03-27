@@ -31,6 +31,8 @@ const API_CONFIG = {
       FETCH_USER_BY_ID: "/fetchuserbyid",
       DELETE_USER: "/delete",
       RESEND_CONFIRMATION_EMAIL: "/resend-confirmation-email",
+      PASSWORD_RESET: "/password-reset/initiate",
+      PASSWORD_RESET_CONFIRM: "/password-reset/confirm",
     },
   },
   STORY: {
@@ -398,6 +400,29 @@ export const AuthService = {
     const { error } = await tfetch.get<{ message: string }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.RESEND_CONFIRMATION_EMAIL}`,
       headers,
+    );
+    if (error) {
+      throw new Error(error.message);
+    }
+  },
+
+  async initiatePasswordReset(email: string): Promise<void> {
+    const { error } = await tfetch.post<{ message: string }>(
+      `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.PASSWORD_RESET}`,
+      { type: "json", data: { email } },
+    );
+    if (error) {
+      throw new Error(error.message);
+    }
+  },
+
+  async confirmPasswordReset(
+    token: string,
+    new_password: string,
+  ): Promise<void> {
+    const { error } = await tfetch.post<{ message: string }>(
+      `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.PASSWORD_RESET_CONFIRM}`,
+      { type: "json", data: { token, new_password } },
     );
     if (error) {
       throw new Error(error.message);

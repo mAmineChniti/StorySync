@@ -37,16 +37,14 @@ export default function UserStories() {
       try {
         await queryClient.invalidateQueries({ queryKey: ["userStories"] });
         toast.success("Story deleted successfully");
-      } catch (error) {
+      } catch (error: unknown) {
         toast.error(
-          error instanceof Error
-            ? error.message
-            : "Failed to refresh stories list",
+          (JSON.parse((error as Error).message) as { message: string }).message,
         );
       }
     },
-    onError: (error) => {
-      toast.error(error.message);
+    onError: (error: Error) => {
+      toast.error((JSON.parse(error.message) as { message: string }).message);
     },
   });
 
