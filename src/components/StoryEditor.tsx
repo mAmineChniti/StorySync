@@ -114,8 +114,8 @@ export default function StoryEditor() {
           toast.success("Story forked successfully");
         }
       })
-      .catch((_error) => {
-        toast.error("Failed to fork story");
+      .catch((error: Error) => {
+        toast.error((JSON.parse(error.message) as { message: string }).message);
       });
     setIsForkLoading(false);
   };
@@ -162,9 +162,9 @@ export default function StoryEditor() {
       await queryClient.invalidateQueries({ queryKey: ["content", story_id] });
       setIsEditing(false);
     },
-    onError: () => {
+    onError: (error: Error) => {
       editor?.commands.setContent(content?.content ?? "");
-      toast.error("Failed to save changes", {
+      toast.error((JSON.parse(error.message) as { message: string }).message, {
         description: "Please try again",
       });
       setIsEditing(false);

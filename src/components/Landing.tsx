@@ -13,7 +13,7 @@ export default function Landing() {
           Discover stories, collaborate with writers, and bring ideas to life.
           Join a thriving community of storytellers today!
         </p>
-        <Button className="mt-6 px-6 py-3 text-lg">
+        <Button className="mt-6 px-6 py-3 text-lg cursor-pointer" asChild>
           <Link href="/login">Get Started</Link>
         </Button>
       </section>

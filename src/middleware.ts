@@ -21,6 +21,7 @@ export function middleware(req: NextRequest) {
     "/story",
     "/create-story",
     "/user-stories",
+    "/email-confirmation",
   ];
 
   if (protectedRoutes.some((route) => pathname.startsWith(route)) && !user) {
@@ -39,6 +40,7 @@ export const config = {
     "/story/:path*",
     "/create-story",
     "/user-stories",
+    "/email-confirmation",
     "/login",
     "/register",
   ],

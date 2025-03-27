@@ -53,8 +53,8 @@ export default function Register() {
     onSuccess: () => {
       router.push("/login");
     },
-    onError: (error) => {
-      toast.error(error.message || "Registration failed");
+    onError: (error: Error) => {
+      toast.error((JSON.parse(error.message) as { message: string }).message);
     },
   });
 
@@ -75,7 +75,7 @@ export default function Register() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 w-full"
+          className="space-y-4 w-full"
         >
           <FormField
             name="username"
@@ -203,7 +203,7 @@ export default function Register() {
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full pl-3 text-left font-normal bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors",
+                            "w-full pl-3 text-left font-normal bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors cursor-pointer",
                             !field.value && "text-muted-foreground",
                           )}
                         >

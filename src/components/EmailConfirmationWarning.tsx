@@ -23,8 +23,8 @@ export default function EmailConfirmationWarning() {
     onSuccess: () => {
       toast.success("Confirmation email sent. Please check your inbox.");
     },
-    onError: () => {
-      toast.error("Failed to send confirmation email");
+    onError: (error: Error) => {
+      toast.error((JSON.parse(error.message) as { message: string }).message);
     },
   });
 
