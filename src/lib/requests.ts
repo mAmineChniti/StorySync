@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/lib/utils";
 import {
   type LoginRequest,
   type LoginResponse,
@@ -9,7 +10,6 @@ import {
   type UserStruct,
 } from "@/types/authInterfaces";
 import type * as storyResponses from "@/types/storyInterfaces";
-import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/utils/lib";
 import { TFetchClient } from "@thatguyjamal/type-fetch";
 
 const tfetch = new TFetchClient({

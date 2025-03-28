@@ -7,7 +7,7 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { cn } from "@/utils/utils";
+import { cn } from "@/lib/utils";
 import { deleteCookie, hasCookie } from "cookies-next/client";
 import Image from "next/image";
 import Link from "next/link";

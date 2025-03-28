@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { AuthService } from "@/utils/requests";
+import { AuthService } from "@/lib/requests";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -60,7 +60,7 @@ export function PasswordResetEmailStage({
               <FormLabel>Email for Password Reset</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="example@domain.com"
+                  placeholder="you@example.com"
                   className="bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors"
                   autoComplete="email"
                   {...field}

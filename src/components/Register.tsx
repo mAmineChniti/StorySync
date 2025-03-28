@@ -1,7 +1,9 @@
 "use client";
 
+import { TermsOfServiceModal } from "@/components/TermsOfService";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -16,20 +18,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { AuthService } from "@/lib/requests";
+import { calculateEighteenYearsAgo, cn, formatDate } from "@/lib/utils";
 import type { RegisterRequest, RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
-import { formatDate } from "@/utils/lib";
-import { AuthService } from "@/utils/requests";
-import { cn } from "@/utils/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type * as z from "zod";
 
 export default function Register() {
+  const [checked, setChecked] = useState(false);
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -40,6 +43,7 @@ export default function Register() {
       first_name: "",
       last_name: "",
       birthdate: undefined,
+      acceptTerms: false,
     },
   });
   const router = useRouter();
@@ -75,7 +79,7 @@ export default function Register() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 w-full"
+          className="space-y-3 w-full"
         >
           <FormField
             name="username"
@@ -141,6 +145,7 @@ export default function Register() {
                   <Input
                     placeholder="you@example.com"
                     className="bg-card/50 border-border focus:bg-card focus:ring-2 focus:ring-primary transition-colors"
+                    autoComplete="email"
                     {...field}
                   />
                 </FormControl>
@@ -191,8 +196,7 @@ export default function Register() {
             name="birthdate"
             control={form.control}
             render={({ field }) => {
-              const eighteenYearsAgo = new Date();
-              eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+              const eighteenYearsAgo = calculateEighteenYearsAgo();
 
               return (
                 <FormItem className="flex flex-col">
@@ -239,10 +243,36 @@ export default function Register() {
             }}
           />
 
+          <FormField
+            name="acceptTerms"
+            control={form.control}
+            render={() => (
+              <FormItem className="flex items-center space-x-2">
+                <FormControl>
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={(checked) => {
+                      setChecked(checked as boolean);
+                    }}
+                  />
+                </FormControl>
+                <FormLabel className="!m-0">
+                  I accept the{" "}
+                  <TermsOfServiceModal
+                    onAccept={() => {
+                      setChecked(true);
+                    }}
+                  />
+                </FormLabel>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button
             type="submit"
             className="w-full h-12 text-base transition-opacity cursor-pointer"
-            disabled={registerMutation.isPending}
+            disabled={registerMutation.isPending || !checked}
           >
             {registerMutation.isPending ? (
               <>

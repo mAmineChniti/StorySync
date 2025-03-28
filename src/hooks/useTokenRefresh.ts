@@ -1,8 +1,8 @@
 "use client";
 
+import { AuthService } from "@/lib/requests";
+import { parseCookie } from "@/lib/utils";
 import type { AccessToken, UserStruct } from "@/types/authInterfaces";
-import { parseCookie } from "@/utils/lib";
-import { AuthService } from "@/utils/requests";
 import { deleteCookie, setCookie } from "cookies-next/client";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";

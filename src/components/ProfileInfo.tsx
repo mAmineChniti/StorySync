@@ -33,11 +33,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { AuthService, StoryService } from "@/lib/requests";
+import {
+  calculateEighteenYearsAgo,
+  cn,
+  formatDate,
+  parseCookie,
+} from "@/lib/utils";
 import { type UpdateRequest, type UserStruct } from "@/types/authInterfaces";
-import { eighteenYearsAgo } from "@/types/authSchemas";
-import { formatDate, parseCookie } from "@/utils/lib";
-import { AuthService, StoryService } from "@/utils/requests";
-import { cn } from "@/utils/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, setCookie } from "cookies-next/client";
 import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
@@ -302,6 +305,7 @@ export default function ProfileInfo() {
                 name="birthdate"
                 control={form.control}
                 render={({ field }) => {
+                  const eighteenYearsAgo = calculateEighteenYearsAgo();
                   let dateValue: Date | undefined = undefined;
                   if (field.value) {
                     if (typeof field.value === "string") {
@@ -342,13 +346,15 @@ export default function ProfileInfo() {
                           <Calendar
                             mode="single"
                             selected={dateValue}
-                            onSelect={(newDate) => {
-                              field.onChange(newDate);
+                            onSelect={(selectedDate) => {
+                              if (
+                                selectedDate &&
+                                selectedDate <= eighteenYearsAgo
+                              ) {
+                                field.onChange(selectedDate);
+                              }
                             }}
-                            disabled={(date) =>
-                              date > eighteenYearsAgo ||
-                              date < new Date("1900-01-01")
-                            }
+                            disabled={(date) => date > eighteenYearsAgo}
                             initialFocus
                           />
                         </PopoverContent>
