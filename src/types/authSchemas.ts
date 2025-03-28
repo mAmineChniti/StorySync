@@ -32,7 +32,7 @@ export const registerSchema = z
       },
       { message: "You must be at least 18 years old" },
     ),
-    acceptTerms: z.boolean().refine((val) => val === true, {
+    accept_terms: z.boolean().refine((val) => val === true, {
       message: "You must accept the Terms of Service to register",
     }),
   })
@@ -40,9 +40,9 @@ export const registerSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   })
-  .refine((data) => data.acceptTerms === true, {
+  .refine((data) => data.accept_terms === true, {
     message: "You must accept the Terms of Service to register",
-    path: ["acceptTerms"],
+    path: ["accept_terms"],
   });
 
 export const profileUpdateSchema = z

@@ -43,5 +43,6 @@ export const config = {
     "/email-confirmation",
     "/login",
     "/register",
+    "/terms-of-service",
   ],
 };
