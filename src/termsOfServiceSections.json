@@ -1,0 +1,77 @@
+[
+  {
+    "title": "Acceptance of Terms",
+    "content": "By accessing and using StorySync, you agree to be bound by these comprehensive Terms of Service. If you do not agree with any part of these terms, please do not use our service.",
+    "details": "These terms constitute a legally binding agreement between you and StorySync."
+  },
+  {
+    "title": "User Responsibilities and Account Security",
+    "content": "You are solely responsible for maintaining the confidentiality and security of your account credentials.",
+    "list": [
+      "Protect your login information",
+      "Use strong, unique passwords",
+      "Enable two-factor authentication",
+      "Immediately report any unauthorized access"
+    ]
+  },
+  {
+    "title": "Intellectual Property Rights",
+    "content": "StorySync respects and protects intellectual property rights.",
+    "list": [
+      "You retain full ownership of your original content",
+      "We provide a platform for content creation and sharing",
+      "You grant us a limited, non-exclusive license to display and distribute your content within the service",
+      "You guarantee that your content does not infringe on third-party rights"
+    ]
+  },
+  {
+    "title": "Prohibited Conduct and Content Guidelines",
+    "content": "To maintain a safe and respectful community, the following conduct is strictly prohibited:",
+    "list": [
+      "Harassment, bullying, or threatening behavior",
+      "Hate speech or discriminatory content",
+      "Explicit sexual or violent content",
+      "Impersonation of other individuals",
+      "Spreading misinformation or malicious content",
+      "Violating local, national, or international laws"
+    ]
+  },
+  {
+    "title": "Privacy and Data Protection",
+    "content": "We are committed to protecting your personal information.",
+    "list": [
+      "We collect only necessary data for service operation",
+      "Your data is encrypted and securely stored",
+      "We do not sell or share personal information with third parties",
+      "You can request data deletion at any time"
+    ]
+  },
+  {
+    "title": "Limitation of Liability",
+    "content": "StorySync provides services 'as is' with no explicit or implied warranties.",
+    "list": [
+      "We are not liable for any direct, indirect, or consequential damages",
+      "Users are responsible for their content and interactions",
+      "Our total liability is limited to the amount paid for services",
+      "We reserve the right to suspend or terminate accounts violating terms"
+    ]
+  },
+  {
+    "title": "Dispute Resolution",
+    "content": "Any disputes will be resolved through fair and transparent processes.",
+    "list": [
+      "Disputes will be handled through arbitration",
+      "Governed by the laws of the jurisdiction where StorySync is registered",
+      "Mediation will be the first step in resolving conflicts"
+    ]
+  },
+  {
+    "title": "Changes to Terms",
+    "content": "We may update these terms periodically to reflect service improvements and legal requirements.",
+    "list": [
+      "Updates will be communicated via email and website notification",
+      "Continued use of the service implies acceptance of updated terms",
+      "You may review the latest terms at any time"
+    ]
+  }
+]

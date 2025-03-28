@@ -103,7 +103,10 @@ export const useTokenRefresh = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const isAuthPage = pathname === "/login" || pathname === "/register";
+    const isAuthPage =
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname === "/terms-of-service";
     let timeoutId: number;
 
     const checkAuthState = async () => {

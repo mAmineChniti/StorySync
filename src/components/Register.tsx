@@ -1,6 +1,6 @@
 "use client";
 
-import { TermsOfServiceModal } from "@/components/TermsOfService";
+import { TermsOfServiceModal } from "@/components/TermsOfServiceModal";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -43,7 +43,7 @@ export default function Register() {
       first_name: "",
       last_name: "",
       birthdate: undefined,
-      acceptTerms: false,
+      accept_terms: false,
     },
   });
   const router = useRouter();
@@ -248,7 +248,7 @@ export default function Register() {
           />
 
           <FormField
-            name="acceptTerms"
+            name="accept_terms"
             control={form.control}
             render={() => (
               <FormItem className="flex items-center space-x-2">

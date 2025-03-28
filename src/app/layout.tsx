@@ -3,12 +3,12 @@ import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import { Providers } from "@/components/providers";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "@/styles/globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,19 +42,18 @@ export default function RootLayout({
             closeButton
             expand={true}
             duration={3000}
-            theme="system"
             /*toastOptions={{
-              classNames: {
-                toast: 'bg-primary text-primary-foreground border-border',
-                title: 'text-primary-foreground',
-                description: 'text-muted-foreground',
-                success: 'bg-green-500 text-green-foreground',
-                error: 'bg-destructive text-destructive-foreground',
-                warning: 'bg-yellow-500 text-yellow-foreground',
-                info: 'bg-blue-500 text-blue-foreground',
-                closeButton: 'text-muted-foreground hover:text-primary-foreground'
-              }
-            }}*/
+            classNames: {
+              toast: 'bg-primary text-primary-foreground border-border',
+              title: 'text-primary-foreground',
+              description: 'text-muted-foreground',
+              success: 'bg-green-500 text-green-foreground',
+              error: 'bg-destructive text-destructive-foreground',
+              warning: 'bg-yellow-500 text-yellow-foreground',
+              info: 'bg-blue-500 text-blue-foreground',
+              closeButton: 'text-muted-foreground hover:text-primary-foreground'
+            }
+          }}*/
           />
         </ThemeProvider>
       </body>
