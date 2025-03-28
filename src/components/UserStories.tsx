@@ -9,8 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDate } from "@/utils/lib";
-import { StoryService } from "@/utils/requests";
+import { StoryService } from "@/lib/requests";
+import { formatDate } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
 import { useRouter } from "next/navigation";

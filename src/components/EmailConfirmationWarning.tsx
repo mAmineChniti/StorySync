@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AuthService } from "@/utils/requests";
+import { AuthService } from "@/lib/requests";
 import { useMutation } from "@tanstack/react-query";
 import { deleteCookie } from "cookies-next/client";
 import { useRouter } from "next/navigation";

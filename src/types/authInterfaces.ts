@@ -42,14 +42,14 @@ export type LoginResponse = {
   tokens: Tokens;
 };
 
-export type RegisterRequest = {
+export interface RegisterRequest {
   username: string;
   email: string;
   password: string;
   first_name: string;
   last_name: string;
   birthdate: string;
-};
+}
 
 export type UpdateRequest = {
   username?: string;

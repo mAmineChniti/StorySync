@@ -3,7 +3,13 @@ import type {
   RefreshToken,
   UserStruct,
 } from "@/types/authInterfaces";
+import { clsx, type ClassValue } from "clsx";
 import { getCookie } from "cookies-next/client";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 type SafeParseResult<T> =
   | { success: true; data: T }
@@ -96,3 +102,9 @@ export const getUserId = (): string | null => {
   const userId = result.data.id?.trim();
   return userId?.length ? userId : null;
 };
+
+export function calculateEighteenYearsAgo(): Date {
+  const date = new Date();
+  date.setFullYear(date.getFullYear() - 18);
+  return date;
+}
