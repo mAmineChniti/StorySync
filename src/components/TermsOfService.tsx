@@ -123,6 +123,9 @@ export function TermsOfServiceModal({ onAccept }: { onAccept?: () => void }) {
       </DialogTrigger>
       <DialogContent
         className="max-w-4xl max-h-[90vh] flex flex-col"
+        onClose={() => {
+          setOpen(false);
+        }}
         onInteractOutside={(e) => {
           e.preventDefault();
           setOpen(false);

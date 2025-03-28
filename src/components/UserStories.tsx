@@ -38,13 +38,22 @@ export default function UserStories() {
         await queryClient.invalidateQueries({ queryKey: ["userStories"] });
         toast.success("Story deleted successfully");
       } catch (error: unknown) {
-        toast.error(
-          (JSON.parse((error as Error).message) as { message: string }).message,
-        );
+        let errormsg = "";
+        if (error instanceof Error) {
+          if (typeof error.message !== "string")
+            errormsg = (JSON.parse(error.message) as { message: string })
+              .message;
+          else errormsg = error.message;
+        }
+        toast.error(errormsg);
       }
     },
     onError: (error: Error) => {
-      toast.error((JSON.parse(error.message) as { message: string }).message);
+      let errormsg = "";
+      if (typeof error.message !== "string")
+        errormsg = (JSON.parse(error.message) as { message: string }).message;
+      else errormsg = error.message;
+      toast.error(errormsg);
     },
   });
 
