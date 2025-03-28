@@ -58,15 +58,11 @@ export default function CreateStory() {
       setSubmitted(true);
     },
     onError: (error) => {
-      toast.error((JSON.parse(error.message) as { message: string }).message, {
-        description: "An error occurred while creating the story",
-        action: {
-          label: "Retry",
-          onClick: () => {
-            router.refresh();
-          },
-        },
-      });
+      let errormsg = "";
+      if (typeof error.message !== "string")
+        errormsg = (JSON.parse(error.message) as { message: string }).message;
+      else errormsg = error.message;
+      toast.error(errormsg);
     },
   });
 

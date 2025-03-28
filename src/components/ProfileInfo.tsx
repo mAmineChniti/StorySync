@@ -100,7 +100,11 @@ export default function ProfileInfo() {
       setIsEditing(false);
     },
     onError: (error: Error) => {
-      toast.error((JSON.parse(error.message) as { message: string }).message);
+      let errormsg = "";
+      if (typeof error.message !== "string")
+        errormsg = (JSON.parse(error.message) as { message: string }).message;
+      else errormsg = error.message;
+      toast.error(errormsg);
     },
   });
 
@@ -153,7 +157,11 @@ export default function ProfileInfo() {
       router.push("/login");
     },
     onError: (error: Error) => {
-      toast.error((JSON.parse(error.message) as { message: string }).message);
+      let errormsg = "";
+      if (typeof error.message !== "string")
+        errormsg = (JSON.parse(error.message) as { message: string }).message;
+      else errormsg = error.message;
+      toast.error(errormsg);
     },
   });
 

@@ -8,7 +8,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 
-const FallBack = () => (
+const BrowseSkeleton = () => (
   <div className="flex flex-col flex-1 w-full bg-background text-foreground">
     <section className="w-full text-center py-12 bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
       <h1 className="text-4xl font-bold tracking-tight">
@@ -95,7 +95,7 @@ const FallBack = () => (
 
 export default function Browse() {
   return (
-    <Suspense fallback={<FallBack />}>
+    <Suspense fallback={<BrowseSkeleton />}>
       <HomeContent />
     </Suspense>
   );

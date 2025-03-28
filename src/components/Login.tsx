@@ -89,7 +89,11 @@ export default function Login() {
       }
     },
     onError: (error) => {
-      toast.error((JSON.parse(error.message) as { message: string }).message);
+      let errormsg = "";
+      if (typeof error.message !== "string")
+        errormsg = (JSON.parse(error.message) as { message: string }).message;
+      else errormsg = error.message;
+      toast.error(errormsg);
       loginForm.reset();
     },
   });

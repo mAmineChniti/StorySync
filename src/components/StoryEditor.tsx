@@ -114,7 +114,11 @@ export default function StoryEditor() {
         }
       })
       .catch((error: Error) => {
-        toast.error((JSON.parse(error.message) as { message: string }).message);
+        let errormsg = "";
+        if (typeof error.message !== "string")
+          errormsg = (JSON.parse(error.message) as { message: string }).message;
+        else errormsg = error.message;
+        toast.error(errormsg);
       });
     setIsForkLoading(false);
   };
@@ -163,9 +167,11 @@ export default function StoryEditor() {
     },
     onError: (error: Error) => {
       editor?.commands.setContent(content?.content ?? "");
-      toast.error((JSON.parse(error.message) as { message: string }).message, {
-        description: "Please try again",
-      });
+      let errormsg = "";
+      if (typeof error.message !== "string")
+        errormsg = (JSON.parse(error.message) as { message: string }).message;
+      else errormsg = error.message;
+      toast.error(errormsg);
       setIsEditing(false);
     },
   });

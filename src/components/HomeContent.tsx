@@ -14,9 +14,10 @@ import { Label } from "@/components/ui/label";
 import { AuthService, StoryService } from "@/lib/requests";
 import { formatDate } from "@/lib/utils";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { BookOpen, Calendar, Tag, User, X } from "lucide-react";
+import { BookOpen, Calendar, Tag, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const OwnerName = ({ ownerId }: { ownerId: string }) => {
   const { data, isPending, error } = useQuery({
@@ -29,7 +30,9 @@ const OwnerName = ({ ownerId }: { ownerId: string }) => {
   if (isPending) return <span className="line-clamp-1">Loading author...</span>;
   if (error)
     return (
-      <span className="line-clamp-1 text-destructive">{error.message}</span>
+      <span className="line-clamp-1 text-destructive/80 dark:text-destructive/70">
+        {error.message}
+      </span>
     );
   return (
     <span className="line-clamp-1">
@@ -73,6 +76,23 @@ export default function HomeContent() {
   });
 
   useEffect(() => {
+    if (error) {
+      let errormsg = "";
+      if (typeof error.message !== "string")
+        errormsg = (JSON.parse(error.message) as { message: string }).message;
+      else errormsg = error.message;
+      toast.error(errormsg, {
+        action: {
+          label: "Retry",
+          onClick: () => {
+            router.refresh();
+          },
+        },
+      });
+    }
+  }, [error, router]);
+
+  useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", "1");
     router.replace(`?${params.toString()}`, { scroll: false });
@@ -109,18 +129,6 @@ export default function HomeContent() {
           read.
         </p>
       </section>
-
-      {error && (
-        <div className="bg-destructive/20 border border-destructive text-destructive px-4 py-3 rounded relative mx-2 sm:mx-4 my-2">
-          <span className="block sm:inline">{error.message}</span>
-          <Button
-            className="absolute top-0 right-0 px-3 py-2 text-foreground cursor-pointer"
-            onClick={() => router.refresh()}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
 
       <div className="flex flex-col md:flex-row max-w-7xl mx-auto w-full px-2 sm:px-4 py-4 sm:py-8">
         <aside className="md:block w-full md:w-64 shrink-0 mb-4 md:mb-0 md:mr-6">
