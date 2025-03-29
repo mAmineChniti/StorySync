@@ -88,7 +88,7 @@ export default function CreateStory() {
 
   if (submitted) {
     return (
-      <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
+      <Card className="mx-auto max-w-7xl border-border">
         <CardHeader>
           <CardTitle className="text-2xl">Story Created</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -123,7 +123,7 @@ export default function CreateStory() {
   }
 
   return (
-    <Card className="mx-auto max-w-7xl bg-card text-card-foreground border-border">
+    <Card className="mx-auto max-w-7xl border-border">
       <CardHeader>
         <CardTitle className="text-2xl">Create New Story</CardTitle>
         <CardDescription className="text-muted-foreground">

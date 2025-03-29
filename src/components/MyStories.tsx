@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function UserStories() {
+export default function MyStories() {
   const [currentPage, setCurrentPage] = useState(1);
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
   const limit = 5;

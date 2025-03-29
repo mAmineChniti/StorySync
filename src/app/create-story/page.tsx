@@ -2,7 +2,12 @@ import CreateStory from "@/components/CreateStory";
 import ProfileLayout from "@/components/ProfileLayout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Create Story",
+};
 
 const CreateStorySkeleton = () => (
   <div className="container mx-auto px-4 py-8">
@@ -43,11 +48,9 @@ const CreateStorySkeleton = () => (
 export default function CreateStoryPage() {
   return (
     <ProfileLayout>
-      <div className="flex flex-col flex-1 w-full items-center justify-between">
-        <Suspense fallback={<CreateStorySkeleton />}>
-          <CreateStory />
-        </Suspense>
-      </div>
+      <Suspense fallback={<CreateStorySkeleton />}>
+        <CreateStory />
+      </Suspense>
     </ProfileLayout>
   );
 }

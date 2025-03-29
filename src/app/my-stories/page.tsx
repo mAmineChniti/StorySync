@@ -1,3 +1,4 @@
+import MyStories from "@/components/MyStories";
 import ProfileLayout from "@/components/ProfileLayout";
 import {
   Card,
@@ -6,10 +7,14 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import UserStories from "@/components/UserStories";
+import { type Metadata } from "next";
 import { Suspense } from "react";
 
-const UserStoriesSkeleton = () => (
+export const metadata: Metadata = {
+  title: "My Stories",
+};
+
+const MyStoriesSkeleton = () => (
   <div className="container mx-auto px-4 py-8">
     <div className="flex justify-between items-center mb-6">
       <Skeleton className="w-1/4 h-8" />
@@ -53,11 +58,11 @@ const UserStoriesSkeleton = () => (
   </div>
 );
 
-export default function UserStoriesPage() {
+export default function MyStoriesPage() {
   return (
     <ProfileLayout>
-      <Suspense fallback={<UserStoriesSkeleton />}>
-        <UserStories />
+      <Suspense fallback={<MyStoriesSkeleton />}>
+        <MyStories />
       </Suspense>
     </ProfileLayout>
   );

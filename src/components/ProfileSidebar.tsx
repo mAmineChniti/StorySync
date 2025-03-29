@@ -20,7 +20,7 @@ export default function ProfileSidebar() {
     {
       id: "my-stories",
       label: "My Stories",
-      url: "/user-stories",
+      url: "/my-stories",
       icon: BookOpen,
     },
     {

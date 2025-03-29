@@ -1,14 +1,14 @@
-import { TermsOfServicePage } from "@/components/TermsOfServicePage";
+import { PrivacyPolicy } from "@/components/PrivacyPolicy";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
+  title: "Privacy Policy",
 };
 
-const TermsOfServiceLoading = () => {
+const PrivacyPolicyLoading = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="text-center mb-8">
@@ -46,10 +46,10 @@ const TermsOfServiceLoading = () => {
   );
 };
 
-export default function TermsOfServiceRoute() {
+export default function PrivacyPolicyRoute() {
   return (
-    <Suspense fallback={<TermsOfServiceLoading />}>
-      <TermsOfServicePage />
+    <Suspense fallback={<PrivacyPolicyLoading />}>
+      <PrivacyPolicy />
     </Suspense>
   );
 }
