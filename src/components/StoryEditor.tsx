@@ -12,6 +12,7 @@ import { StoryService } from "@/lib/requests";
 import { cn, getUserId } from "@/lib/utils";
 import { type ForkStoryResponse } from "@/types/storyInterfaces";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type Extension } from "@tiptap/core";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Highlight from "@tiptap/extension-highlight";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
@@ -88,7 +89,7 @@ export default function StoryEditor() {
     enabled: !!story_id,
   });
 
-  const { data: collaborators } = useQuery({
+  const { data: collaborators } = useQuery<string[]>({
     queryKey: ["collaborators", story_id],
     queryFn: () => StoryService.getCollaborators(story_id),
     staleTime: 60 * 60 * 1000,
@@ -134,7 +135,7 @@ export default function StoryEditor() {
       StarterKit.configure({
         codeBlock: false,
         horizontalRule: false,
-      }),
+      }) as Extension,
       Placeholder.configure({ placeholder: "Start writing your story..." }),
       Underline,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
@@ -179,7 +180,8 @@ export default function StoryEditor() {
   const canEdit = () =>
     story &&
     userId &&
-    (story.owner_id === userId || collaborators?.includes(userId));
+    (story.owner_id === userId ||
+      (Array.isArray(collaborators) && collaborators.includes(userId)));
 
   if (!story_id)
     return (
