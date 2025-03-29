@@ -14,7 +14,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://storysync.vercel.app"),
+  metadataBase: new URL("https://storysync-delta.vercel.app"),
   title: {
     default: "StorySync - Collaborative Storytelling Platform",
     template: "StorySync | %s",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://storysync.vercel.app",
+    url: "https://storysync-delta.vercel.app",
     title: "StorySync - Collaborative Storytelling Platform",
     description:
       "StorySync is a collaborative platform where writers can create, share, and co-author stories together.",
