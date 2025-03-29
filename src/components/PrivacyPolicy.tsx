@@ -1,7 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { env } from "@/env";
 import Link from "next/link";
+
+const siteUrl =
+  env.NEXT_PUBLIC_SITE_URL && "https://storysync-delta.vercel.app";
 
 export function PrivacyPolicy() {
   const privacySections = [
@@ -23,11 +27,11 @@ export function PrivacyPolicy() {
         <span key={"site-link"}>
           Website refers to StorySync, accessible from{" "}
           <Link
-            href="https://storysync-delta.vercel.app/"
+            href={siteUrl}
             target="_blank"
             className="text-primary hover:underline"
           >
-            storysync-delta.vercel.app
+            {siteUrl.replace("https://", "")}
           </Link>
         </span>,
         "You means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.",

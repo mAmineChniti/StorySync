@@ -31,7 +31,7 @@ const OwnerName = ({ ownerId }: { ownerId: string }) => {
   if (error)
     return (
       <span className="line-clamp-1 text-destructive/80 dark:text-destructive/70">
-        {error.message}
+        Unknown Author
       </span>
     );
   return (

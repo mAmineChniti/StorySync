@@ -13,10 +13,13 @@ import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const siteUrl =
+  env.NEXT_PUBLIC_SITE_URL || "https://storysync-delta.vercel.app";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://storysync-delta.vercel.app"),
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "StorySync - Collaborative Storytelling Platform",
+    default: "StorySync - Create, Share, and Collaborate on Stories",
     template: "StorySync | %s",
   },
   description:
@@ -32,25 +35,25 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://storysync-delta.vercel.app",
-    title: "StorySync - Collaborative Storytelling Platform",
+    url: siteUrl,
+    title: "StorySync - Create, Share, and Collaborate on Stories",
     description:
       "StorySync is a collaborative platform where writers can create, share, and co-author stories together.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "StorySync - Collaborative Storytelling Platform",
+        alt: "StorySync - Create, Share, and Collaborate on Stories",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "StorySync - Collaborative Storytelling Platform",
+    title: "StorySync - Create, Share, and Collaborate on Stories",
     description:
       "StorySync is a collaborative platform where writers can create, share, and co-author stories together.",
-    images: ["/og-image.png"],
+    images: ["/twitter-image"],
   },
   robots: {
     index: true,

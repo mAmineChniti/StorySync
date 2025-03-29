@@ -1,33 +1,37 @@
+import { env } from "@/env";
 import { type MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const siteUrl =
+    env.NEXT_PUBLIC_SITE_URL && "https://storysync-delta.vercel.app";
+
   return [
     {
-      url: "https://storysync-delta.vercel.app",
+      url: `${siteUrl}`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
     {
-      url: "https://storysync-delta.vercel.app/register",
+      url: `${siteUrl}/register`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: "https://storysync-delta.vercel.app/login",
+      url: `${siteUrl}/login`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: "https://storysync-delta.vercel.app/terms-of-service",
+      url: `${siteUrl}/terms-of-service`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,
     },
     {
-      url: "https://storysync-delta.vercel.app/privacy-policy",
+      url: `${siteUrl}/privacy-policy`,
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.5,

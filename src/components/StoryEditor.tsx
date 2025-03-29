@@ -52,9 +52,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function StoryEditor() {
+export default function StoryEditor({
+  skeletonLoading,
+}: {
+  skeletonLoading?: React.ReactNode;
+}) {
   const router = useRouter();
-  const params = useParams();
+  const params = useParams<{ story_id: string }>();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
@@ -67,7 +71,7 @@ export default function StoryEditor() {
     setUserId(getUserId());
   }, []);
 
-  const story_id = params?.story_id as string;
+  const story_id = params?.story_id;
   const lowlight = createLowlight();
 
   const {
@@ -80,6 +84,7 @@ export default function StoryEditor() {
     staleTime: 30 * 60 * 1000,
     gcTime: 20 * 60 * 1000,
     enabled: !!story_id,
+    retry: 1,
   });
 
   useEffect(() => {
@@ -109,6 +114,7 @@ export default function StoryEditor() {
     staleTime: 30 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     enabled: !!story_id,
+    retry: 1,
   });
 
   const { data: collaborators } = useQuery<string[]>({
@@ -117,13 +123,16 @@ export default function StoryEditor() {
     staleTime: 60 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     enabled: !!story_id,
+    retry: 1,
   });
+
   const OwnerName = ({ ownerId }: { ownerId: string }) => {
     const { data, isPending, error } = useQuery({
       queryKey: ["ownerName", ownerId],
       queryFn: () => AuthService.getUserName(ownerId),
       staleTime: 60 * 60 * 1000,
       gcTime: 2 * 60 * 60 * 1000,
+      retry: 1,
     });
 
     if (isPending)
@@ -131,7 +140,7 @@ export default function StoryEditor() {
     if (error)
       return (
         <span className="line-clamp-1 text-destructive/80 dark:text-destructive/70">
-          {error.message}
+          Unknown Author
         </span>
       );
     return (
@@ -140,6 +149,7 @@ export default function StoryEditor() {
       </span>
     );
   };
+
   const forkQuery = useQuery<ForkStoryResponse, Error>({
     queryKey: ["fork", story_id],
     queryFn: async () => StoryService.forkStory(story_id),
@@ -226,19 +236,31 @@ export default function StoryEditor() {
     (story.owner_id === userId ||
       (Array.isArray(collaborators) && collaborators.includes(userId)));
 
-  if (!story_id)
+  if (loadingStory) {
+    return skeletonLoading;
+  }
+
+  if (storyError || !story) {
     return (
-      <div className="max-w-screen-md w-full mx-auto mt-16 p-4 min-h-[80vh] flex flex-col justify-center">
-        <Card className="text-center">
-          <CardHeader>
-            <CardTitle>Error</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Invalid story ID.</p>
-          </CardContent>
-        </Card>
+      <div className="flex flex-col justify-center items-center h-full min-h-[500px] p-6 text-center bg-background">
+        <AlertCircle className="h-16 w-16 text-destructive dark:text-destructive mb-4" />
+        <h2 className="text-2xl font-bold mb-2 text-foreground dark:text-foreground">
+          Story Not Found
+        </h2>
+        <p className="text-muted-foreground dark:text-muted-foreground mb-4">
+          The story you are looking for may have been deleted, is no longer
+          accessible, or the link is incorrect.
+        </p>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/browse")}
+          className="text-primary dark:text-white/90 hover:text-primary/80 dark:hover:text-white cursor-pointer"
+        >
+          Browse Other Stories
+        </Button>
       </div>
     );
+  }
 
   if (!userId)
     return (
@@ -253,7 +275,13 @@ export default function StoryEditor() {
             </p>
           </CardContent>
           <CardFooter>
-            <Button onClick={() => router.push("/login")}>Login</Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/login")}
+              className="text-primary dark:text-white/90 hover:text-primary/80 dark:hover:text-white cursor-pointer"
+            >
+              Login
+            </Button>
           </CardFooter>
         </Card>
       </div>
@@ -697,7 +725,7 @@ export default function StoryEditor() {
               <>
                 {isForkLoading || forkQuery.isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-primary dark:text-white/90" />
                     Forking Story...
                   </>
                 ) : (
