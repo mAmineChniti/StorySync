@@ -1,6 +1,5 @@
 import { StoryService } from "@/lib/requests";
 import { ImageResponse } from "next/og";
-import { Inter } from "next/font/google";
 
 export const runtime = "edge";
 export const alt = "StorySync Story";
@@ -9,8 +8,6 @@ export const size = {
   height: 630,
 };
 export const contentType = "image/png";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default async function Image({
   params,
@@ -32,7 +29,7 @@ export default async function Image({
               justifyContent: "center",
               alignItems: "center",
               backgroundColor: "oklch(0.985 0.002 247.839)",
-              fontFamily: inter.style.fontFamily,
+              fontFamily: "sans-serif",
               padding: "30px",
               textAlign: "center",
             }}
@@ -62,7 +59,7 @@ export default async function Image({
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "oklch(0.985 0.002 247.839)",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: "sans-serif",
             padding: "30px",
             textAlign: "center",
             position: "relative",
@@ -116,17 +113,9 @@ export default async function Image({
       ),
       {
         ...size,
-        fonts: [
-          {
-            name: "Inter",
-            data: Buffer.from(inter.style.fontFamily),
-            style: "normal",
-          },
-        ],
       }
     );
   } catch (error) {
-    console.error("Twitter Image Generation Error:", error);
     return new ImageResponse(
       (
         <div
@@ -138,7 +127,7 @@ export default async function Image({
             alignItems: "center",
             backgroundColor: "red",
             color: "white",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: "sans-serif",
           }}
         >
           Error Generating Image

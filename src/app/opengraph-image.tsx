@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { Inter } from "next/font/google";
 
 export const runtime = "edge";
 export const alt = "StorySync - Create, Share, Inspire";
@@ -9,9 +8,13 @@ export const size = {
 };
 export const contentType = "image/png";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export default function Image() {
+  console.log("OpenGraph Image Generation Started", {
+    runtime,
+    size,
+    contentType,
+  });
+
   try {
     return new ImageResponse(
       (
@@ -24,7 +27,7 @@ export default function Image() {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "oklch(0.985 0.002 247.839)",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: "sans-serif",
             padding: "40px",
             textAlign: "center",
             position: "relative",
@@ -72,17 +75,10 @@ export default function Image() {
       ),
       {
         ...size,
-        fonts: [
-          {
-            name: "Inter",
-            data: Buffer.from(inter.style.fontFamily),
-            style: "normal",
-          },
-        ],
+        // Remove font loading to avoid OpenType signature error
       }
     );
   } catch (error) {
-    console.error("OpenGraph Image Generation Error:", error);
     return new ImageResponse(
       (
         <div
@@ -94,7 +90,7 @@ export default function Image() {
             alignItems: "center",
             backgroundColor: "red",
             color: "white",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: "sans-serif",
           }}
         >
           Error Generating Image
