@@ -21,7 +21,8 @@ export default function Image() {
             justifyContent: "center",
             alignItems: "center",
             background: "linear-gradient(to right, #8b5cf6, #6366f1)",
-            fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
+            fontFamily:
+              "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
             position: "relative",
             overflow: "hidden",
             color: "white",
@@ -43,22 +44,22 @@ export default function Image() {
               border: "1px solid rgba(33, 34, 101, 0.1)",
             }}
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="100" 
-              height="100" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="#1a2b5f" 
-              strokeWidth="1.5" 
-              strokeLinecap="round" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="100"
+              height="100"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#1a2b5f"
+              strokeWidth="1.5"
+              strokeLinecap="round"
               strokeLinejoin="round"
               style={{
                 marginBottom: "20px",
               }}
             >
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
 
             <h1
@@ -89,9 +90,9 @@ export default function Image() {
       ),
       {
         ...size,
-      }
+      },
     );
-  } catch (error) {
+  } catch {
     return new ImageResponse(
       (
         <div
@@ -111,7 +112,7 @@ export default function Image() {
           Error Generating Image
         </div>
       ),
-      size
+      size,
     );
   }
 }

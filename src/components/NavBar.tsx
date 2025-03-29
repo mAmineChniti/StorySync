@@ -61,6 +61,7 @@ export default function NavBar() {
     deleteCookie("access");
     deleteCookie("refresh");
     router.push("/");
+    router.refresh();
   };
 
   return (

@@ -18,7 +18,7 @@ import type { LoginResponse } from "@/types/authInterfaces";
 import { loginSchema } from "@/types/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { setCookie } from "cookies-next/client";
+import { setCookie } from "cookies-next";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,8 +51,8 @@ export default function Login() {
           expires: new Date(userData.tokens.access_expires_at),
         };
 
-        setCookie("user", JSON.stringify(userData.user), cookieOptions);
-        setCookie(
+        await setCookie("user", JSON.stringify(userData.user), cookieOptions);
+        await setCookie(
           "access",
           JSON.stringify({
             access_token: userData.tokens.access_token,
@@ -61,7 +61,7 @@ export default function Login() {
           }),
           cookieOptions,
         );
-        setCookie(
+        await setCookie(
           "refresh",
           JSON.stringify({
             refresh_token: userData.tokens.refresh_token,

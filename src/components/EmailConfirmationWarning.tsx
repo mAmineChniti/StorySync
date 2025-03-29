@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { AuthService } from "@/lib/requests";
 import { useMutation } from "@tanstack/react-query";
-import { deleteCookie } from "cookies-next/client";
+import { deleteCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -32,12 +32,15 @@ export default function EmailConfirmationWarning() {
     },
   });
 
-  const handleLogout = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleLogout = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     e.preventDefault();
-    deleteCookie("user");
-    deleteCookie("access");
-    deleteCookie("refresh");
+    await deleteCookie("user");
+    await deleteCookie("access");
+    await deleteCookie("refresh");
     router.push("/");
+    router.refresh();
   };
 
   return (
