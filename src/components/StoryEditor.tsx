@@ -51,7 +51,6 @@ import Head from "next/head";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 export default function StoryEditor({
   skeletonLoading,
 }: {
@@ -66,9 +65,12 @@ export default function StoryEditor({
   const [isForkLoading, setIsForkLoading] = useState(false);
   const [forkedStoryId, setForkedStoryId] = useState<string | null>(null);
   const [storyTitle, setStoryTitle] = useState<string>("Story Details");
-
   useEffect(() => {
-    setUserId(getUserId());
+    const fetchUserId = async () => {
+      const user = await getUserId();
+      setUserId(user);
+    };
+    void fetchUserId();
   }, []);
 
   const story_id = params?.story_id;

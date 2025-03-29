@@ -3,38 +3,38 @@
 import { AuthService } from "@/lib/requests";
 import { parseCookie } from "@/lib/utils";
 import type { AccessToken, UserStruct } from "@/types/authInterfaces";
-import { deleteCookie, setCookie } from "cookies-next/client";
+import { deleteCookie, setCookie } from "cookies-next";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const REFRESH_THRESHOLD = 5 * 60 * 1000;
 
-const handleLogout = () => {
-  deleteCookie("user");
-  deleteCookie("access");
-  deleteCookie("refresh");
+const handleLogout = async () => {
+  await deleteCookie("user");
+  await deleteCookie("access");
+  await deleteCookie("refresh");
 };
 
 export const checkAndRefreshToken = async () => {
   try {
-    const accessResult = parseCookie<AccessToken>("access");
-    const refreshResult = parseCookie<{ refresh_expires_at: string }>(
+    const accessResult = await parseCookie<AccessToken>("access");
+    const refreshResult = await parseCookie<{ refresh_expires_at: string }>(
       "refresh",
     );
-    const userResult = parseCookie<UserStruct>("user");
+    const userResult = await parseCookie<UserStruct>("user");
 
     if (
       !accessResult.success ||
       !refreshResult.success ||
       !userResult.success
     ) {
-      handleLogout();
+      await handleLogout();
       return { success: false };
     }
 
     const refreshExpiresAt = new Date(refreshResult.data.refresh_expires_at);
     if (refreshExpiresAt < new Date()) {
-      handleLogout();
+      await handleLogout();
       return { success: false };
     }
 
@@ -44,7 +44,7 @@ export const checkAndRefreshToken = async () => {
     if (timeUntilExpiry < REFRESH_THRESHOLD) {
       const newTokens = await AuthService.refreshTokens();
 
-      setCookie(
+      await setCookie(
         "access",
         JSON.stringify({
           access_token: newTokens.access_token,
@@ -59,7 +59,7 @@ export const checkAndRefreshToken = async () => {
         },
       );
 
-      setCookie(
+      await setCookie(
         "refresh",
         JSON.stringify({
           refresh_token: newTokens.refresh_token,
@@ -93,7 +93,7 @@ export const checkAndRefreshToken = async () => {
     return { success: true };
   } catch (error) {
     console.error("Token refresh failed:", error);
-    handleLogout();
+    await handleLogout();
     return { success: false };
   }
 };

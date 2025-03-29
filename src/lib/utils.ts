@@ -4,7 +4,7 @@ import type {
   UserStruct,
 } from "@/types/authInterfaces";
 import { clsx, type ClassValue } from "clsx";
-import { getCookie } from "cookies-next/client";
+import { getCookie } from "cookies-next";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,29 +15,43 @@ type SafeParseResult<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
-export const parseCookie = <T>(cookieName: string): SafeParseResult<T> => {
+export const parseCookie = async <T>(
+  cookieName: string,
+): Promise<SafeParseResult<T>> => {
   try {
-    const cookieValue = getCookie(cookieName);
-    if (typeof cookieValue !== "string")
-      return { success: false, error: `Cookie ${cookieName} not found` };
-    return { success: true, data: JSON.parse(cookieValue) as T };
+    const cookieValue = (await getCookie(cookieName)) ?? "";
+
+    if (!cookieValue) {
+      return {
+        success: false,
+        error: `Cookie ${cookieName} not found`,
+      };
+    }
+
+    return {
+      success: true,
+      data: JSON.parse(cookieValue) as T,
+    };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return { success: false, error: errorMessage };
+    return {
+      success: false,
+      error: `Failed to parse ${cookieName} cookie: ${errorMessage}`,
+    };
   }
 };
 
-const getToken = (
+const getToken = async (
   cookieName: "access" | "refresh",
   tokenField: keyof AccessToken | keyof RefreshToken,
-): string | null => {
+): Promise<string | null> => {
   const result =
     cookieName === "access"
-      ? parseCookie<AccessToken>(cookieName)
-      : parseCookie<RefreshToken>(cookieName);
+      ? await parseCookie<AccessToken>(cookieName)
+      : await parseCookie<RefreshToken>(cookieName);
 
   if (!result.success) {
-    console.error(`Failed to parse ${cookieName} token: ${result.error}`);
+    console.warn(`Failed to parse ${cookieName} token: ${result.error}`);
     return null;
   }
 
@@ -45,12 +59,13 @@ const getToken = (
   return typeof token === "string" ? token.trim() : null;
 };
 
-const getAccessToken = (): string | null => getToken("access", "access_token");
-const getRefreshToken = (): string | null =>
+const getAccessToken = async (): Promise<string | null> =>
+  getToken("access", "access_token");
+const getRefreshToken = async (): Promise<string | null> =>
   getToken("refresh", "refresh_token");
 
-export const getAuthHeaders = (): HeadersInit => {
-  const token = getAccessToken();
+export const getAuthHeaders = async (): Promise<HeadersInit> => {
+  const token = await getAccessToken();
   if (!token) {
     return {};
   }
@@ -60,8 +75,8 @@ export const getAuthHeaders = (): HeadersInit => {
   return headers;
 };
 
-export const getRefreshHeaders = (): HeadersInit => {
-  const token = getRefreshToken();
+export const getRefreshHeaders = async (): Promise<HeadersInit> => {
+  const token = await getRefreshToken();
   if (!token) {
     return {};
   }
@@ -93,8 +108,8 @@ export const formatDate = (
   }
 };
 
-export const getUserId = (): string | null => {
-  const result = parseCookie<UserStruct>("user");
+export const getUserId = async (): Promise<string | null> => {
+  const result = await parseCookie<UserStruct>("user");
   if (!result.success) {
     return null;
   }

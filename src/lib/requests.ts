@@ -12,12 +12,7 @@ import {
 import type * as storyResponses from "@/types/storyInterfaces";
 import { TFetchClient } from "@thatguyjamal/type-fetch";
 
-const tfetch = new TFetchClient({
-  retry: {
-    count: 2,
-    delay: 1000,
-  },
-});
+const tfetch = new TFetchClient();
 
 const API_CONFIG = {
   AUTH: {
@@ -80,7 +75,7 @@ export const StoryService = {
   async create(
     storyData: storyResponses.StoryRequest,
   ): Promise<{ message: string; story_id: string }> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return { message: "", story_id: "" };
     }
@@ -99,7 +94,7 @@ export const StoryService = {
   },
 
   async edit(storyId: string, content: string): Promise<void> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
@@ -118,7 +113,7 @@ export const StoryService = {
   },
 
   async getDetails(storyId: string): Promise<storyResponses.StoryDetails> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return {} as storyResponses.StoryDetails;
     }
@@ -138,9 +133,13 @@ export const StoryService = {
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
+    const headers = await getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return [];
+    }
     const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
-      getAuthHeaders(),
+      headers,
       { type: "json", data: { page, limit } },
     );
     if (error) {
@@ -150,20 +149,24 @@ export const StoryService = {
   },
 
   async getContent(storyId: string): Promise<storyResponses.StoryContent> {
+    const headers = await getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return {} as storyResponses.StoryContent;
+    }
     const { data, error } = await tfetch.get<{
       content: storyResponses.StoryContent;
     }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}/${storyId}`,
-      getAuthHeaders() ?? {},
+      headers,
     );
     if (error) {
       throw new Error(error.message);
     }
-    return data?.content ?? ([] as unknown as storyResponses.StoryContent);
+    return data?.content ?? ({} as storyResponses.StoryContent);
   },
 
   async delete(storyId: string): Promise<void> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
@@ -177,9 +180,13 @@ export const StoryService = {
   },
 
   async getCollaborators(storyId: string): Promise<string[]> {
+    const headers = await getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return [];
+    }
     const { data, error } = await tfetch.get<string[]>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}/${storyId}`,
-      getAuthHeaders(),
+      headers,
     );
     if (error) {
       throw new Error(error.message);
@@ -191,7 +198,7 @@ export const StoryService = {
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return [];
     }
@@ -209,7 +216,7 @@ export const StoryService = {
   async getByFilters(
     params: storyResponses.FetchStoriesByFilterParams,
   ): Promise<storyResponses.StoryDetails[]> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return [];
     }
@@ -228,9 +235,9 @@ export const StoryService = {
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
-    const userId = getUserId();
+    const userId = await getUserId();
     if (!userId) return [];
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return [];
     }
@@ -246,7 +253,7 @@ export const StoryService = {
   },
 
   async forkStory(storyId: string): Promise<storyResponses.ForkStoryResponse> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return { message: "", story_id: "" };
     }
@@ -261,7 +268,7 @@ export const StoryService = {
   },
 
   async deleteAllStories(): Promise<void> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
@@ -327,7 +334,7 @@ export const AuthService = {
   },
 
   async updateProfile(updatedData: UpdateRequest): Promise<UserStruct> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return {} as UserStruct;
     }
@@ -345,7 +352,7 @@ export const AuthService = {
   async getUserName(
     ownerId: string,
   ): Promise<{ first_name: string; last_name: string }> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return { first_name: "", last_name: "" };
     }
@@ -364,7 +371,7 @@ export const AuthService = {
   },
 
   async deleteAccount(): Promise<void> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
@@ -378,7 +385,7 @@ export const AuthService = {
   },
 
   async refreshTokens(): Promise<Tokens> {
-    const refreshHeaders = getRefreshHeaders();
+    const refreshHeaders = await getRefreshHeaders();
     if (!refreshHeaders || Object.keys(refreshHeaders).length === 0) {
       return {} as Tokens;
     }
@@ -393,7 +400,7 @@ export const AuthService = {
   },
 
   async resendConfirmationEmail(): Promise<void> {
-    const headers = getAuthHeaders();
+    const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }

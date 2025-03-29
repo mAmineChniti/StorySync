@@ -42,7 +42,7 @@ import {
 } from "@/lib/utils";
 import { type UpdateRequest, type UserStruct } from "@/types/authInterfaces";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCookie, setCookie } from "cookies-next/client";
+import { deleteCookie, setCookie } from "cookies-next";
 import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -72,9 +72,17 @@ export default function ProfileInfo() {
   });
 
   useEffect(() => {
-    const userData = parseCookie<UserStruct>("user");
-    if (userData.success) setUser(userData.data);
-  }, []);
+    parseCookie<UserStruct>("user")
+      .then((userData) => {
+        if (userData.success) setUser(userData.data);
+      })
+      .catch(() => {
+        toast.error("Failed to parse user data", {
+          description: "Please log in again.",
+        });
+        router.push("/login");
+      });
+  }, [router]);
 
   useEffect(() => {
     if (user) {
@@ -92,11 +100,11 @@ export default function ProfileInfo() {
 
   const updateMutation = useMutation<UserStruct, Error, UpdateRequest>({
     mutationFn: (data) => AuthService.updateProfile(data),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success("Profile updated successfully");
       queryClient.setQueryData(["userProfile"], data);
-      deleteCookie("user");
-      setCookie("user", JSON.stringify(data));
+      await deleteCookie("user");
+      await setCookie("user", JSON.stringify(data));
       setIsEditing(false);
     },
     onError: (error: Error) => {
@@ -149,10 +157,10 @@ export default function ProfileInfo() {
       await StoryService.deleteAllStories();
       await AuthService.deleteAccount();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Account deleted successfully");
-      deleteCookie("user");
-      deleteCookie("auth_token");
+      await deleteCookie("user");
+      await deleteCookie("auth_token");
       queryClient.removeQueries({ queryKey: ["userProfile"] });
       router.push("/login");
     },
