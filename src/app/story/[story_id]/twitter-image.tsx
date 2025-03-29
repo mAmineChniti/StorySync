@@ -1,7 +1,16 @@
 import { StoryService } from "@/lib/requests";
 import { ImageResponse } from "next/og";
+import { Inter } from "next/font/google";
 
 export const runtime = "edge";
+export const alt = "StorySync Story";
+export const size = {
+  width: 1200,
+  height: 630,
+};
+export const contentType = "image/png";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default async function Image({
   params,
@@ -12,7 +21,34 @@ export default async function Image({
     const story = await StoryService.getDetails(params.story_id);
 
     if (!story) {
-      return new Response("Story Not Found", { status: 404 });
+      return new ImageResponse(
+        (
+          <div
+            style={{
+              height: "100%",
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "oklch(0.985 0.002 247.839)",
+              fontFamily: inter.style.fontFamily,
+              padding: "30px",
+              textAlign: "center",
+            }}
+          >
+            <h1
+              style={{
+                fontSize: 64,
+                color: "oklch(0.13 0.028 261.692)",
+              }}
+            >
+              Story Not Found
+            </h1>
+          </div>
+        ),
+        size
+      );
     }
 
     return new ImageResponse(
@@ -26,7 +62,7 @@ export default async function Image({
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "oklch(0.985 0.002 247.839)",
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: inter.style.fontFamily,
             padding: "30px",
             textAlign: "center",
             position: "relative",
@@ -47,7 +83,7 @@ export default async function Image({
 
           <h1
             style={{
-              fontSize: 48,
+              fontSize: 64,
               fontWeight: 800,
               color: "oklch(0.13 0.028 261.692)",
               marginBottom: "15px",
@@ -55,46 +91,60 @@ export default async function Image({
               lineHeight: 1.2,
               zIndex: 2,
               textShadow: "2px 2px 4px rgba(0,0,0,0.1)",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {story.title}
           </h1>
 
-          {story.description && (
-            <p
-              style={{
-                fontSize: 24,
-                color: "oklch(0.551 0.027 264.364)",
-                maxWidth: "70%",
-                zIndex: 2,
-                textAlign: "center",
-              }}
-            >
-              {story.description}
-            </p>
-          )}
-
-          <div
+          <p
             style={{
-              position: "absolute",
-              bottom: 30,
-              right: 30,
-              fontSize: 20,
-              color: "oklch(0.21 0.034 264.665)",
+              fontSize: 36,
+              color: "oklch(0.4 0.1 261.692)",
               zIndex: 2,
+              maxWidth: "70%",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
-            StorySync
-          </div>
+            By {story.owner_id || "Anonymous"}
+          </p>
         </div>
       ),
       {
-        width: 800,
-        height: 418,
-      },
+        ...size,
+        fonts: [
+          {
+            name: "Inter",
+            data: Buffer.from(inter.style.fontFamily),
+            style: "normal",
+          },
+        ],
+      }
     );
   } catch (error) {
-    console.error("Error generating Twitter image:", error);
-    return new Response("Failed to generate Twitter image", { status: 500 });
+    console.error("Twitter Image Generation Error:", error);
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "red",
+            color: "white",
+            fontFamily: inter.style.fontFamily,
+          }}
+        >
+          Error Generating Image
+        </div>
+      ),
+      size
+    );
   }
 }
