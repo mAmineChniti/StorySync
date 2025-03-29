@@ -9,8 +9,6 @@ export const size = {
 };
 export const contentType = "image/png";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export default function Image() {
   try {
     return new ImageResponse(
@@ -24,7 +22,7 @@ export default function Image() {
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "oklch(0.985 0.002 247.839)",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: "sans-serif",
             padding: "30px",
             textAlign: "center",
             position: "relative",
@@ -72,17 +70,9 @@ export default function Image() {
       ),
       {
         ...size,
-        fonts: [
-          {
-            name: "Inter",
-            data: Buffer.from(inter.style.fontFamily),
-            style: "normal",
-          },
-        ],
       }
     );
   } catch (error) {
-    console.error("Twitter Image Generation Error:", error);
     return new ImageResponse(
       (
         <div
@@ -94,7 +84,7 @@ export default function Image() {
             alignItems: "center",
             backgroundColor: "red",
             color: "white",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: "sans-serif",
           }}
         >
           Error Generating Image
