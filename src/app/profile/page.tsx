@@ -2,7 +2,12 @@ import ProfileInfo from "@/components/ProfileInfo";
 import ProfileLayout from "@/components/ProfileLayout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
 
 const ProfileSkeleton = () => (
   <div className="container mx-auto px-4 py-8">

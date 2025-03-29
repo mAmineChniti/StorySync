@@ -7,7 +7,12 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Collaborations",
+};
 
 const CollaborationsSkeleton = () => (
   <div className="container mx-auto px-4 py-8">

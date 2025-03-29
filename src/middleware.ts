@@ -20,7 +20,7 @@ export function middleware(req: NextRequest) {
     "/collaborations",
     "/story",
     "/create-story",
-    "/user-stories",
+    "/my-stories",
     "/email-confirmation",
   ];
 
@@ -39,10 +39,11 @@ export const config = {
     "/collaborations",
     "/story/:path*",
     "/create-story",
-    "/user-stories",
+    "/my-stories",
     "/email-confirmation",
     "/login",
     "/register",
     "/terms-of-service",
+    "/privacy-policy",
   ],
 };

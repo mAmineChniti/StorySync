@@ -6,7 +6,12 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Browse Stories",
+};
 
 const BrowseSkeleton = () => (
   <div className="flex flex-col flex-1 w-full bg-background text-foreground">
@@ -93,7 +98,7 @@ const BrowseSkeleton = () => (
   </div>
 );
 
-export default function Browse() {
+export default function BrowsePage() {
   return (
     <Suspense fallback={<BrowseSkeleton />}>
       <HomeContent />
