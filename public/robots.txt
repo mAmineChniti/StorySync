@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://storysync-delta.vercel.app/sitemap.xml
-
-# Crawl-delay to prevent overwhelming the server
-Crawl-delay: 10

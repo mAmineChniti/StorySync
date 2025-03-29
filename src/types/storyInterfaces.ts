@@ -1,4 +1,4 @@
-export type StoryDetails = {
+export interface StoryDetails {
   id: string;
   title: string;
   description: string;
@@ -8,32 +8,32 @@ export type StoryDetails = {
   created_at: string;
   updated_at: string;
   forkedFrom?: string | null;
-};
+}
 
-export type StoryContent = {
+export interface StoryContent {
   id: string;
   story_id: string;
   content: string;
-};
+}
 
-export type StoryResponse = {
+export interface StoryResponse {
   message: string;
   stories: StoryDetails[];
-};
+}
 
-export type FetchStoriesByFilterParams = {
+export interface FetchStoriesByFilterParams {
   genres?: string[];
   page: number;
   limit: number;
-};
+}
 
-export type StoryRequest = {
+export interface StoryRequest {
   title: string;
   description: string;
   genre: string;
-};
+}
 
-export type ForkStoryResponse = {
+export interface ForkStoryResponse {
   message: string;
   story_id: string;
-};
+}

@@ -1,7 +1,61 @@
 import StoryEditor from "@/components/StoryEditor";
 import { Skeleton } from "@/components/ui/skeleton";
+import { env } from "@/env";
+import { StoryService } from "@/lib/requests";
 import { cn } from "@/lib/utils";
+import { type Metadata } from "next";
 import { Suspense } from "react";
+
+const siteUrl =
+  env.NEXT_PUBLIC_SITE_URL || "https://storysync-delta.vercel.app";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { story_id: string };
+}): Promise<Metadata> {
+  try {
+    const story = await StoryService.getDetails(params.story_id);
+
+    if (!story) {
+      return {
+        title: "Story Not Found",
+        description: "The requested story could not be found.",
+      };
+    }
+
+    return {
+      title: `${story.title} | StorySync`,
+      description: story.description || "A story on StorySync",
+      openGraph: {
+        type: "article",
+        title: story.title,
+        description: story.description || "A story on StorySync",
+        url: `${siteUrl}/story/${params.story_id}`,
+        images: [
+          {
+            url: `/story/${params.story_id}/opengraph-image`,
+            width: 1200,
+            height: 630,
+            alt: story.title,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: story.title,
+        description: story.description || "A story on StorySync",
+        images: [`/story/${params.story_id}/twitter-image`],
+      },
+    };
+  } catch (error) {
+    console.error("Error generating metadata:", error);
+    return {
+      title: "Story | StorySync",
+      description: "A story on StorySync",
+    };
+  }
+}
 
 const StoryEditorSkeleton = () => (
   <div className="max-w-screen-md w-full mx-auto mt-16 p-4 sm:p-8 min-h-[80vh] flex flex-col justify-center">
@@ -46,7 +100,7 @@ export default function Story() {
   return (
     <div className="flex flex-col flex-1 w-full items-center justify-between">
       <Suspense fallback={<StoryEditorSkeleton />}>
-        <StoryEditor />
+        <StoryEditor skeletonLoading={<StoryEditorSkeleton />} />
       </Suspense>
     </div>
   );
