@@ -35,7 +35,6 @@ import {
   Underline as UnderlineIcon,
   Undo2,
 } from "lucide-react";
-import Head from "next/head";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -65,7 +64,6 @@ export default function StoryEditor({
   const [userId, setUserId] = useState<string | null>("");
   const [isForkLoading, setIsForkLoading] = useState(false);
   const [forkedStoryId, setForkedStoryId] = useState<string | null>(null);
-  const [storyTitle, setStoryTitle] = useState<string>("Story Details");
   useEffect(() => {
     const fetchUserId = async () => {
       const user = await getUserId();
@@ -99,13 +97,6 @@ export default function StoryEditor({
       });
     }
   }, [storyError]);
-
-  useEffect(() => {
-    if (story?.title) {
-      document.title = `StorySync | ${story.title}`;
-      setStoryTitle(story.title);
-    }
-  }, [story]);
 
   const {
     data: content,
@@ -294,9 +285,6 @@ export default function StoryEditor({
 
   return (
     <>
-      <Head>
-        <title>StorySync | {storyTitle}</title>
-      </Head>
       <div className="max-w-screen-md w-full mx-auto mt-16 p-4 sm:p-8 min-h-[80vh] flex flex-col justify-center">
         <Card className="w-full shadow-lg dark:shadow-gray-800">
           {loadingStory && storyError && loadingContent && contentError && (
