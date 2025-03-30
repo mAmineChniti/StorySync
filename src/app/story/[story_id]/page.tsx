@@ -21,24 +21,30 @@ export async function generateMetadata(properties: {
     }
 
     return {
-      title: `${story.title} | StorySync`,
+      title: `${story.title}`,
       description: story.description || "A story on StorySync",
     };
   } catch (error) {
-    console.error("Error generating metadata:", error);
+    console.error("Detailed error in generateMetadata:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : "No stack trace",
+    });
     return {
-      title: "Story | StorySync",
-      description: "A story on StorySync",
+      title: "Story Not Found",
+      description: "The requested story could not be found.",
     };
   }
 }
 
 export async function generateStaticParams() {
   try {
-    const storyIds = await StoryService.list(1, 100);
-    return storyIds.map((id) => ({ story_id: id }));
+    const stories = await StoryService.list(1, 100);
+    return stories.map((story) => ({ story_id: story.id }));
   } catch (error) {
-    console.error("Failed to generate static params:", error);
+    console.error("Detailed error in generateStaticParams:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : "No stack trace",
+    });
     return [];
   }
 }

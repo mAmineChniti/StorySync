@@ -114,15 +114,10 @@ export const StoryService = {
   },
 
   async getDetails(storyId: string): Promise<storyResponses.StoryDetails> {
-    const headers = await getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return {} as storyResponses.StoryDetails;
-    }
     const { data, error } = await tfetch.get<{
       story: storyResponses.StoryDetails;
     }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_DETAILS}/${storyId}`,
-      headers,
     );
     if (error) {
       throw new Error(error.message);
@@ -134,13 +129,8 @@ export const StoryService = {
     page: number,
     limit: number,
   ): Promise<storyResponses.StoryDetails[]> {
-    const headers = await getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return [];
-    }
     const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
-      headers,
       { type: "json", data: { page, limit } },
     );
     if (error) {
@@ -150,15 +140,10 @@ export const StoryService = {
   },
 
   async getContent(storyId: string): Promise<storyResponses.StoryContent> {
-    const headers = await getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return {} as storyResponses.StoryContent;
-    }
     const { data, error } = await tfetch.get<{
       content: storyResponses.StoryContent;
     }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.STORY_CONTENT}/${storyId}`,
-      headers,
     );
     if (error) {
       throw new Error(error.message);
@@ -181,13 +166,8 @@ export const StoryService = {
   },
 
   async getCollaborators(storyId: string): Promise<string[]> {
-    const headers = await getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return [];
-    }
     const { data, error } = await tfetch.get<string[]>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATORS}/${storyId}`,
-      headers,
     );
     if (error) {
       throw new Error(error.message);
@@ -217,13 +197,8 @@ export const StoryService = {
   async getByFilters(
     parameters: storyResponses.FetchStoriesByFilterParameters,
   ): Promise<storyResponses.StoryDetails[]> {
-    const headers = await getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return [];
-    }
     const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FILTERED_STORIES}`,
-      headers,
       { type: "json", data: parameters },
     );
     if (error) {
@@ -238,13 +213,8 @@ export const StoryService = {
   ): Promise<storyResponses.StoryDetails[]> {
     const userId = await getUserId();
     if (!userId) return [];
-    const headers = await getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return [];
-    }
     const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.USER_STORIES}`,
-      headers,
       { type: "json", data: { user_id: userId, page, limit } },
     );
     if (error) {
@@ -259,7 +229,7 @@ export const StoryService = {
       return { message: "", story_id: "" };
     }
     const { data, error } = await tfetch.get<storyResponses.ForkStoryResponse>(
-      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FORK_STORY}${storyId}`,
+      `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FORK_STORY}/${storyId}`,
       headers,
     );
     if (error) {
@@ -283,11 +253,6 @@ export const StoryService = {
   },
 
   async getAllStoryIds(): Promise<string[]> {
-    const headers = await getAuthHeaders();
-    if (!headers || Object.keys(headers).length === 0) {
-      return [];
-    }
-
     const limit = 100;
     let page = 1;
     const allStoryIds: string[] = [];
@@ -296,7 +261,6 @@ export const StoryService = {
     while (hasMoreStories) {
       const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
         `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
-        headers,
         { type: "json", data: { page, limit } },
       );
 
