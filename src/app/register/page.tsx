@@ -1,3 +1,6 @@
+import { type Metadata } from "next";
+import { Suspense } from "react";
+
 import AuthPage from "@/components/AuthPage";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Metadata } from "next";
-import { Suspense } from "react";
 
 const RegisterSkeleton = () => (
   <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">

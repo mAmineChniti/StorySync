@@ -1,5 +1,10 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import { deleteCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +15,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AuthService } from "@/lib/requests";
-import { useMutation } from "@tanstack/react-query";
-import { deleteCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 export default function EmailConfirmationWarning() {
   const router = useRouter();
@@ -25,9 +26,10 @@ export default function EmailConfirmationWarning() {
     },
     onError: (error: Error) => {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
     },
   });

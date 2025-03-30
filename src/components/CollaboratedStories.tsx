@@ -1,5 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { Calendar, Edit, Eye, Tag, User, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,10 +18,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AuthService, StoryService } from "@/lib/requests";
 import { formatDate } from "@/lib/utils";
 import { type StoryDetails } from "@/types/storyInterfaces";
-import { useQuery } from "@tanstack/react-query";
-import { Calendar, Edit, Eye, Tag, User, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 const OwnerInfo = ({ ownerId }: { ownerId: string }) => {
   const { data: ownerData, isLoading } = useQuery({
@@ -59,9 +60,9 @@ export default function CollaboratedStories() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {[1, 2].map((i) => (
+            {[1, 2].map((index) => (
               <div
-                key={i}
+                key={index}
                 className="flex flex-col md:flex-row gap-4 border-b border-border pb-6 last:border-0"
               >
                 <div className="flex-1">
@@ -70,8 +71,8 @@ export default function CollaboratedStories() {
                   </div>
                   <Skeleton className="h-6 w-full mb-4 bg-muted" />
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex items-center">
+                    {[1, 2, 3].map((index) => (
+                      <div key={index} className="flex items-center">
                         <Skeleton className="h-4 w-1/2 mr-1 bg-muted" />
                       </div>
                     ))}
@@ -191,7 +192,9 @@ export default function CollaboratedStories() {
           variant="outline"
           className="w-full sm:w-auto border-border cursor-pointer"
           disabled={currentPage === 1 || isLoading}
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          onClick={() =>
+            setCurrentPage((previous) => Math.max(previous - 1, 1))
+          }
         >
           Previous
         </Button>
@@ -200,7 +203,7 @@ export default function CollaboratedStories() {
           variant="outline"
           className="w-full sm:w-auto border-border cursor-pointer"
           disabled={stories.length < limit || isLoading}
-          onClick={() => setCurrentPage((prev) => prev + 1)}
+          onClick={() => setCurrentPage((previous) => previous + 1)}
         >
           Next
         </Button>

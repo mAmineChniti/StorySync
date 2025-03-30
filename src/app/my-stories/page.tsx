@@ -1,3 +1,6 @@
+import { type Metadata } from "next";
+import { Suspense } from "react";
+
 import MyStories from "@/components/MyStories";
 import ProfileLayout from "@/components/ProfileLayout";
 import {
@@ -7,8 +10,6 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "My Stories",
@@ -22,11 +23,11 @@ const MyStoriesSkeleton = () => (
     </div>
 
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {Array(6)
+      {Array.from({ length: 6 })
         .fill(0)
-        .map((_, idx) => (
+        .map((_, index) => (
           <Card
-            key={idx}
+            key={index}
             className="flex flex-col h-fit w-full max-w-[350px] mx-auto hover:shadow-lg transition-shadow duration-300"
           >
             <CardHeader className="pb-2">

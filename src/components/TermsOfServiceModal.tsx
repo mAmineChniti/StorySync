@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +14,6 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import termsOfServiceSections from "@/termsOfServiceSections.json";
-import { useState } from "react";
 
 export function TermsOfServiceModal({ onAccept }: { onAccept?: () => void }) {
   const [open, setOpen] = useState(false);

@@ -7,7 +7,7 @@ export interface StoryDetails {
   collaborators?: string[];
   created_at: string;
   updated_at: string;
-  forkedFrom?: string | null;
+  forked_from?: string | null;
 }
 
 export interface StoryContent {
@@ -21,7 +21,7 @@ export interface StoryResponse {
   stories: StoryDetails[];
 }
 
-export interface FetchStoriesByFilterParams {
+export interface FetchStoriesByFilterParameters {
   genres?: string[];
   page: number;
   limit: number;

@@ -1,11 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import Login from "@/components/Login";
 import Register from "@/components/Register";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   const [isLoginState, setIsLoginState] = useState(isLogin);

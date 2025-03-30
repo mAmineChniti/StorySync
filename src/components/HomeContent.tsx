@@ -1,5 +1,11 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { BookOpen, Calendar, Tag, User } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,11 +19,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthService, StoryService } from "@/lib/requests";
 import { formatDate } from "@/lib/utils";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { BookOpen, Calendar, Tag, User } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 const OwnerName = ({ ownerId }: { ownerId: string }) => {
   const { data, isPending, error } = useQuery({
@@ -43,7 +44,7 @@ const OwnerName = ({ ownerId }: { ownerId: string }) => {
 
 export default function HomeContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParameters = useSearchParams();
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const limit = 10;
@@ -78,9 +79,10 @@ export default function HomeContent() {
   useEffect(() => {
     if (error) {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg, {
         action: {
           label: "Retry",
@@ -93,10 +95,10 @@ export default function HomeContent() {
   }, [error, router]);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", "1");
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [selectedGenres, searchQuery, router, searchParams]);
+    const parameters = new URLSearchParams(searchParameters.toString());
+    parameters.set("page", "1");
+    router.replace(`?${parameters.toString()}`, { scroll: false });
+  }, [selectedGenres, searchQuery, router, searchParameters]);
 
   const allStories =
     (data?.pages.flat().filter(Boolean) ?? []).length > 0
@@ -168,10 +170,10 @@ export default function HomeContent() {
                         id={`genre-${genre}`}
                         checked={selectedGenres.includes(genre)}
                         onCheckedChange={(checked) =>
-                          setSelectedGenres((prev) =>
+                          setSelectedGenres((previous) =>
                             checked
-                              ? [...prev, genre]
-                              : prev.filter((g) => g !== genre),
+                              ? [...previous, genre]
+                              : previous.filter((g) => g !== genre),
                           )
                         }
                         className="text-primary-foreground border-border"

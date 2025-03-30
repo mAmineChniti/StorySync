@@ -1,11 +1,12 @@
+import { clsx, type ClassValue } from "clsx";
+import { getCookie } from "cookies-next";
+import { twMerge } from "tailwind-merge";
+
 import type {
   AccessToken,
   RefreshToken,
   UserStruct,
 } from "@/types/authInterfaces";
-import { clsx, type ClassValue } from "clsx";
-import { getCookie } from "cookies-next";
-import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

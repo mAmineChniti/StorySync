@@ -1,3 +1,6 @@
+import { type Metadata } from "next";
+import { Suspense } from "react";
+
 import HomeContent from "@/components/HomeContent";
 import {
   Card,
@@ -6,8 +9,6 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Browse Stories",
@@ -36,10 +37,10 @@ const BrowseSkeleton = () => (
                 <Skeleton className="w-1/4 h-4 bg-muted" />
               </h3>
               <div className="space-y-2">
-                {Array(5)
+                {Array.from({ length: 5 })
                   .fill(0)
-                  .map((_, idx) => (
-                    <div key={idx} className="flex items-center space-x-2">
+                  .map((_, index) => (
+                    <div key={index} className="flex items-center space-x-2">
                       <Skeleton className="w-4 h-4 rounded-full bg-muted" />
                       <Skeleton className="w-1/2 h-4 bg-muted" />
                     </div>
@@ -58,11 +59,11 @@ const BrowseSkeleton = () => (
 
         <div className="flex-1 flex flex-col">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-            {Array(6)
+            {Array.from({ length: 6 })
               .fill(0)
-              .map((_, idx) => (
+              .map((_, index) => (
                 <Card
-                  key={idx}
+                  key={index}
                   className="flex flex-col h-fit w-full max-w-[350px] mx-auto hover:shadow-lg transition-shadow duration-300 bg-card text-card-foreground border-border"
                 >
                   <CardHeader className="pb-2">

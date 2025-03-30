@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
+
 import "@/styles/globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { GeistSans } from "geist/font/sans";

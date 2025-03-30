@@ -1,11 +1,12 @@
 "use client";
 
-import { AuthService } from "@/lib/requests";
-import { parseCookie } from "@/lib/utils";
-import type { AccessToken, UserStruct } from "@/types/authInterfaces";
 import { deleteCookie, setCookie } from "cookies-next";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+
+import { AuthService } from "@/lib/requests";
+import { parseCookie } from "@/lib/utils";
+import type { AccessToken, UserStruct } from "@/types/authInterfaces";
 
 const REFRESH_THRESHOLD = 5 * 60 * 1000;
 
@@ -54,7 +55,7 @@ export const checkAndRefreshToken = async () => {
         {
           path: "/",
           sameSite: "lax",
-          secure: window.location.protocol === "https:",
+          secure: globalThis.location.protocol === "https:",
           expires: new Date(newTokens.access_expires_at),
         },
       );
@@ -69,7 +70,7 @@ export const checkAndRefreshToken = async () => {
         {
           path: "/",
           sameSite: "lax",
-          secure: window.location.protocol === "https:",
+          secure: globalThis.location.protocol === "https:",
           expires: new Date(newTokens.refresh_expires_at),
         },
       );

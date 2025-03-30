@@ -1,17 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AuthService, StoryService } from "@/lib/requests";
-import { cn, formatDate, getUserId } from "@/lib/utils";
-import { type ForkStoryResponse } from "@/types/storyInterfaces";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type Extension } from "@tiptap/core";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -51,13 +39,26 @@ import Head from "next/head";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AuthService, StoryService } from "@/lib/requests";
+import { cn, formatDate, getUserId } from "@/lib/utils";
+import { type ForkStoryResponse } from "@/types/storyInterfaces";
 export default function StoryEditor({
   skeletonLoading,
 }: {
   skeletonLoading?: React.ReactNode;
 }) {
   const router = useRouter();
-  const params = useParams<{ story_id: string }>();
+  const parameters = useParams<{ story_id: string }>();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
@@ -73,7 +74,7 @@ export default function StoryEditor({
     void fetchUserId();
   }, []);
 
-  const story_id = params?.story_id;
+  const story_id = parameters?.story_id;
   const lowlight = createLowlight();
 
   const {
@@ -171,9 +172,10 @@ export default function StoryEditor({
       })
       .catch((error: Error) => {
         let errormsg = "";
-        if (typeof error.message !== "string")
-          errormsg = (JSON.parse(error.message) as { message: string }).message;
-        else errormsg = error.message;
+        errormsg =
+          typeof error.message === "string"
+            ? error.message
+            : (JSON.parse(error.message) as { message: string }).message;
         toast.error(errormsg);
       });
     setIsForkLoading(false);
@@ -224,9 +226,10 @@ export default function StoryEditor({
     onError: (error: Error) => {
       editor?.commands.setContent(content?.content ?? "");
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
       setIsEditing(false);
     },
