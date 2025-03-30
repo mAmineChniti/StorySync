@@ -32,7 +32,7 @@ export default function NavBar() {
 
   const getActiveClass = () => {
     for (const route of ROUTE_PRIORITY) {
-      if (route.routes.some((r) => pathname === r)) {
+      if (route.routes.includes(pathname)) {
         return {
           "/": route.key === "/",
           login: route.key === "login",
@@ -85,40 +85,7 @@ export default function NavBar() {
           </Link>
         </NavigationMenuItem>
         <div className="ml-auto flex items-center gap-2 sm:gap-4">
-          {!isUserLoggedIn ? (
-            <>
-              <NavigationMenuItem>
-                <Link href="/login" passHref legacyBehavior>
-                  <NavigationMenuLink
-                    aria-label="Login"
-                    className={cn(
-                      "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
-                      getActiveClass().login
-                        ? "bg-accent text-accent-foreground"
-                        : "",
-                    )}
-                  >
-                    Login
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/register" passHref legacyBehavior>
-                  <NavigationMenuLink
-                    aria-label="Register"
-                    className={cn(
-                      "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
-                      getActiveClass().register
-                        ? "bg-accent text-accent-foreground"
-                        : "",
-                    )}
-                  >
-                    Register
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </>
-          ) : (
+          {isUserLoggedIn ? (
             <>
               <NavigationMenuItem>
                 <Link href="/browse" passHref legacyBehavior>
@@ -158,6 +125,39 @@ export default function NavBar() {
                     className="px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-transparent focus:outline-none"
                   >
                     Logout
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+            </>
+          ) : (
+            <>
+              <NavigationMenuItem>
+                <Link href="/login" passHref legacyBehavior>
+                  <NavigationMenuLink
+                    aria-label="Login"
+                    className={cn(
+                      "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
+                      getActiveClass().login
+                        ? "bg-accent text-accent-foreground"
+                        : "",
+                    )}
+                  >
+                    Login
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="/register" passHref legacyBehavior>
+                  <NavigationMenuLink
+                    aria-label="Register"
+                    className={cn(
+                      "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
+                      getActiveClass().register
+                        ? "bg-accent text-accent-foreground"
+                        : "",
+                    )}
+                  >
+                    Register
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>

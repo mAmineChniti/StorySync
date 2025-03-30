@@ -1,5 +1,14 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { BookOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { type z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,14 +36,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { StoryService } from "@/lib/requests";
 import { storySchema } from "@/types/storySchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { BookOpen } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { type z } from "zod";
 
 export default function CreateStory() {
   const [submitted, setSubmitted] = useState(false);
@@ -59,9 +60,10 @@ export default function CreateStory() {
     },
     onError: (error) => {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
     },
   });

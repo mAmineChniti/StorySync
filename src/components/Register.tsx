@@ -1,5 +1,14 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type * as z from "zod";
+
 import { TermsOfServiceModal } from "@/components/TermsOfServiceModal";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -22,14 +31,6 @@ import { AuthService } from "@/lib/requests";
 import { calculateEighteenYearsAgo, cn, formatDate } from "@/lib/utils";
 import type { RegisterRequest, RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { CalendarIcon, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import type * as z from "zod";
 
 export default function Register() {
   const [checked, setChecked] = useState(false);
@@ -59,9 +60,10 @@ export default function Register() {
     },
     onError: (error: Error) => {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
     },
   });

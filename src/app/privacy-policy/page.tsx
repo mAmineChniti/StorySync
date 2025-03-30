@@ -1,8 +1,9 @@
+import { type Metadata } from "next";
+import { Suspense } from "react";
+
 import { PrivacyPolicy } from "@/components/PrivacyPolicy";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",

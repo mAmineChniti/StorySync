@@ -1,5 +1,15 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { setCookie } from "cookies-next";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type * as z from "zod";
+
 import { PasswordResetEmailStage } from "@/components/PasswordResetEmailStage";
 import { PasswordResetTokenStage } from "@/components/PasswordResetTokenStage";
 import { Button } from "@/components/ui/button";
@@ -16,15 +26,6 @@ import { checkAndRefreshToken } from "@/hooks/useTokenRefresh";
 import { AuthService } from "@/lib/requests";
 import type { LoginResponse } from "@/types/authInterfaces";
 import { loginSchema } from "@/types/authSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { setCookie } from "cookies-next";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import type * as z from "zod";
 
 export default function Login() {
   const [isPasswordReset, setIsPasswordReset] = useState(false);
@@ -47,7 +48,7 @@ export default function Login() {
         const cookieOptions = {
           path: "/",
           sameSite: "lax" as const,
-          secure: window.location.protocol === "https:",
+          secure: globalThis.location.protocol === "https:",
           expires: new Date(userData.tokens.access_expires_at),
         };
 
@@ -75,7 +76,7 @@ export default function Login() {
           () => void checkAndRefreshToken(),
           new Date(userData.tokens.access_expires_at).getTime() -
             Date.now() -
-            30000,
+            30_000,
         );
 
         if (!userData.user.email_confirmed) {
@@ -90,9 +91,10 @@ export default function Login() {
     },
     onError: (error) => {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
       loginForm.reset();
     },

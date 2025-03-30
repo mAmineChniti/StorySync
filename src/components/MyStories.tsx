@@ -1,4 +1,10 @@
 "use client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,11 +17,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { StoryService } from "@/lib/requests";
 import { formatDate } from "@/lib/utils";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Calendar, Edit, Tag, Trash2, User } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export default function MyStories() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,19 +41,20 @@ export default function MyStories() {
       } catch (error: unknown) {
         let errormsg = "";
         if (error instanceof Error) {
-          if (typeof error.message !== "string")
-            errormsg = (JSON.parse(error.message) as { message: string })
-              .message;
-          else errormsg = error.message;
+          errormsg =
+            typeof error.message === "string"
+              ? error.message
+              : (JSON.parse(error.message) as { message: string }).message;
         }
         toast.error(errormsg);
       }
     },
     onError: (error: Error) => {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
     },
   });
@@ -64,8 +66,9 @@ export default function MyStories() {
     mutation.mutate(storyId);
   };
 
-  const handleNextPage = () => setCurrentPage((prev) => prev + 1);
-  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () => setCurrentPage((previous) => previous + 1);
+  const handlePreviousPage = () =>
+    setCurrentPage((previous) => Math.max(previous - 1, 1));
 
   if (isLoading) {
     return (
@@ -76,9 +79,9 @@ export default function MyStories() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            {[1, 2].map((i) => (
+            {[1, 2].map((index) => (
               <div
-                key={i}
+                key={index}
                 className="flex flex-col gap-4 border-b border-border pb-6 last:border-0"
               >
                 <div className="flex-1">
@@ -87,8 +90,8 @@ export default function MyStories() {
                   </div>
                   <Skeleton className="h-6 w-full mb-4 bg-muted" />
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm text-muted-foreground mb-4">
-                    {[1, 2, 3, 4].map((i) => (
-                      <Skeleton key={i} className="h-4 w-1/2 bg-muted" />
+                    {[1, 2, 3, 4].map((index) => (
+                      <Skeleton key={index} className="h-4 w-1/2 bg-muted" />
                     ))}
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -212,7 +215,7 @@ export default function MyStories() {
         <Button
           variant="outline"
           className="w-full sm:w-auto border-border"
-          onClick={handlePrevPage}
+          onClick={handlePreviousPage}
           disabled={currentPage === 1 || isLoading}
         >
           Previous

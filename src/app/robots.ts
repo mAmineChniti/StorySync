@@ -1,5 +1,6 @@
-import { env } from "@/env";
 import { type MetadataRoute } from "next";
+
+import { env } from "@/env";
 
 export default function robots(): MetadataRoute.Robots {
   const siteUrl =
@@ -10,6 +11,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       disallow: ["/private/", "/admin/"],
+      crawlDelay: 15,
     },
     sitemap: `${siteUrl}/sitemap.xml`,
     host: siteUrl,

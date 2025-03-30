@@ -1,10 +1,11 @@
 "use client";
 
+import { BookOpen, Edit, PenTool, User } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { BookOpen, Edit, PenTool, User } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
 
 export default function ProfileSidebar() {
   const router = useRouter();

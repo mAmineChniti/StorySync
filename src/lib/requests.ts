@@ -1,3 +1,5 @@
+import { TFetchClient } from "@thatguyjamal/type-fetch";
+
 import { env } from "@/env";
 import { getAuthHeaders, getRefreshHeaders, getUserId } from "@/lib/utils";
 import {
@@ -10,7 +12,6 @@ import {
   type UserStruct,
 } from "@/types/authInterfaces";
 import type * as storyResponses from "@/types/storyInterfaces";
-import { TFetchClient } from "@thatguyjamal/type-fetch";
 
 const tfetch = new TFetchClient();
 
@@ -214,7 +215,7 @@ export const StoryService = {
   },
 
   async getByFilters(
-    params: storyResponses.FetchStoriesByFilterParams,
+    parameters: storyResponses.FetchStoriesByFilterParameters,
   ): Promise<storyResponses.StoryDetails[]> {
     const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
@@ -223,7 +224,7 @@ export const StoryService = {
     const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FILTERED_STORIES}`,
       headers,
-      { type: "json", data: params },
+      { type: "json", data: parameters },
     );
     if (error) {
       throw new Error(error.message);
@@ -279,6 +280,41 @@ export const StoryService = {
     if (error) {
       throw new Error(error.message);
     }
+  },
+
+  async getAllStoryIds(): Promise<string[]> {
+    const headers = await getAuthHeaders();
+    if (!headers || Object.keys(headers).length === 0) {
+      return [];
+    }
+
+    const limit = 100;
+    let page = 1;
+    const allStoryIds: string[] = [];
+    let hasMoreStories = true;
+
+    while (hasMoreStories) {
+      const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
+        `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.GET_STORIES}`,
+        headers,
+        { type: "json", data: { page, limit } },
+      );
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const storyIds = data?.stories.map((story) => story.id) ?? [];
+
+      if (storyIds.length === 0) {
+        hasMoreStories = false;
+      } else {
+        allStoryIds.push(...storyIds);
+        page++;
+      }
+    }
+
+    return allStoryIds;
   },
 };
 

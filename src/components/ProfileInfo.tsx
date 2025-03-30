@@ -1,5 +1,14 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteCookie, setCookie } from "cookies-next";
+import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import type * as z from "zod";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,15 +50,6 @@ import {
   parseCookie,
 } from "@/lib/utils";
 import { type UpdateRequest, type UserStruct } from "@/types/authInterfaces";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCookie, setCookie } from "cookies-next";
-import { CalendarIcon, Edit2, Loader2, Save, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import type * as z from "zod";
-
 import { type profileUpdateSchema } from "@/types/authSchemas";
 
 export default function ProfileInfo() {
@@ -109,9 +109,10 @@ export default function ProfileInfo() {
     },
     onError: (error: Error) => {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
     },
   });
@@ -166,9 +167,10 @@ export default function ProfileInfo() {
     },
     onError: (error: Error) => {
       let errormsg = "";
-      if (typeof error.message !== "string")
-        errormsg = (JSON.parse(error.message) as { message: string }).message;
-      else errormsg = error.message;
+      errormsg =
+        typeof error.message === "string"
+          ? error.message
+          : (JSON.parse(error.message) as { message: string }).message;
       toast.error(errormsg);
     },
   });
@@ -222,10 +224,10 @@ export default function ProfileInfo() {
             <AlertDialog
               open={isDeleteDialogOpen}
               onOpenChange={(open) => {
-                if (!open) {
-                  onDeleteCancel();
-                } else {
+                if (open) {
                   setIsDeleteDialogOpen(true);
+                } else {
+                  onDeleteCancel();
                 }
               }}
             >
@@ -322,7 +324,7 @@ export default function ProfileInfo() {
                 control={form.control}
                 render={({ field }) => {
                   const eighteenYearsAgo = calculateEighteenYearsAgo();
-                  let dateValue: Date | undefined = undefined;
+                  let dateValue: Date | undefined;
                   if (field.value) {
                     if (typeof field.value === "string") {
                       dateValue = new Date(field.value);

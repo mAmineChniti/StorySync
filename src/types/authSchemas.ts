@@ -1,5 +1,6 @@
-import { calculateEighteenYearsAgo } from "@/lib/utils";
 import * as z from "zod";
+
+import { calculateEighteenYearsAgo } from "@/lib/utils";
 
 export const loginSchema = z.object({
   identifier: z.string().min(5, "Username or Email is required"),
@@ -32,7 +33,7 @@ export const registerSchema = z
       },
       { message: "You must be at least 18 years old" },
     ),
-    accept_terms: z.boolean().refine((val) => val === true, {
+    accept_terms: z.boolean().refine((value) => value === true, {
       message: "You must accept the Terms of Service to register",
     }),
   })

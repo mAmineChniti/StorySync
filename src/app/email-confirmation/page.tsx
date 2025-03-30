@@ -1,3 +1,6 @@
+import { type Metadata } from "next";
+import { Suspense } from "react";
+
 import EmailConfirmationWarning from "@/components/EmailConfirmationWarning";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,8 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type Metadata } from "next";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Email Confirmation",
