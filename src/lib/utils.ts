@@ -45,7 +45,7 @@ export const parseCookie = async <T>(
 const getToken = async (
   cookieName: "access" | "refresh",
   tokenField: keyof AccessToken | keyof RefreshToken,
-): Promise<string | null> => {
+): Promise<string | undefined> => {
   const result =
     cookieName === "access"
       ? await parseCookie<AccessToken>(cookieName)
@@ -53,16 +53,16 @@ const getToken = async (
 
   if (!result.success) {
     console.warn(`Failed to parse ${cookieName} token: ${result.error}`);
-    return null;
+    return undefined;
   }
 
   const token = result.data[tokenField as keyof typeof result.data] as string;
-  return typeof token === "string" ? token.trim() : null;
+  return typeof token === "string" ? token.trim() : undefined;
 };
 
-const getAccessToken = async (): Promise<string | null> =>
+const getAccessToken = async (): Promise<string | undefined> =>
   getToken("access", "access_token");
-const getRefreshToken = async (): Promise<string | null> =>
+const getRefreshToken = async (): Promise<string | undefined> =>
   getToken("refresh", "refresh_token");
 
 export const getAuthHeaders = async (): Promise<HeadersInit> => {
@@ -109,14 +109,14 @@ export const formatDate = (
   }
 };
 
-export const getUserId = async (): Promise<string | null> => {
+export const getUserId = async (): Promise<string | undefined> => {
   const result = await parseCookie<UserStruct>("user");
   if (!result.success) {
-    return null;
+    return undefined;
   }
 
   const userId = result.data.id?.trim();
-  return userId?.length ? userId : null;
+  return userId?.length ? userId : undefined;
 };
 
 export function calculateEighteenYearsAgo(): Date {

@@ -56,7 +56,7 @@ export default function ProfileInfo() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [user, setUser] = useState<UserStruct | null>(null);
+  const [user, setUser] = useState<UserStruct | undefined>(undefined);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof profileUpdateSchema>>({
