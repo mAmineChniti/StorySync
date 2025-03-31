@@ -50,28 +50,6 @@ const API_CONFIG = {
   },
 } as const;
 
-type ApiError = {
-  message?: string;
-  [key: string]: unknown;
-};
-
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    const errorData: ApiError = await response
-      .json()
-      .then((data) => data as ApiError)
-      .catch(() => ({}) as ApiError);
-
-    const errorMessage =
-      typeof errorData.message === "string"
-        ? errorData.message
-        : `Request failed with status ${response.status}`;
-
-    throw new Error(errorMessage);
-  }
-  return response.json() as Promise<T>;
-}
-
 export const StoryService = {
   async create(
     storyData: storyResponses.StoryRequest,
@@ -85,8 +63,8 @@ export const StoryService = {
       story_id: string;
     }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.CREATE_STORY}`,
-      headers,
       { type: "json", data: storyData },
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -99,18 +77,14 @@ export const StoryService = {
     if (!headers || Object.keys(headers).length === 0) {
       return;
     }
-    const response = await fetch(
+    const { error } = await tfetch.patch<{ message: string }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.EDIT_STORY}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          ...headers,
-        },
-        body: JSON.stringify({ story_id: storyId, content }),
-      },
+      { type: "json", data: { story_id: storyId, content } },
+      { headers },
     );
-    await handleResponse<{ message: string }>(response);
+    if (error) {
+      throw new Error(error.message);
+    }
   },
 
   async getDetails(storyId: string): Promise<storyResponses.StoryDetails> {
@@ -158,7 +132,7 @@ export const StoryService = {
     }
     const { error } = await tfetch.delete<{ message: string }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_STORY}/${storyId}`,
-      headers,
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -185,8 +159,8 @@ export const StoryService = {
     }
     const { data, error } = await tfetch.post<storyResponses.StoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.COLLABORATIONS}`,
-      headers,
       { type: "json", data: { page, limit } },
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -223,14 +197,16 @@ export const StoryService = {
     return data?.stories ?? [];
   },
 
-  async forkStory(storyId: string): Promise<storyResponses.ForkStoryResponse> {
+  async forkStory(
+    storyId: string,
+  ): Promise<{ message: string; story_id: string }> {
     const headers = await getAuthHeaders();
     if (!headers || Object.keys(headers).length === 0) {
       return { message: "", story_id: "" };
     }
     const { data, error } = await tfetch.get<storyResponses.ForkStoryResponse>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.FORK_STORY}/${storyId}`,
-      headers,
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -245,7 +221,7 @@ export const StoryService = {
     }
     const { error } = await tfetch.delete<{ message: string }>(
       `${API_CONFIG.STORY.BASE_URL}${API_CONFIG.STORY.ENDPOINTS.DELETE_ALL_STORIES}`,
-      headers,
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -286,7 +262,6 @@ export const AuthService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const { data, error } = await tfetch.post<LoginResponse>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.LOGIN}`,
-      { "Content-Type": "application/json" },
       { type: "json", data: credentials },
     );
     if (error) {
@@ -298,7 +273,6 @@ export const AuthService = {
   async register(data: RegisterRequest): Promise<RegisterResponse> {
     const { data: responseData, error } = await tfetch.post<RegisterResponse>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REGISTER}`,
-      { "Content-Type": "application/json" },
       {
         type: "json",
         data: {
@@ -340,8 +314,8 @@ export const AuthService = {
     }
     const { data, error } = await tfetch.put<UserStruct>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.UPDATE_USER}`,
-      headers,
       { type: "json", data: updatedData },
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -358,8 +332,8 @@ export const AuthService = {
     }
     const { data, error } = await tfetch.post<{ user: UserStruct }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.FETCH_USER_BY_ID}`,
-      headers,
       { type: "json", data: { user_id: ownerId } },
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -377,7 +351,7 @@ export const AuthService = {
     }
     const { error } = await tfetch.delete<{ message: string }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.DELETE_USER}`,
-      headers,
+      { headers },
     );
     if (error) {
       throw new Error(error.message);
@@ -391,7 +365,7 @@ export const AuthService = {
     }
     const { data, error } = await tfetch.get<{ tokens: Tokens }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.REFRESH}`,
-      refreshHeaders,
+      { headers: refreshHeaders },
     );
     if (error) {
       throw new Error(error.message);
@@ -406,7 +380,7 @@ export const AuthService = {
     }
     const { error } = await tfetch.get<{ message: string }>(
       `${API_CONFIG.AUTH.BASE_URL}${API_CONFIG.AUTH.ENDPOINTS.RESEND_CONFIRMATION_EMAIL}`,
-      headers,
+      { headers },
     );
     if (error) {
       throw new Error(error.message);

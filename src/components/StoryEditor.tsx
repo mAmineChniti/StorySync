@@ -61,9 +61,11 @@ export default function StoryEditor({
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
-  const [userId, setUserId] = useState<string | null>("");
+  const [userId, setUserId] = useState<string | undefined>("");
   const [isForkLoading, setIsForkLoading] = useState(false);
-  const [forkedStoryId, setForkedStoryId] = useState<string | null>(null);
+  const [forkedStoryId, setForkedStoryId] = useState<string | undefined>(
+    undefined,
+  );
   useEffect(() => {
     const fetchUserId = async () => {
       const user = await getUserId();
@@ -85,7 +87,6 @@ export default function StoryEditor({
     staleTime: 30 * 60 * 1000,
     gcTime: 20 * 60 * 1000,
     enabled: !!story_id,
-    retry: 1,
   });
 
   useEffect(() => {
@@ -108,7 +109,6 @@ export default function StoryEditor({
     staleTime: 30 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     enabled: !!story_id,
-    retry: 1,
   });
 
   const { data: collaborators } = useQuery<string[]>({
@@ -117,7 +117,6 @@ export default function StoryEditor({
     staleTime: 60 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     enabled: !!story_id,
-    retry: 1,
   });
 
   const OwnerName = ({ ownerId }: { ownerId: string }) => {
@@ -126,7 +125,6 @@ export default function StoryEditor({
       queryFn: () => AuthService.getUserName(ownerId),
       staleTime: 60 * 60 * 1000,
       gcTime: 2 * 60 * 60 * 1000,
-      retry: 1,
     });
 
     if (isPending)
@@ -148,7 +146,6 @@ export default function StoryEditor({
     queryKey: ["fork", story_id],
     queryFn: async () => StoryService.forkStory(story_id),
     enabled: false,
-    retry: false,
   });
 
   const handleForkStory = async () => {

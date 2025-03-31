@@ -46,7 +46,6 @@ export default function CollaboratedStories() {
     queryFn: () => StoryService.getCollaboratedStories(currentPage, limit),
     staleTime: 30 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    retry: false,
   });
 
   const stories = data ?? [];

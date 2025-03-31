@@ -20,7 +20,9 @@ import { formatDate } from "@/lib/utils";
 
 export default function MyStories() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
+  const [deletingStoryId, setDeletingStoryId] = useState<string | undefined>(
+    undefined,
+  );
   const limit = 5;
   const router = useRouter();
   const queryClient = useQueryClient();
