@@ -6,6 +6,7 @@ export interface UserStruct {
   last_name: string;
   birthdate: string;
   email_confirmed: boolean;
+  accept_terms: boolean;
   date_joined: string;
 }
 
@@ -49,6 +50,7 @@ export interface RegisterRequest {
   first_name: string;
   last_name: string;
   birthdate: string;
+  accept_terms: boolean;
 }
 
 export interface UpdateRequest {

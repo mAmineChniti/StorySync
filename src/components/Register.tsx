@@ -76,6 +76,7 @@ export default function Register() {
       first_name: data.first_name,
       last_name: data.last_name,
       birthdate: data.birthdate.toISOString(),
+      accept_terms: data.accept_terms,
     };
     registerMutation.mutate(registerData);
   };

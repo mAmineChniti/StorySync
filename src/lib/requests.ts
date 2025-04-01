@@ -282,6 +282,7 @@ export const AuthService = {
           first_name: data.first_name,
           last_name: data.last_name,
           birthdate: data.birthdate,
+          accept_terms: data.accept_terms,
         },
       },
     );
