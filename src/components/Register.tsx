@@ -253,13 +253,14 @@ export default function Register() {
           <FormField
             name="accept_terms"
             control={form.control}
-            render={() => (
+            render={({ field }) => (
               <FormItem className="flex items-center space-x-2">
                 <FormControl>
                   <Checkbox
                     checked={checked}
                     onCheckedChange={(checked) => {
                       setChecked(checked as boolean);
+                      field.onChange(checked);
                     }}
                   />
                 </FormControl>
