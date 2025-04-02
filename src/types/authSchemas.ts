@@ -2,30 +2,62 @@ import * as z from "zod";
 
 import { calculateEighteenYearsAgo } from "@/lib/utils";
 
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const loginSchema = z.object({
-  identifier: z.string().min(5, "Username or Email is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  identifier: z
+    .string()
+    .min(5, { message: "Username or Email must be at least 5 characters" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" })
+    .max(64, { message: "Password must be at most 64 characters" })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least one uppercase letter",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least one lowercase letter",
+    })
+    .regex(/[0-9]/, { message: "Password must contain at least one number" })
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+      message: "Password must contain at least one special character",
+    }),
 });
 
 export const registerSchema = z
   .object({
     username: z
       .string()
-      .min(3, { message: "Username must be at least 3 characters" }),
+      .min(5, { message: "Username must be at least 5 characters" })
+      .max(20, { message: "Username must be at most 20 characters" }),
     email: z.string().email({ message: "Invalid email address" }),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters" })
+      .max(64, { message: "Password must be at most 64 characters" })
       .regex(/[A-Z]/, {
         message: "Password must contain at least one uppercase letter",
       })
       .regex(/[a-z]/, {
         message: "Password must contain at least one lowercase letter",
       })
-      .regex(/[0-9]/, { message: "Password must contain at least one number" }),
-    confirmPassword: z.string(),
-    first_name: z.string().min(1, { message: "First name is required" }),
-    last_name: z.string().min(1, { message: "Last name is required" }),
+      .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+        message: "Password must contain at least one special character",
+      }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Confirm password must be at least 8 characters" })
+      .max(64, { message: "Confirm password must be at most 64 characters" }),
+    first_name: z
+      .string()
+      .min(2, { message: "First name must be at least 2 characters" })
+      .max(50, { message: "First name must be at most 50 characters" }),
+    last_name: z
+      .string()
+      .min(2, { message: "Last name must be at least 2 characters" })
+      .max(50, { message: "Last name must be at most 50 characters" }),
     birthdate: z.date().refine(
       (date) => {
         const eighteenYearsAgo = calculateEighteenYearsAgo();
@@ -51,11 +83,13 @@ export const profileUpdateSchema = z
     username: z
       .string()
       .min(5, { message: "Username must be at least 5 characters" })
+      .max(20, { message: "Username must be at most 20 characters" })
       .optional(),
     email: z.string().email().optional(),
     password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters" })
+      .max(64, { message: "Password must be at most 64 characters" })
       .regex(/[A-Z]/, {
         message: "Password must contain at least one uppercase letter",
       })
@@ -63,27 +97,24 @@ export const profileUpdateSchema = z
         message: "Password must contain at least one lowercase letter",
       })
       .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+        message: "Password must contain at least one special character",
+      })
       .optional(),
     confirmPassword: z
       .string()
       .min(8, { message: "Confirm password must be at least 8 characters" })
-      .regex(/[A-Z]/, {
-        message: "Confirm password must contain at least one uppercase letter",
-      })
-      .regex(/[a-z]/, {
-        message: "Confirm password must contain at least one lowercase letter",
-      })
-      .regex(/[0-9]/, {
-        message: "Confirm password must contain at least one number",
-      })
+      .max(64, { message: "Confirm password must be at most 64 characters" })
       .optional(),
     first_name: z
       .string()
-      .min(1, { message: "First name is required" })
+      .min(2, { message: "First name must be at least 2 characters" })
+      .max(50, { message: "First name must be at most 50 characters" })
       .optional(),
     last_name: z
       .string()
-      .min(1, { message: "Last name is required" })
+      .min(2, { message: "Last name must be at least 2 characters" })
+      .max(50, { message: "Last name must be at most 50 characters" })
       .optional(),
     birthdate: z
       .date()
@@ -103,17 +134,30 @@ export const profileUpdateSchema = z
       }
       return true;
     },
-    {
-      message: "Passwords don't match",
-      path: ["confirmPassword"],
-    },
+    { message: "Passwords do not match", path: ["confirmPassword"] },
   );
 
 export const passwordResetSchemaToken = z
   .object({
-    token: z.string().min(1, "Token is required"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string(),
+    token: z.string().regex(UUID_REGEX, { message: "Invalid token format" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" })
+      .max(64, { message: "Password must be at most 64 characters" })
+      .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+      })
+      .regex(/[a-z]/, {
+        message: "Password must contain at least one lowercase letter",
+      })
+      .regex(/[0-9]/, { message: "Password must contain at least one number" })
+      .regex(/[!@#$%^&*(),.?":{}|<>]/, {
+        message: "Password must contain at least one special character",
+      }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Confirm password must be at least 8 characters" })
+      .max(64, { message: "Confirm password must be at most 64 characters" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
