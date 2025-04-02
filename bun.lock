@@ -513,7 +513,7 @@
 
     "axobject-query": ["axobject-query@4.1.0", "", {}, "sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ=="],
 
-    "babel-plugin-react-compiler": ["babel-plugin-react-compiler@19.0.0-beta-e993439-20250328", "", { "dependencies": { "@babel/types": "^7.26.0" } }, "sha512-eq0lxXDicCNfhtIhm2L2nW2FyDcPMfuJTQG641ZWMWxEVqwmtUlAkWXC4o5C3vykhWMTsXmiJe7/hxXVUbV8ZA=="],
+    "babel-plugin-react-compiler": ["babel-plugin-react-compiler@19.0.0-beta-714736e-20250131", "", { "dependencies": { "@babel/types": "^7.19.0" } }, "sha512-frj2l6fRWVi26iw9WthFKyFyE4u5ZSHH3KdKiscOOwpz210seTtwnp0QbJmi8Zoa5HK7Fk2fH40JffN2y8GvLg=="],
 
     "balanced-match": ["balanced-match@1.0.2", "", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
 
