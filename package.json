@@ -67,7 +67,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.23.0",
     "@tailwindcss/postcss": "^4.1.0",
-    "@tanstack/eslint-plugin-query": "^5.68.0",
+    "@tanstack/eslint-plugin-query": "^5.71.5",
     "@types/eslint": "^9.6.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/node": "^22.13.10",
