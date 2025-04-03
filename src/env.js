@@ -21,6 +21,9 @@ export const env = createEnv({
     NEXT_PUBLIC_STORY_API_URL: z.string().url(),
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: z.string(),
     NEXT_PUBLIC_SITE_URL: z.string().url(),
+    NEXT_PUBLIC_DEBUG: z
+      .string()
+      .transform((val) => val.toLowerCase() === "true"),
   },
 
   /**
@@ -34,6 +37,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION:
       process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**
