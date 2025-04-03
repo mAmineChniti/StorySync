@@ -6,14 +6,16 @@ import { ReactScan } from "@/components/ReactScan";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
+import { Geist } from "next/font/google";
 
 import "@/styles/globals.css";
 import { Analytics } from "@vercel/analytics/next";
-import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+});
 
 const siteUrl =
   env.NEXT_PUBLIC_SITE_URL || "https://storysync-delta.vercel.app";
@@ -77,11 +79,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${GeistSans.variable} ${inter.className}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
       {env.NEXT_PUBLIC_DEBUG && <ReactScan />}
       <ClientTokenRefresher />
       <Analytics />
@@ -99,18 +97,18 @@ export default function RootLayout({
             expand={true}
             duration={3000}
             /** toastOptions={{
-            classNames: {
-              toast: "bg-primary text-primary-foreground border-border",
-              title: "text-primary-foreground",
-              description: "text-muted-foreground",
-              success: "bg-green-500 text-green-foreground",
-              error: "bg-destructive text-destructive-foreground",
-              warning: "bg-yellow-500 text-yellow-foreground",
-              info: "bg-blue-500 text-blue-foreground",
-              closeButton:
-                "text-muted-foreground hover:text-primary-foreground",
-            },
-          }} **/
+      classNames: {
+        toast: "bg-primary text-primary-foreground border-border",
+        title: "text-primary-foreground",
+        description: "text-muted-foreground",
+        success: "bg-green-500 text-green-foreground",
+        error: "bg-destructive text-destructive-foreground",
+        warning: "bg-yellow-500 text-yellow-foreground",
+        info: "bg-blue-500 text-blue-foreground",
+        closeButton:
+          "text-muted-foreground hover:text-primary-foreground",
+      },
+    }} **/
           />
         </ThemeProvider>
       </body>
