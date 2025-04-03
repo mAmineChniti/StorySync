@@ -2,6 +2,7 @@ import { ClientTokenRefresher } from "@/components/ClientTokenRefresher";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import { Providers } from "@/components/providers";
+import { ReactScan } from "@/components/ReactScan";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/env";
@@ -81,6 +82,7 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${inter.className}`}
       suppressHydrationWarning
     >
+      {env.NEXT_PUBLIC_DEBUG && <ReactScan />}
       <ClientTokenRefresher />
       <Analytics />
       <body className="bg-background text-primary-foreground min-h-screen">
