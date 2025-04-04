@@ -8,14 +8,9 @@ import prettierPlugin from "eslint-plugin-prettier";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import unicornPlugin from "eslint-plugin-unicorn";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: import.meta.dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
@@ -28,7 +23,7 @@ const eslintConfig = [
     "plugin:prettier/recommended",
   ),
   {
-    ignores: ["**/.next/**", "**/node_modules/**", "**/dist/**", "**/build/**"],
+    ignores: [".next", "node_modules", ".vercel"],
   },
   {
     plugins: {
