@@ -6,22 +6,27 @@ import { useEffect } from "react";
 
 import { AuthService } from "@/lib/requests";
 import { parseCookie } from "@/lib/utils";
-import type { AccessToken, UserStruct } from "@/types/authInterfaces";
+import type {
+  AccessToken,
+  RefreshToken,
+  UserStruct,
+} from "@/types/authInterfaces";
 
 const REFRESH_THRESHOLD = 5 * 60 * 1000;
 
 const handleLogout = async () => {
-  await deleteCookie("user");
-  await deleteCookie("access");
-  await deleteCookie("refresh");
+  await Promise.all([
+    deleteCookie("user"),
+    deleteCookie("access"),
+    deleteCookie("refresh"),
+  ]);
+  window.location.href = "/";
 };
 
 export const checkAndRefreshToken = async () => {
   try {
     const accessResult = await parseCookie<AccessToken>("access");
-    const refreshResult = await parseCookie<{ refresh_expires_at: string }>(
-      "refresh",
-    );
+    const refreshResult = await parseCookie<RefreshToken>("refresh");
     const userResult = await parseCookie<UserStruct>("user");
 
     if (
@@ -45,35 +50,41 @@ export const checkAndRefreshToken = async () => {
     if (timeUntilExpiry < REFRESH_THRESHOLD) {
       const newTokens = await AuthService.refreshTokens();
 
-      await setCookie(
-        "access",
-        JSON.stringify({
-          access_token: newTokens.access_token,
-          access_created_at: newTokens.access_created_at,
-          access_expires_at: newTokens.access_expires_at,
-        }),
-        {
-          path: "/",
-          sameSite: "lax",
-          secure: globalThis.location.protocol === "https:",
-          expires: new Date(newTokens.access_expires_at),
-        },
-      );
+      const cookieOptions = {
+        path: "/",
+        sameSite: "lax" as const,
+        secure: globalThis.location?.protocol === "https:",
+        expires: new Date(newTokens.access_expires_at),
+      };
 
-      await setCookie(
-        "refresh",
-        JSON.stringify({
-          refresh_token: newTokens.refresh_token,
-          refresh_created_at: newTokens.refresh_created_at,
-          refresh_expires_at: newTokens.refresh_expires_at,
-        }),
-        {
-          path: "/",
-          sameSite: "lax",
-          secure: globalThis.location.protocol === "https:",
-          expires: new Date(newTokens.refresh_expires_at),
-        },
-      );
+      await Promise.all([
+        setCookie("user", JSON.stringify(userResult.data), cookieOptions),
+
+        setCookie(
+          "access",
+          JSON.stringify({
+            access_token: newTokens.access_token,
+            access_created_at: newTokens.access_created_at,
+            access_expires_at: newTokens.access_expires_at,
+          }),
+          cookieOptions,
+        ),
+
+        setCookie(
+          "refresh",
+          JSON.stringify({
+            refresh_token: newTokens.refresh_token,
+            refresh_created_at: newTokens.refresh_created_at,
+            refresh_expires_at: newTokens.refresh_expires_at,
+          }),
+          {
+            path: "/",
+            sameSite: "lax",
+            secure: globalThis.location?.protocol === "https:",
+            expires: new Date(newTokens.refresh_expires_at),
+          },
+        ),
+      ]);
 
       const nextRefreshTime =
         new Date(newTokens.access_expires_at).getTime() -
@@ -104,7 +115,7 @@ export const useTokenRefresh = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const isAuthPage =
+    const isOuterPage =
       pathname === "/login" ||
       pathname === "/register" ||
       pathname === "/terms-of-service" ||
@@ -116,7 +127,7 @@ export const useTokenRefresh = () => {
         const result = await checkAndRefreshToken();
 
         if (!result.success) {
-          if (!isAuthPage) {
+          if (!isOuterPage) {
             router.push("/");
           }
           return;

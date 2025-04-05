@@ -22,7 +22,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { checkAndRefreshToken } from "@/hooks/useTokenRefresh";
 import { AuthService } from "@/lib/requests";
 import type { LoginResponse } from "@/types/authInterfaces";
 import { loginSchema } from "@/types/authSchemas";
@@ -48,36 +47,35 @@ export default function Login() {
         const cookieOptions = {
           path: "/",
           sameSite: "lax" as const,
-          secure: globalThis.location.protocol === "https:",
+          secure: globalThis.location?.protocol === "https:",
           expires: new Date(userData.tokens.access_expires_at),
         };
-
-        await setCookie("user", JSON.stringify(userData.user), cookieOptions);
-        await setCookie(
-          "access",
-          JSON.stringify({
-            access_token: userData.tokens.access_token,
-            access_created_at: userData.tokens.access_created_at,
-            access_expires_at: userData.tokens.access_expires_at,
-          }),
-          cookieOptions,
-        );
-        await setCookie(
-          "refresh",
-          JSON.stringify({
-            refresh_token: userData.tokens.refresh_token,
-            refresh_created_at: userData.tokens.refresh_created_at,
-            refresh_expires_at: userData.tokens.refresh_expires_at,
-          }),
-          cookieOptions,
-        );
-
-        setTimeout(
-          () => void checkAndRefreshToken(),
-          new Date(userData.tokens.access_expires_at).getTime() -
-            Date.now() -
-            30_000,
-        );
+        await Promise.all([
+          setCookie("user", JSON.stringify(userData.user), cookieOptions),
+          setCookie(
+            "access",
+            JSON.stringify({
+              access_token: userData.tokens.access_token,
+              access_created_at: userData.tokens.access_created_at,
+              access_expires_at: userData.tokens.access_expires_at,
+            }),
+            cookieOptions,
+          ),
+          setCookie(
+            "refresh",
+            JSON.stringify({
+              refresh_token: userData.tokens.refresh_token,
+              refresh_created_at: userData.tokens.refresh_created_at,
+              refresh_expires_at: userData.tokens.refresh_expires_at,
+            }),
+            {
+              path: "/",
+              sameSite: "lax" as const,
+              secure: globalThis.location.protocol === "https:",
+              expires: new Date(userData.tokens.refresh_expires_at),
+            },
+          ),
+        ]);
 
         if (!userData.user.email_confirmed) {
           router.push("/email-confirmation");

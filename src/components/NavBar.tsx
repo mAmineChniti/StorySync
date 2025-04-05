@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-import { deleteCookie, hasCookie } from "cookies-next/client";
+import { deleteCookie, hasCookie } from "cookies-next";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -22,7 +22,6 @@ const ROUTE_PRIORITY = [
   { key: "browse", routes: ["/browse"] },
   { key: "login", routes: ["/login"] },
   { key: "register", routes: ["/register"] },
-  { key: "/", routes: ["/"] },
 ];
 
 export default function NavBar() {
@@ -34,7 +33,6 @@ export default function NavBar() {
     for (const route of ROUTE_PRIORITY) {
       if (route.routes.includes(pathname)) {
         return {
-          "/": route.key === "/",
           login: route.key === "login",
           register: route.key === "register",
           browse: route.key === "browse",
@@ -43,7 +41,6 @@ export default function NavBar() {
       }
     }
     return {
-      "/": false,
       login: false,
       register: false,
       browse: false,
@@ -52,14 +49,23 @@ export default function NavBar() {
   };
 
   useEffect(() => {
-    setIsUserLoggedIn(hasCookie("user"));
+    const userCookie = hasCookie("user");
+    const accessCookie = hasCookie("access");
+    const refreshCookie = hasCookie("refresh");
+    if (userCookie && accessCookie && refreshCookie) {
+      setIsUserLoggedIn(true);
+    } else {
+      setIsUserLoggedIn(false);
+    }
   }, [pathname]);
 
-  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleLogout = async (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
     e.preventDefault();
-    deleteCookie("user");
-    deleteCookie("access");
-    deleteCookie("refresh");
+    await deleteCookie("user");
+    await deleteCookie("access");
+    await deleteCookie("refresh");
     router.push("/");
     router.refresh();
   };
