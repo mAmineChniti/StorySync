@@ -20,7 +20,6 @@ const handleLogout = async () => {
     deleteCookie("access"),
     deleteCookie("refresh"),
   ]);
-  window.location.href = "/";
 };
 
 export const checkAndRefreshToken = async () => {
