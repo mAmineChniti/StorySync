@@ -49,10 +49,9 @@ export default function NavBar() {
   };
 
   useEffect(() => {
-    const userCookie = hasCookie("user");
-    const accessCookie = hasCookie("access");
-    const refreshCookie = hasCookie("refresh");
-    if (userCookie && accessCookie && refreshCookie) {
+    const isAuthenticated =
+      hasCookie("user") && hasCookie("access") && hasCookie("refresh");
+    if (isAuthenticated) {
       setIsUserLoggedIn(true);
     } else {
       setIsUserLoggedIn(false);
@@ -63,9 +62,11 @@ export default function NavBar() {
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   ) => {
     e.preventDefault();
-    await deleteCookie("user");
-    await deleteCookie("access");
-    await deleteCookie("refresh");
+    await Promise.all([
+      deleteCookie("user"),
+      deleteCookie("access"),
+      deleteCookie("refresh"),
+    ]);
     router.push("/");
     router.refresh();
   };
