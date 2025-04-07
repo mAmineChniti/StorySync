@@ -20,6 +20,7 @@ const handleLogout = async () => {
     deleteCookie("access"),
     deleteCookie("refresh"),
   ]);
+  localStorage.removeItem("profile_picture");
 };
 
 export const checkAndRefreshToken = async () => {

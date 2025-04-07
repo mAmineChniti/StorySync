@@ -44,6 +44,7 @@ export default function Login() {
     mutationFn: (data) => AuthService.login(data),
     onSuccess: async (userData) => {
       try {
+        const { profile_picture, ...userWithoutPicture } = userData.user;
         const cookieOptions = {
           path: "/",
           sameSite: "lax" as const,
@@ -51,7 +52,7 @@ export default function Login() {
           expires: new Date(userData.tokens.access_expires_at),
         };
         await Promise.all([
-          setCookie("user", JSON.stringify(userData.user), cookieOptions),
+          setCookie("user", JSON.stringify(userWithoutPicture), cookieOptions),
           setCookie(
             "access",
             JSON.stringify({
@@ -76,6 +77,10 @@ export default function Login() {
             },
           ),
         ]);
+
+        if (profile_picture) {
+          localStorage.setItem("profile_picture", profile_picture);
+        }
 
         if (!userData.user.email_confirmed) {
           router.push("/email-confirmation");

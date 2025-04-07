@@ -2,7 +2,7 @@
 
 import { useTokenRefresh } from "@/hooks/useTokenRefresh";
 
-export const ClientTokenRefresher = () => {
+export default function ClientTokenRefresher() {
   useTokenRefresh();
   return undefined;
-};
+}
