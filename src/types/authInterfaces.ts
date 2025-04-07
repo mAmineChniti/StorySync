@@ -5,6 +5,7 @@ export interface UserStruct {
   first_name: string;
   last_name: string;
   birthdate: string;
+  profile_picture: string;
   email_confirmed: boolean;
   accept_terms: boolean;
   date_joined: string;
@@ -51,6 +52,7 @@ export interface RegisterRequest {
   last_name: string;
   birthdate: string;
   accept_terms: boolean;
+  profile_picture: string;
 }
 
 export interface UpdateRequest {
@@ -60,6 +62,7 @@ export interface UpdateRequest {
   first_name?: string;
   last_name?: string;
   birthdate?: string;
+  profile_picture?: string;
 }
 
 export interface LoginRequest {

@@ -28,7 +28,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { AuthService } from "@/lib/requests";
-import { calculateEighteenYearsAgo, cn, formatDate } from "@/lib/utils";
+import {
+  calculateEighteenYearsAgo,
+  cn,
+  formatDate,
+  readFileAsBase64,
+} from "@/lib/utils";
 import type { RegisterRequest, RegisterResponse } from "@/types/authInterfaces";
 import { registerSchema } from "@/types/authSchemas";
 
@@ -68,7 +73,10 @@ export default function Register() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof registerSchema>) => {
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    const profilePictureBase64 = await readFileAsBase64(
+      "/default-profile-picture.png",
+    );
     const registerData: RegisterRequest = {
       username: data.username,
       email: data.email,
@@ -77,6 +85,7 @@ export default function Register() {
       last_name: data.last_name,
       birthdate: data.birthdate.toISOString(),
       accept_terms: data.accept_terms,
+      profile_picture: profilePictureBase64,
     };
     registerMutation.mutate(registerData);
   };

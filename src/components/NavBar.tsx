@@ -26,6 +26,9 @@ const ROUTE_PRIORITY = [
 
 export default function NavBar() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | undefined>(
+    undefined,
+  );
   const router = useRouter();
   const pathname = usePathname();
 
@@ -53,8 +56,11 @@ export default function NavBar() {
       hasCookie("user") && hasCookie("access") && hasCookie("refresh");
     if (isAuthenticated) {
       setIsUserLoggedIn(true);
+      const profilePicture = localStorage.getItem("profile_picture");
+      setProfilePicture(profilePicture ?? undefined);
     } else {
       setIsUserLoggedIn(false);
+      setProfilePicture(undefined);
     }
   }, [pathname]);
 
@@ -67,6 +73,7 @@ export default function NavBar() {
       deleteCookie("access"),
       deleteCookie("refresh"),
     ]);
+    localStorage.removeItem("profile_picture");
     router.push("/");
     router.refresh();
   };
@@ -94,6 +101,29 @@ export default function NavBar() {
         <div className="ml-auto flex items-center gap-2 sm:gap-4">
           {isUserLoggedIn ? (
             <>
+              {profilePicture && (
+                <NavigationMenuItem>
+                  <Link href="/profile" passHref legacyBehavior>
+                    <NavigationMenuLink
+                      aria-label="Profile"
+                      className={cn(
+                        "rounded-full transition-colors hover:bg-accent hover:text-accent-foreground",
+                        getActiveClass().profile
+                          ? "bg-accent text-accent-foreground"
+                          : "",
+                      )}
+                    >
+                      <Image
+                        src={profilePicture}
+                        alt="Profile Picture"
+                        width={32}
+                        height={32}
+                        className="rounded-full h-8 w-8 object-cover"
+                      />
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              )}
               <NavigationMenuItem>
                 <Link href="/browse" passHref legacyBehavior>
                   <NavigationMenuLink
@@ -106,21 +136,6 @@ export default function NavBar() {
                     )}
                   >
                     Browse
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/profile" passHref legacyBehavior>
-                  <NavigationMenuLink
-                    aria-label="Profile"
-                    className={cn(
-                      "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
-                      getActiveClass().profile
-                        ? "bg-accent text-accent-foreground"
-                        : "",
-                    )}
-                  >
-                    Profile
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>

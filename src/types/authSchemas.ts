@@ -126,6 +126,7 @@ export const profileUpdateSchema = z
         { message: "You must be at least 18 years old" },
       )
       .optional(),
+    profile_picture: z.string().optional(),
   })
   .refine(
     (data) => {

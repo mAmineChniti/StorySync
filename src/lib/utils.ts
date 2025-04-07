@@ -124,3 +124,14 @@ export function calculateEighteenYearsAgo(): Date {
   date.setFullYear(date.getFullYear() - 18);
   return date;
 }
+
+export async function readFileAsBase64(filePath: string): Promise<string> {
+  const response = await fetch(filePath);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
