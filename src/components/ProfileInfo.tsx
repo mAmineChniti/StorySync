@@ -367,7 +367,7 @@ export default function ProfileInfo() {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
@@ -385,7 +385,7 @@ export default function ProfileInfo() {
                   control={form.control}
                   name="confirmPassword"
                   render={({ field }) => (
-                    <FormItem className="space-y-2">
+                    <FormItem>
                       <FormLabel>Confirm Password</FormLabel>
                       <FormControl>
                         <Input
