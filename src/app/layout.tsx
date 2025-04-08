@@ -70,9 +70,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-  },
+  //   verification: {
+  //     google: env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  //   },
 };
 
 export default function RootLayout({
@@ -96,19 +96,21 @@ export default function RootLayout({
             closeButton
             expand={true}
             duration={3000}
-            // toastOptions={{
-            //   classNames: {
-            //     toast: "bg-primary text-primary-foreground border-border",
-            //     title: "text-primary-foreground",
-            //     description: "text-muted-foreground",
-            //     success: "bg-green-500 text-green-foreground",
-            //     error: "bg-destructive text-destructive-foreground",
-            //     warning: "bg-yellow-500 text-yellow-foreground",
-            //     info: "bg-blue-500 text-blue-foreground",
-            //     closeButton:
-            //       "text-muted-foreground hover:text-primary-foreground",
-            //   },
-            // }}
+            /*
+toastOptions={{
+      classNames: {
+        toast: "bg-primary text-primary-foreground border-border",
+        title: "text-primary-foreground",
+        description: "text-muted-foreground",
+        success: "bg-green-500 text-green-foreground",
+        error: "bg-destructive text-destructive-foreground",
+        warning: "bg-yellow-500 text-yellow-foreground",
+        info: "bg-blue-500 text-blue-foreground",
+        closeButton:
+          "text-muted-foreground hover:text-primary-foreground",
+      },
+    }}
+*/
           />
         </ThemeProvider>
       </body>

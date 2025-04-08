@@ -1,17 +1,29 @@
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
 
 export default function NotFoundPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md text-center max-w-md">
-        <h1 className="text-3xl font-bold mb-4">404 - Page Not Found</h1>
-        <p className="text-lg mb-6">
-          Oops! The page you are looking for doesn&apos;t exist.
-        </p>
-        <Link href="/" className="text-blue-500 hover:underline">
-          Go back to home
-        </Link>
-      </div>
+    <div className="flex items-center justify-center p-4 w-full min-h-[calc(100vh-8rem)]">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-center">404 - Page Not Found</CardTitle>
+          <CardDescription className="text-center text-md">
+            Oops! The page you are looking for doesn&apos;t exist.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center">
+          <Button className="cursor-pointer" asChild>
+            <Link href="/">Go back to home</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -147,25 +147,8 @@ export default function CreateStory() {
                       <FormControl>
                         <Input
                           placeholder="Enter a captivating title"
-                          {...field}
                           className="bg-background border-border"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          className="resize-none bg-background border-border"
-                          placeholder="What is your story about?"
-                          rows={5}
+                          maxLength={75}
                           {...field}
                         />
                       </FormControl>
@@ -201,6 +184,28 @@ export default function CreateStory() {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          className="resize-none bg-background border-border"
+                          placeholder="What is your story about?"
+                          rows={5}
+                          maxLength={500}
+                          {...field}
+                        />
+                      </FormControl>
+                      <span className="flex justify-end text-sm text-muted-foreground">
+                        {field.value.length + " / 500"}
+                      </span>
                       <FormMessage />
                     </FormItem>
                   )}
