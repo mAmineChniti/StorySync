@@ -4,13 +4,11 @@ import { NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const user = request.cookies.get("user");
+  const access = request.cookies.get("access");
+  const refresh = request.cookies.get("refresh");
+  const isLoggedIn = user && access && refresh;
 
-  if (
-    (pathname === "/" ||
-      pathname.startsWith("/login") ||
-      pathname.startsWith("/register")) &&
-    user
-  ) {
+  if (["/", "/login", "/register"].includes(pathname) && isLoggedIn) {
     return NextResponse.redirect(new URL("/browse", request.url), 307);
   }
 
@@ -24,8 +22,12 @@ export function middleware(request: NextRequest) {
     "/email-confirmation",
   ];
 
-  if (protectedRoutes.some((route) => pathname.startsWith(route)) && !user) {
-    return NextResponse.redirect(new URL("/login", request.url), 307);
+  const isProtected = protectedRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  if (isProtected && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/", request.url), 307);
   }
 
   return NextResponse.next();
