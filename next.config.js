@@ -6,10 +6,8 @@ import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
 const nextConfig = {
+  turbopack: {},
   experimental: {
-    turbo: {
-      resolveAlias: {},
-    },
     reactCompiler: true,
   },
 };
