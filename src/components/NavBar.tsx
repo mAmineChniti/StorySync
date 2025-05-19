@@ -82,8 +82,9 @@ export default function NavBar() {
     <NavigationMenu>
       <NavigationMenuList className="fixed top-0 left-0 w-full h-16 bg-background text-foreground flex items-center px-2 sm:px-4 shadow-md z-50 border-b border-border">
         <NavigationMenuItem>
-          <Link href="/" passHref legacyBehavior>
-            <NavigationMenuLink
+          <NavigationMenuLink asChild>
+            <Link
+              href="/"
               aria-label="Home"
               className="px-3 py-1 rounded-md hover:bg-transparent focus:outline-none focus:bg-transparent"
             >
@@ -95,16 +96,17 @@ export default function NavBar() {
                 className="h-8 w-8 object-contain"
                 priority
               />
-            </NavigationMenuLink>
-          </Link>
+            </Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
         <div className="ml-auto flex items-center gap-2 sm:gap-4">
           {isUserLoggedIn ? (
             <>
               {profilePicture && (
                 <NavigationMenuItem>
-                  <Link href="/profile" passHref legacyBehavior>
-                    <NavigationMenuLink
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/profile"
                       aria-label="Profile"
                       className={cn(
                         "rounded-full transition-colors hover:bg-accent hover:text-accent-foreground",
@@ -120,13 +122,14 @@ export default function NavBar() {
                         height={32}
                         className="rounded-full h-8 w-8 object-cover"
                       />
-                    </NavigationMenuLink>
-                  </Link>
+                    </Link>
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               )}
               <NavigationMenuItem>
-                <Link href="/browse" passHref legacyBehavior>
-                  <NavigationMenuLink
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/browse"
                     aria-label="Browse Stories"
                     className={cn(
                       "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
@@ -136,26 +139,28 @@ export default function NavBar() {
                     )}
                   >
                     Browse
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="#" passHref legacyBehavior>
-                  <NavigationMenuLink
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="#"
                     aria-label="Logout"
                     onClick={handleLogout}
                     className="px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-transparent focus:outline-none"
                   >
                     Logout
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </>
           ) : (
             <>
               <NavigationMenuItem>
-                <Link href="/login" passHref legacyBehavior>
-                  <NavigationMenuLink
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/login"
                     aria-label="Login"
                     className={cn(
                       "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
@@ -165,12 +170,13 @@ export default function NavBar() {
                     )}
                   >
                     Login
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="/register" passHref legacyBehavior>
-                  <NavigationMenuLink
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/register"
                     aria-label="Register"
                     className={cn(
                       "px-3 py-1 rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
@@ -180,8 +186,8 @@ export default function NavBar() {
                     )}
                   >
                     Register
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </>
           )}
