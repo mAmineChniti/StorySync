@@ -32,7 +32,7 @@
         "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
-        "cookies-next": "^5.1.0",
+        "cookies-next": "^6.0.0",
         "lowlight": "^3.3.0",
         "lucide-react": "^0.503.0",
         "next": "^15.3.1",
@@ -693,7 +693,7 @@
 
     "cookie": ["cookie@1.0.2", "", {}, "sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA=="],
 
-    "cookies-next": ["cookies-next@5.1.0", "", { "dependencies": { "cookie": "^1.0.1" }, "peerDependencies": { "next": ">=15.0.0", "react": ">= 16.8.0" } }, "sha512-9Ekne+q8hfziJtnT9c1yDUBqT0eDMGgPrfPl4bpR3xwQHLTd/8gbSf6+IEkP/pjGsDZt1TGbC6emYmFYRbIXwQ=="],
+    "cookies-next": ["cookies-next@6.0.0", "", { "dependencies": { "cookie": "^1.0.1" }, "peerDependencies": { "next": ">=15.0.0", "react": ">= 16.8.0" } }, "sha512-Xq87TPIe7faqluf7gr3mobzO2JRe65oX+pnv4nrnDE/ak49Ic6QhNZSLCk+E5xOKtpVm1EoEazu0iBNyr5TXTA=="],
 
     "core-js-compat": ["core-js-compat@3.41.0", "", { "dependencies": { "browserslist": "^4.24.4" } }, "sha512-RFsU9LySVue9RTwdDVX/T0e2Y6jRYWXERKElIjpuEOEnxaXffI0X7RUwVzfYLfzuLXSNJDYoRYUAmRUcyln20A=="],
 
