@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -30,25 +29,19 @@ const RegisterSkeleton = () => (
           <Label>
             <Skeleton className="h-6 w-1/3" />
           </Label>
-          <Input disabled placeholder="">
-            <Skeleton className="h-10 w-full" />
-          </Input>
+          <Skeleton className="h-10 w-full" />
         </div>
         <div className="space-y-2">
           <Label>
             <Skeleton className="h-6 w-1/3" />
           </Label>
-          <Input disabled placeholder="">
-            <Skeleton className="h-10 w-full" />
-          </Input>
+          <Skeleton className="h-10 w-full" />
         </div>
         <div className="space-y-2">
           <Label>
             <Skeleton className="h-6 w-1/3" />
           </Label>
-          <Input disabled placeholder="">
-            <Skeleton className="h-10 w-full" />
-          </Input>
+          <Skeleton className="h-10 w-full" />
         </div>
         <div className="flex flex-col space-y-4">
           <Button disabled className="w-full">
